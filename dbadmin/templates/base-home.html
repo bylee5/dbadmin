@@ -1,0 +1,162 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+	<meta name="generator" content="Jekyll v3.8.6">
+	<title>DBA / Internal Admin</title>
+
+	<link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/offcanvas/">
+
+	<!-- Favicons -->
+	<link rel="icon" href="{% static 'image/tmon-logo1.png' %}" sizes="16x16" type="image/png">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+
+	<!-- jQuery library -->
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+
+	<!-- Popper JS -->
+	<script src="{% static 'js/popper.min.js' %}"></script>
+
+	<!-- Latest compiled JavaScript -->
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+	<!-- echart js -->
+	<script src="{% static 'js/echarts.js' %}"></script>
+
+	<!-- LOCAL Custom CSS -->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+
+	<!-- Bootstrap core CSS -->
+	<link href="{% static 'css/bootstrap_core.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/offcanvas.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<!-- NAV TOP -->
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+	<img class="mb2 mr-lg-2" src="{% static 'image/tmon-logo1.png' %}" style="width: 30px; height: 30px;">
+	<a class="navbar-brand mr-auto mr-lg-0" href="/home">Tmon DBA / Internal Admin </a>
+	<button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+	<ul class="navbar-nav mr-auto small">
+		<li class="nav-item">
+			<a class="nav-link" href="/home">대시보드<span class="sr-only">(current)</span></a>
+		</li>
+
+		<li class="nav-item">
+			<a class="nav-link" href="/account">계정관리</a>
+		</li>
+
+		<li class="nav-item">
+			<a class="nav-link" href="#">모니터링(미구현)</a>
+		</li>
+
+		<li class="nav-item">
+			<a class="nav-link" href="#">URL(미구현)</a>
+		</li>
+
+		<li class="nav-item dropdown">
+		<a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">기타(미구현)</a>
+			<div class="dropdown-menu" aria-labelledby="dropdown01">
+			  <a class="dropdown-item small" href="#">기타1</a>
+			  <a class="dropdown-item small" href="#">기타2</a>
+			  <a class="dropdown-item small" href="#">기타3</a>
+			</div>
+		</li>
+	</ul>
+
+	<form class="form-inline my-2 my-lg-0">
+		<input class="form-control mr-sm-2 form-control-sm" type="text" placeholder="Search" aria-label="Search">
+		<button class="btn btn-outline-success my-2 my-sm-0 btn-sm" type="submit">Search</button>
+	</form>
+
+	<ul class="navbar-nav px-3">
+    	<li class="nav-item text-nowrap">
+			{% if user.is_authenticated %} <!-- 만약 로그인이 되어있는 상태이면 -->
+				<a class="nav-link small" href="{% url 'logout' %}">{{user.first_name}} {{user.last_name}}님 환영합니다 (로그아웃)</a>
+			{% else %} <!-- 로그인이 되어있지않다면 -->
+				<a class="nav-link small" href="{% url 'login' %}">로그인 하셔야합니다.</a>
+			{% endif %}
+    	</li>
+	</ul>
+
+	</div>
+</nav>
+
+<!-- NAV TOP MENU-->
+<div class="nav-scroller bg-white shadow-sm">
+  <nav class="nav nav-underline">
+    <a class="nav-link small" href="/home">Dashboard</a>
+    <a class="nav-link small" href="/home/test">
+     Test page
+      <!--<span class="badge badge-pill bg-light align-text-bottom">7</span>-->
+    </a>
+    <a class="nav-link small" href="/home/testGraph">Test graph</a>
+	  <a class="nav-link small" href="/home/post">Test ajax (post)</a>
+  </nav>
+</div>
+
+<!-- MAIN -->
+<div class="container" style="max-width: 1800px;">
+	<!--<div class="main-title">
+		This is main message.
+	</div>
+
+
+	<div class="sub-title">
+		sub title message.
+	</div>
+-->
+	<div class="my-3 p-3 bg-white rounded shadow-sm">
+		<h6 class="border-bottom border-gray pb-2 mb-0">최근 업데이트 / 공지사항</h6>
+
+		<div class="media text-muted pt-3">
+			<svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#f27935"/><text x="50%" y="50%" fill="#f27935" dy=".3em">32x32</text></svg>
+			<p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+				<strong class="d-block text-gray-dark">Admin Notice</strong>
+                Welcome to Tmon DBA / internal Admin page. 환영합니다.<br>어드민 사이트로, 지금은 공사중입니다.
+			</p>
+		</div>
+
+		<!--<small class="d-block text-right mt-3">
+			<a href="#">All updates</a>
+		</small>-->
+	</div>
+
+	<div class="sub-main my-3 p-3 rounded shadow-sm">
+		{% if user.is_authenticated %}<!-- 만약 로그인이 되어있는 상태이면 -->
+			{% block content %}
+			{% endblock %}
+
+		{% else %} <!-- 로그인이 되어있지않다면 -->
+		<div class="alert alert-warning small" role="alert">
+			<a href="{% url 'login' %}" class="alert-link"> 인증되지 않은 사용자는 볼 수 없습니다.<br><u>(로그인 하러 가기)</u></a>
+		</div>
+		{% endif %}
+	</div>
+
+</div>
+
+<!-- BOTTOM -->
+<!--<div class="main-bottom">
+main bottom message.
+-->
+
+<!-- 현재 url을 호출하여 active 효과 먹이기 -->
+<script>
+$(function() {
+	$('nav a[href^="/' + location.pathname.split("/")[1] + '"]').addClass('active');
+});
+</script>
+
+</body>
+</html>
