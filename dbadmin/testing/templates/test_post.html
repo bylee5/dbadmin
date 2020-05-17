@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% extends 'base-home.html' %}
+{% extends 'base-testing.html' %}
 {% load static %}
 <html lang="en">
 <head>
@@ -19,7 +19,7 @@
             <th class="rounded-right"></th>
         </tr>
         <tr>
-            <form class="form-inline" action="{% url 'post_list' %}" method="post">
+            <form class="form-inline" action="{% url 'post' %}" method="post">
             {% csrf_token %}
             <td class="">
                 <input class="form-control form-control-sm" id="title" value="{{ title }}" name="title" type="text" placeholder="">
@@ -38,7 +38,7 @@
 <!-- 리스트 뿌리기 -->
 <!-- Ajax 결과물을 추가 -->
 <input id="page" type="hidden" value="1">
-<div class="board small" id="post_list_ajax" style="font-size: 12px;">
+<div class="board small" id="post_ajax" style="font-size: 12px;">
     <!--
     <table class="table table-bordered table-sm table-hover">
         <br><< 결과란 >>
@@ -71,13 +71,7 @@
 <script>
     var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
-    $('#test').click(function(){
-        var page = parseInt($("#page").val())+1;
-        callMorePostAjax(page);
-        $("#page").val(parseInt(page)+1);
-    });
-
-    $('#post_list_ajax').load('adminAccount_select_ajax.html',function(){
+    $('#post_ajax').load('test_post_ajax.html',function(){
         var page = $("#page").val();
         callMorePostAjax(page);
         $("#page").val(parseInt(page));
@@ -87,7 +81,7 @@
         var scrollHeight = $(window).scrollTop() + $(window).height();
         var documentHeight = $(document).height();
 
-        if (scrollHeight + 350 >= documentHeight){
+        if (scrollHeight + 400 >= documentHeight){
             var page = $("#page").val();
             callMorePostAjax(page);
             $("#page").val(parseInt(page)+1);
@@ -100,7 +94,7 @@
 
         $.ajax( {
         type : 'POST',
-        url: "{% url 'post_list_ajax' %}",
+        url: "{% url 'post_ajax' %}",
         data: {
         'title': title,
         'content': content,
@@ -113,7 +107,7 @@
     }
 
     function addMorePostAjax(data, textStatus, jqXHR) {
-        $('#post_list_ajax').html(data);
+        $('#post_ajax').html(data);
     }
 
 </script>

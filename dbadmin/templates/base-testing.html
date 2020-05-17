@@ -7,7 +7,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
 	<meta name="generator" content="Jekyll v3.8.6">
-	<title>DB Admin - Account</title>
+	<title>DB Admin - Testing</title>
 
 	<link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/offcanvas/">
 
@@ -26,7 +26,7 @@
 	<script src="{% static 'js/bootstrap.min.js' %}"></script>
 
 	<!-- echart js -->
-	<script src="{% static 'js/echarts.min.js' %}"></script>
+	<script src="{% static 'js/echarts.js' %}"></script>
 
 	<!-- LOCAL Custom CSS -->
 	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
@@ -71,20 +71,19 @@
 		</li>
 	</ul>
 
-	<form class="form-inline my-2 my-lg-0" action="{% url 'account_select_fast' %}" method="post">
-		{% csrf_token %}
-		<input class="form-control form-control-sm mr-sm-2" type="text" id="account_user" name="account_user" placeholder="빠른 계정검색" aria-label="Search">
+	<form class="form-inline my-2 my-lg-0">
+		<input class="form-control mr-sm-2 form-control-sm" type="text" placeholder="Search" aria-label="Search">
 		<button class="btn btn-outline-success my-2 my-sm-0 btn-sm" type="submit">Search</button>
 	</form>
 
 	<ul class="navbar-nav px-3">
-		<li class="nav-item text-nowrap">
-			{% if user.is_authenticated %}<!-- 만약 로그인이 되어있는 상태이면 -->
+    	<li class="nav-item text-nowrap">
+			{% if user.is_authenticated %} <!-- 만약 로그인이 되어있는 상태이면 -->
 				<a class="nav-link small" href="{% url 'logout' %}">{{user.first_name}} {{user.last_name}}님 환영합니다 (로그아웃)</a>
 			{% else %} <!-- 로그인이 되어있지않다면 -->
 				<a class="nav-link small" href="{% url 'login' %}">로그인 하셔야합니다.</a>
 			{% endif %}
-		</li>
+    	</li>
 	</ul>
 
 	</div>
@@ -93,11 +92,10 @@
 <!-- NAV TOP MENU-->
 <div class="nav-scroller bg-white shadow-sm">
   <nav class="nav nav-underline">
-    <a class="nav-link small" style="font-size: 13px;" href="{% url 'account_select' %}">조회</a>
-	<a class="nav-link small" style="font-size: 13px;" href="{% url 'account_select_del' %}">조회(삭제계정)</a>
-	<a class="nav-link small" style="font-size: 13px;" href="{% url 'account_insert' %}">입력</a>
-	<a class="nav-link small" style="font-size: 13px;" href="{% url 'account_repository_select' %}">Repository 계정관리</a>
-    <a class="nav-link small" style="font-size: 13px;" href="#">대량삭제(미구현)</a>
+    <a class="nav-link small" style="font-size: 13px;" href="/testing">Test dashboard</a>
+	<a class="nav-link small" style="font-size: 13px;" href="/testing/page">Test page</a>
+    <a class="nav-link small" style="font-size: 13px;" href="/testing/graph">Test graph</a>
+	<a class="nav-link small" style="font-size: 13px;" href="/testing/post">Test ajax (post)</a>
   </nav>
 </div>
 
@@ -112,27 +110,25 @@
 		sub title message.
 	</div>
 -->
-
-	<!-- 공지사항 -->
-	<!--
 	<div class="my-3 p-3 bg-white rounded shadow-sm">
-
 		<h6 class="border-bottom border-gray pb-2 mb-0">최근 업데이트 / 공지사항</h6>
 
 		<div class="media text-muted pt-3">
-			<svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#6610f2"/><text x="50%" y="50%" fill="#6610f2" dy=".3em">32x32</text></svg>
+			<svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" aria-label="Placeholder: 32x32">
+				<title>Placeholder</title>
+				<rect width="100%" height="100%" fill="#088A85"/>
+				<text x="50%" y="50%" fill="#088A85" dy=".3em">32x32</text>
+			</svg>
 			<p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
 				<strong class="d-block text-gray-dark">Admin Notice</strong>
-                Welcome to Tmon DBA / internal Admin page. 환영합니다.<br>계정관리 페이지입니다.
+                Welcome to Tmon DBA / Testing page.<br>테스팅 페이지입니다.
 			</p>
 		</div>
 
-		<small class="d-block text-right mt-3">
+		<!--<small class="d-block text-right mt-3">
 			<a href="#">All updates</a>
-		</small>
-
+		</small>-->
 	</div>
-	-->
 
 	<div class="sub-main my-3 p-3 rounded shadow-sm">
 		{% if user.is_authenticated %}<!-- 만약 로그인이 되어있는 상태이면 -->
@@ -151,10 +147,9 @@
 <!-- BOTTOM -->
 <!--<div class="main-bottom">
 main bottom message.
-</div>-->
+-->
 
-
-<!-- 현재 url을 호출하여 nav.a active 효과 먹이기 -->
+<!-- 현재 url을 호출하여 active 효과 먹이기 -->
 <script>
 $(function() {
 	$('nav a[href^="/' + location.pathname.split("/")[1] + '"]').addClass('active');

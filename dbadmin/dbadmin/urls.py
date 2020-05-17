@@ -1,27 +1,33 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
+
 import login.views
 import home.views
 import account.views
-from django.conf.urls import url
+import testing.views
 
 urlpatterns = [
     #url(r'^$', login.views.login),
 
+    #########################################################################
+    # django admin
+    #########################################################################
     path('admin/', admin.site.urls),
-    path('', login.views.login),
+
 
     #########################################################################
     # login app
     #########################################################################
+    path('', login.views.login),
     path('login/', login.views.login, name='login'),
     path('logout/', login.views.logout, name='logout'),
+
 
     #########################################################################
     # home app
     #########################################################################
     path('home/', home.views.home, name='home'),
-
 
     #########################################################################
     # account app
@@ -45,22 +51,25 @@ urlpatterns = [
     # account test
     path('account/select_del/', account.views.account_select_del, name='account_select_del'),
 
+
     #########################################################################
-    # test
+    # testing app
     #########################################################################
-    path('home/test/', home.views.test, name='test_select'),
+    #main test
+    path('testing/', testing.views.main, name='main'),
 
-    path('home/test/insert/', home.views.test_insert, name='test_insert'),
-    path('home/test/delete/', home.views.test_delete, name='test_delete'),
-    path('home/test/update/', home.views.test_update, name='test_update'),
+    #page test
+    path('testing/page/', testing.views.page, name='page'),
+    path('testing/page/insert/', testing.views.page_insert, name='page_insert'),
+    path('testing/page/delete/', testing.views.page_delete, name='page_delete'),
+    path('testing/page/update/', testing.views.page_update, name='page_update'),
 
-    path('home/test1/', home.views.test1, name='test1'),
-    path('home/testGraph/', home.views.testGraph, name='testGraph'),
-
+    #graph test
+    path('testing/graph/', testing.views.graph, name='graph'),
 
     #post test
-    path('home/post/', home.views.post_list, name='post_list'),
-    path('home/post/select/', home.views.post_list_ajax, name='post_list_ajax'),
+    path('testing/post/', testing.views.post, name='post'),
+    path('testing/post/select/', testing.views.post_ajax, name='post_ajax'),
 
     #########################################################################
 

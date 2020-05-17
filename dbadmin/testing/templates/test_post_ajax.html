@@ -55,7 +55,7 @@
 
         $.ajax( {
         type : 'POST',
-        url: "{% url 'post_list_ajax' %}",
+        url: "{% url 'post_ajax' %}",
         data: {
         'title': title,
         'content': content,
@@ -68,7 +68,7 @@
     }
 
     function addMorePostAjax(data, textStatus, jqXHR) {
-        $('#post_list_ajax').html(data);
+        $('#post_ajax').html(data);
     }
 </script>
 </html>

@@ -11,8 +11,11 @@ class Faq(models.Model):
 	faq_question = models.TextField(default='질문')
 	faq_answer = models.TextField(default='답변')
 
+	class Meta:
+		db_table = u'account_faq'
+
 	def __str__(self):
-		return self.faq_question
+		return self.faq_id
 
 class Account(models.Model):
 	account_create_dt = models.DateTimeField(default=datetime.now)		# 생성일        -- 2020-02-06
@@ -37,6 +40,9 @@ class Account(models.Model):
 	account_del_reason = models.CharField(blank=True, max_length=100, default='')     			# 삭제사유
 	account_del_note = models.CharField(blank=True, max_length=100, default='')       			# 삭제비고
 
+	class Meta:
+		db_table = u'account_account'
+
 	def __str__(self):
 		return self.account_create_dt
 
@@ -49,12 +55,18 @@ class AccountRepository(models.Model):
 	url = models.CharField(blank=True, max_length=100, default='') # JIRA URL
 	info = models.CharField(blank=True, max_length=100, default='') # INFO
 
+	class Meta:
+		db_table = u'account_repository'
+
 	def __str__(self):
 		return self.create_dt
 
 class Account_hash(models.Model):
 	password_encrypt = models.CharField(blank=True, max_length=100, default='', unique=True) # 패스워드 암호화
 	password_hash = models.CharField(blank=True, max_length=250, default='') # 패스워드 해시
+
+	class Meta:
+		db_table = u'account_hash'
 
 	def __str__(self):
 		return self.password_encrypt

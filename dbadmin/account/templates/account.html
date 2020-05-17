@@ -570,7 +570,7 @@
 			var scrollHeight = $(window).scrollTop() + $(window).height();
 			var documentHeight = $(document).height();
 
-			if (scrollHeight + 100 >= documentHeight){
+			if (scrollHeight + 400 >= documentHeight){
 				var page = $("#page").val();
 				callMoreListAjax(page);
 				$("#page").val(parseInt(page)+1);

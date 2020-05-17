@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% extends 'base-home.html' %}
+{% extends 'base-testing.html' %}
 {% load static %}
 <html lang="en">
 <head>
@@ -10,31 +10,19 @@
 <body>
     {% block content %}
 
-    <div>
-
-        <div>
-            <h1>Wellcome Test Graph Page!</h1>
-            <p>  Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<br>
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat.<br>Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.<br>
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum.</p>
-        </div>
-
-        <div class="test_1">
-            <p><a class="btn11" href="/home">Go main</a>,
-            <a class="btn11" href="http://google.com">Go google</a></p>
-        </div>
-
+    <div class="">
+        <h1>Welcome to DBA admin page!</h1>
+        <p>
+            본 어드민 페이지는 공사중입니다..<br>
+            문의가 필요하시면 인프라팀 DB파트로 문의주세요.
+        </p>
     </div>
 
 
 	<!-- Modal windows button open -->
     <div class="buttons">
-    <button type="button" class="btn btn-primary btn-lg btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
-    <button type="button" class="btn btn-primary btn-lg btn-lg btnAdd" id="btnAdd" name="btnAdd">add button</button><br><br>
+        <button type="button" class="btn btn-primary btn-lg btn-sm" data-toggle="modal" data-target="#myModal">Modal 테스트</button>
+        <button type="button" class="btn btn-primary btn-lg btn-sm btnAdd" id="btnAdd" name="btnAdd">버튼 추가 테스트</button><br><br>
     </div>
 
     <script>
@@ -51,10 +39,6 @@
             }); // end click
         }); // end ready
     </script>
-
-
-
-
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -80,61 +64,44 @@
                 </li>
 
             </ul>
-
-
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-
             </div>
+
             <div class="modal-body">
                 <div role="tabpanel">
-
                     <!-- Tab panes -->
                     <div class="tab-content">
+
                         <div role="tabpanel" class="tab-pane active fade show" id="uploadTab">
-
-                            upload Tab
-
+                            상세 탭
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary save">1234</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary save">상세 확인</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
                             </div>
-
                         </div>
+
                         <div role="tabpanel" class="tab-pane fade" id="browseTab">
-
-                            browseTab
-
+                           수정 탭
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary save">5678</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary save">수정 확인</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
                             </div>
                         </div>
+
                         <div role="tabpanel" class="tab-pane fade" id="testTab">
-
-                            testTab
-
+                           삭제 탭
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary save">abcd</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary save">삭제 확인</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
                             </div>
                         </div>
-
 
                     </div>
                 </div>
             </div>
-            <!--
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary save">Save changes</button>
-            </div>
-            -->
         </div>
     </div>
 </div>
-
-
-
 
 	<!-- Modal window option script -->
 	<script>
@@ -146,8 +113,6 @@
 	})
 	</script>
 
-
-
-	{% endblock %}
+    {% endblock %}
 </body>
 </html>
