@@ -52,15 +52,17 @@
     function callMorePostAjax(page) {
         var title = $("#title").val();
         var content = $("#content").val();
+        var read = $("#read").val();
 
         $.ajax( {
         type : 'POST',
         url: "{% url 'post_ajax' %}",
         data: {
-        'title': title,
-        'content': content,
-        'page': page,
-        'csrfmiddlewaretoken': token
+            'title': title,
+            'content': content,
+            'page': page,
+            'read': read,
+            'csrfmiddlewaretoken': token
         },
         success: addMorePostAjax,
         dataType: 'html'

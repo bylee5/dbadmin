@@ -13,7 +13,10 @@ from .forms import *
 # faq_list = Faq.objects.filter(faq_id="test@test.com")
 # Create your views here.
 
-################# Encrypt key
+#########################################################################
+# custom function
+#########################################################################
+# Encrypt key
 def get_key():
     with open('static/other/keyfile.lst', encoding='utf-8') as txtfile:
         for row in txtfile.readlines():
@@ -21,66 +24,114 @@ def get_key():
 
     return key
 
-
-#Account
-
+#########################################################################
+# Account page
+#########################################################################
 def account(request):
     if request.method == 'POST':
-        account_requestor = request.POST['account_requestor']
-        account_devteam = request.POST['account_devteam']
-        account_svr = request.POST['account_svr']
-        account_user = request.POST['account_user']
-        account_host = request.POST['account_host']
-        account_grant = request.POST['account_grant']
-        account_db = request.POST['account_db']
-        account_table = request.POST['account_table']
-        account_url = request.POST['account_url']
+        account_requestor = request.POST.get('account_requestor')
+        account_devteam = request.POST.get('account_devteam')
+        account_svr = request.POST.get('account_svr')
+        account_user = request.POST.get('account_user')
+        account_host = request.POST.get('account_host')
+        account_grant = request.POST.get('account_grant')
+        account_db = request.POST.get('account_db')
+        account_table = request.POST.get('account_table')
+        account_url = request.POST.get('account_url')
 
-        print("input val : " + account_user)
-
-        account_list = Account.objects.filter(
-            account_requestor__startswith=account_requestor,
-            account_devteam__startswith=account_devteam,
-            account_svr__startswith=account_svr,
-            account_user__contains=account_user,
-            account_host__startswith=account_host,
-            account_grant__contains=account_grant,
-            account_db__startswith=account_db,
-            account_table__startswith=account_table,
-            account_url__contains=account_url,
-            account_del_yn='N' # 계정 삭제여부
-
-        ).order_by('-id')
-
-        page = request.GET.get('page')
-        pagelist = request.GET.get('pagelist')
-
-        if pagelist is None:
-            pagelist = 1000
-
-        #print(pagelist)
-        paginator = Paginator(account_list, pagelist)
-        accounts = paginator.get_page(page)
-        context = {'accounts': accounts, 'pagelist': pagelist}
+        context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
+            'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url
+        }
         return render(request, 'account.html', context)
 
     else:
+        return render(request, 'account.html')
+
+def account_select(request):
+    if request.method == 'POST':
+        account_requestor = request.POST.get('account_requestor')
+        account_devteam = request.POST.get('account_devteam')
+        account_svr = request.POST.get('account_svr')
+        account_user = request.POST.get('account_user')
+        account_host = request.POST.get('account_host')
+        account_grant = request.POST.get('account_grant')
+        account_db = request.POST.get('account_db')
+        account_table = request.POST.get('account_table')
+        account_url = request.POST.get('account_url')
+        callmorepostFlag = 'true'
+
         #account_list = Account.objects.all().order_by('-id')
-        page = request.GET.get('page')
-        pagelist = request.GET.get('pagelist')
+        account_list = Account.objects.filter(
+            account_requestor__contains=account_requestor,
+            account_devteam__contains=account_devteam,
+            account_svr__contains=account_svr,
+            account_user__contains=account_user,
+            account_host__contains=account_host,
+            account_grant__contains=account_grant,
+            account_db__contains=account_db,
+            account_table__contains=account_table,
+            account_url__contains=account_url
+		).order_by('-id')
 
-        if pagelist is None:
-            pagelist = 15
+        page = int(request.POST.get('page'))
 
-        #print("test" + pagelist)
-        #print(pagelist)
+        total_count = account_list.count()
+        page_max = round(account_list.count() / 15)
 
-        account_list = Account.objects.filter(account_del_yn='N').order_by('-id')
-        paginator = Paginator(account_list, pagelist)
-        accounts = paginator.get_page(page)
-        context = {'accounts': accounts, 'pagelist': pagelist}
+
+        paginator = Paginator(account_list, page * 15)
+
+        try:
+            if int(page) >= page_max : # 마지막 페이지 멈춤 구현
+                account_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+
+            else:
+                account_list = paginator.get_page(1)
+
+        except PageNotAnInteger:
+            account_list = paginator.get_page(1)
+        except EmptyPage:
+            account_list = paginator.get_page(paginator.num_pages)
+
+        context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
+            'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url,
+            'account_list': account_list,
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag
+        }
+
+        return render(request, 'account_select.html', context)
+
+    else:
+        return render(request, 'account.html')
+
+def account_select_fast(request):
+    if request.method == 'POST':
+        account_user = request.POST.get('account_search')
+
+        context = {
+            'account_user': account_user
+        }
         return render(request, 'account.html', context)
 
+    else:
+        return render(request, 'account.html')
 
 def account_insert(request):
     if request.method == 'POST':
@@ -125,7 +176,6 @@ def account_insert(request):
 
     return render(request, 'account_insert.html', {'form': form})
 
-
 def account_update(request):
     if request.method == 'POST':
         account = Account.objects.get(id=request.POST['id'])
@@ -167,7 +217,7 @@ def account_delete(request):
         form = AccountDelForm(request.POST) # 입력값 가져옴
 
         if form.is_valid():
-            print(form.cleaned_data) # 콘솔 찍기. 디버깅
+            #print(form.cleaned_data) # 콘솔 찍기. 디버깅
 
             account.account_del_yn = 'Y'
             account.account_update_dt = datetime.now()
@@ -184,58 +234,12 @@ def account_delete(request):
     return render(request, 'account.html', {'form': form})
 
 
-def account_select_fast(request):
-    if request.method == 'POST':
-        account_user = request.POST['account_user']
-        #print("input val : " + account_user)
-        account_list = Account.objects.filter(
-            account_user__contains=account_user,
-            account_del_yn = 'N'  # 계정 삭제여부
-        ).order_by('-id')
-
-        paginator = Paginator(account_list, 1000)
-        page = request.GET.get('page')
-        accounts = paginator.get_page(page)
-        context = {'accounts': accounts}
-        return render(request, 'account.html', context)
-
-    else:
-        #account_list = Account.objects.all().order_by('-id')
-        account_list = Account.objects.filter(account_del_yn='N').order_by('-id')
-        paginator = Paginator(account_list, 1000)
-        page = request.GET.get('page')
-        accounts = paginator.get_page(page)
-        context = {'accounts' : accounts}
-        return render(request, 'account.html', context)
 
 
-def account_select_ajax(request):
-    account_list = Account.objects.all().order_by('-id')
-    #page = int(request.POST.get('page'))
-    page = int(request.POST['page'])
-    print("page : " + str(page))
 
-    paginator = Paginator(account_list, page * 15)
-    paginator_max = Paginator(account_list, 15)
-    morelist_alax_flag = 'true'
-
-    try:
-        if int(page) > paginator_max.num_pages: # 마지막 페이지 멈춤 구현
-            account_list = Account.objects.filter(id=30000000)
-            accounts = paginator.get_page(1)
-            morelist_alax_flag = 'false'
-        else:
-            accounts = paginator.get_page(1)
-        ##ccounts = paginator.get_page(1)
-
-    except PageNotAnInteger:
-        accounts = paginator.get_page(1)
-    except EmptyPage:
-        accounts = paginator.get_page(paginator.num_pages)
-
-    context = {'accounts': accounts, 'morelist_alax_flag' : morelist_alax_flag}
-    return render(request, 'account_select_ajax.html', context)
-
+#########################################################################
+# Account Delete='Y' page
+#########################################################################
 def account_select_del(request):
     if request.method == 'POST':
         account_requestor = request.POST['account_requestor']
@@ -248,7 +252,7 @@ def account_select_del(request):
         account_table = request.POST['account_table']
         account_url = request.POST['account_url']
 
-        print("input val : " + account_user)
+        #print("input val : " + account_user)
 
         account_list = Account.objects.filter(
             account_requestor__startswith=account_requestor,
@@ -301,9 +305,8 @@ def account_fn_search(request):
 
 
 #########################################################################
-# account repository
+# Account repository page
 #########################################################################
-
 def account_repository(request):
     if request.method == 'POST':
         repository_team = request.POST['repository_team']
@@ -337,7 +340,6 @@ def account_repository(request):
         account_repositories = paginator.get_page(page)
         context = {'account_repositories': account_repositories}
         return render(request, 'account_repository.html', context)
-
 
 def account_repository_insert(request):
     if request.method == 'POST':

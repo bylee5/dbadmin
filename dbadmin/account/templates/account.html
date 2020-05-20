@@ -26,51 +26,59 @@
             <th class="rounded-right"></th>
         </tr>
         <tr>
-            <form class="form-inline" action="{% url 'account_select' %}" method="post">
+            <form class="form-inline" action="{% url 'account' %}" method="post">
             {% csrf_token %}
-
             <td class="">
-                <input class="form-control form-control-sm" id="account_requestor" name="account_requestor"  type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_requestor" name="account_requestor" value="{{ account_requestor }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_devteam" name="account_devteam" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_devteam" name="account_devteam" value="{{ account_devteam }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_svr" name="account_svr" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_svr" name="account_svr" value="{{ account_svr }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_user" name="account_user" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_user" name="account_user" value="{{ account_user }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_host" name="account_host" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_host" name="account_host" value="{{ account_host }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_grant" name="account_grant" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_grant" name="account_grant" value="{{ account_grant }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_db" name="account_db" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_db" name="account_db" value="{{ account_db }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_table" name="account_table" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_table" name="account_table" value="{{ account_table }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_url" name="account_url" type="text" placeholder="">
+                <input class="form-control form-control-sm" id="account_url" name="account_url" value="{{ account_url }}" type="text" placeholder="">
             </td>
             <td class="">
-                    <button class="btn btn-outline-primary btn-sm" type="submit">검색</button>
+				<button class="btn btn-outline-primary btn-sm" type="submit">검색</button>
             </td>
 
             </form>
         </tr>
         </table>
     </div>
-
     <!-- 입력란 -->
+	<!--
+	<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+		Link with href
+	</a>
+    <div class="collapse" id="collapseExample">
+	    <div class="">
+	    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+	    </div>
+    </div>
+    -->
+
     <div class="query_menu my-1 p-1 border rounded small" style="font-size: 12px;">
         << 입력란 >>
         <table class="table table-sm text-center" style="table-layout: fixed">
         <tr class="bg-dark text-white">
-            <!--<th class="">서버/호스트</th>-->
             <th class="rounded-left">요청자명</th>
             <th class="">요청팀</th>
             <th class="">서버</th>
@@ -146,123 +154,14 @@
         </table>
     </div>
 
-    <!-- 결과란 --> <br>
+    <!-- 결과란 -->
+	<input id="page" type="hidden" value="1">
 	<div class="board small" id="account_list_ajax" style="font-size: 12px;">
-		<< 결과란 >>
-		<table class="table table-bordered table-sm table-hover">
-            <tr class="bg-dark text-white">
-                <th class="rounded-left">ID</th>
-				<th>생성일</th>
-                <th>요청자</th>
-                <th>서버</th>
-                <th>아이디</th>
-                <th>호스트</th>
-                <th>권한</th>
-                <th>DB</th>
-                <th>TABLE</th>
-                <th class="rounded-right">URL</th>
-            </tr>
-            {% for account in accounts %}
 
-            <tr data-toggle="modal" data-target="#myModal"
-			    data-id="{{ account.id }}"
-			    data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
-			    data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
-			    data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
-			    data-account_requestor="{{ account.account_requestor }}"
-			    data-account_svr="{{ account.account_svr }}"
-			    data-account_user="{{ account.account_user }}"
-			    data-account_devteam="{{ account.account_devteam}}"
-			    data-account_host="{{ account.account_host }}"
-			    data-account_pass="{{ account.account_pass }}"
-			    data-account_hash="{{ account.account_hash }}"
-			    data-account_grant="{{ account.account_grant }}"
-			    data-account_grant_with="{{ account.account_grant_with }}"
-			    data-account_db="{{ account.account_db }}"
-			    data-account_table="{{ account.account_table }}"
-			    data-account_info="{{ account.account_info}}"
-			    data-account_sql="{{ account.account_sql }}"
-			    data-account_url="{{ account.account_url }}"
-			    data-account_note="{{ account.account_note }}"
-			    data-account_del_yn="{{ account.account_del_yn }}"
-			    data-account_del_dt="{{ account.account_del_dt }}"
-			    data-account_del_reason="{{ account.account_del_reason }}"
-			    data-account_del_note="{{ account.account_del_note }}" style = "cursor:pointer;">
-				<td style = "width: 10%;">{{ account.id }}</td>
-                <td style = "width: 10%;">{{ account.account_create_dt|date:'Y/m/d H:i:s' }}</td>
-                <td style = "width: 8%;">{{ account.account_requestor}}</td>
-                <td style = "width: 8%;">{{ account.account_svr }}</td>
-                <td style = "width: 8%;">{{ account.account_user }}</td>
-                <td style = "width: 10%;">{{ account.account_host }}</td>
-                <td style = "width: 20%;">{{ account.account_grant }}</td>
-                <td style = "width: 8%;">{{ account.account_db }}</td>
-                <td style = "width: 8%;">{{ account.account_table }}</td>
-                <td style = "width: 10%;">{{ account.account_url }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-	<!-- 페이지 정보를 입력할 곳-->
-	<input id="page" type="hidden" value="2">
-
- 	<!-- 페이지 스크롤 이벤트가 작동하지 않을 경우 클릭 -->
-	<button id="morelist" type="button" class="btn btn-primary btn-sm btn-block">더 보기</button>
-
-    <!-- Page Navy -->
-	<!--
-	<table>
-	<td>
-		<nav aria-label="Page navigation example">
-  		<ul class="pagination pagination-sm">
-    		{% if accounts.has_previous %}
-			<li class="page-item"><a class="page-link" href="?page=1">&laquo; 맨 처음</a></li>
-			<li class="page-item"><a class="page-link" href="?page={{ accounts.previous_page_number }}">이전</a></li>
-			{% endif %}
-
-			<li class="page-item"><a class="page-link" href="#">
-		    Page {{ accounts.number }} of {{ accounts.paginator.num_pages }}
-			</a></li>
-
-			{% if accounts.has_next %}
-			<li class="page-item"><a class="page-link" href="?page={{ accounts.next_page_number }}">다음</a></li>
-			<li class="page-item"><a class="page-link" href="?page={{ accounts.paginator.num_pages }}">마지막 &raquo;</a></li>
-			{% endif %}
-		</ul>
-		</nav>
-	</td>
-	<td>
-		<div class="form-group">
-		<select class="form-control form-control-sm" id="selectbox" name="selectbox" onchange='location.href="?pagelist=" + this.value'>
-
-			{% if pagelist == 15 %}
-				<option value="15" selected>15개</option>
-				<option value="20">20개</option>
-				<option value="30">30개</option>
-			{% elif pagelist == 20 %}
-				<option value="15">15개</option>
-				<option value="20" selected>20개</option>
-				<option value="30">30개</option>
-			{% elif pagelist == 30 %}
-				<option value="15">15개</option>
-				<option value="20">20개</option>
-				<option value="30" selected>30개</option>
-			{% else %}
-				<option value="15">15개</option>
-				<option value="20">20개</option>
-				<option value="30">30개</option>
-			{% endif %}
-
-			<option value="10" {% if pagelist == 10 %} selected {% endif %}>10개</option>
-			<option value="20" {% if pagelist == 20 %} selected {% endif %}>20개</option>
-			<option value="30" {% if pagelist == 30 %} selected {% endif %}>30개</option>
-		</select>
-  		</div>
-	</td>
-	</table>
-	-->
+	</div>
 
     <!-- Modal -->
+
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
@@ -471,7 +370,6 @@
 			</div>
 		</div>
 	</div>
-
 	<!-- Modal window option script -->
     <script>
     $('#myModal').on('show.bs.modal', function (event) {
@@ -556,15 +454,11 @@
 	<script>
 		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
-		function searchSuccess(data, textStatus, jqXHR) {
-			$('#search_result_ajax').html(data);
-		}
-
-		$('#morelist').click(function(){
-			var page = $("#page").val();
-			callMoreListAjax(page);
-			$("#page").val(parseInt(page)+1);
-		});
+        $('#account_list_ajax').load('dummy',function(){
+            var page = $("#page").val();
+            callMoreListAjax(page);
+            $("#page").val(parseInt(page));
+        });
 
 		$(window).scroll(function(){
 			var scrollHeight = $(window).scrollTop() + $(window).height();
@@ -578,15 +472,34 @@
 		});
 
 		function callMoreListAjax(page) {
+			var account_requestor = $("#account_requestor").val();
+			var account_devteam = $("#account_devteam").val();
+			var account_svr = $("#account_svr").val();
+			var account_user = $("#account_user").val();
+			var account_host = $("#account_host").val();
+			var account_grant = $("#account_grant").val();
+			var account_db = $("#account_db").val();
+			var account_table = $("#account_table").val();
+			var account_url = $("#account_url").val();
+
 			$.ajax( {
-			type : 'POST',
-			url: "{% url 'account_select_ajax' %}",
-			data: {
-			'page': page,
-			'csrfmiddlewaretoken': token
-			},
-			success: addMoreAccountAjax,
-			dataType: 'html'
+				type : 'POST',
+				url: "{% url 'account_select' %}",
+				data: {
+					'account_requestor': account_requestor,
+					'account_devteam': account_devteam,
+					'account_svr': account_svr,
+					'account_user': account_user,
+					'account_host': account_host,
+					'account_grant': account_grant,
+					'account_db': account_db,
+					'account_table': account_table,
+					'account_url': account_url,
+					'page': page,
+					'csrfmiddlewaretoken': token,
+				},
+				success: addMoreAccountAjax,
+				dataType: 'html'
 			});
 		}
 
@@ -594,7 +507,6 @@
 			$('#account_list_ajax').html(data);
 		}
 	</script>
-
 
     {% endblock %}
 </body>

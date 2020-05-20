@@ -16,6 +16,7 @@
             <!--<th class="">서버/호스트</th>-->
             <th class="rounded-left">title</th>
             <th class="">content</th>
+            <th class="">read</th>
             <th class="rounded-right"></th>
         </tr>
         <tr>
@@ -27,8 +28,28 @@
             <td class="">
                 <input class="form-control form-control-sm" id="content" value="{{ content }}" name="content" type="text" placeholder="">
             </td>
+            <td>
+                <div class="input-group input-group-sm mb-3">
+                    <select class="custom-select" id="read" name="read">
+                            <option value="">All</option>
+                            <option {% if read == "1" %} selected {% endif %} value="1">1</option>
+                            <option {% if read == "2" %} selected {% endif %} value="2">2</option>
+                            <option {% if read == "3" %} selected {% endif %} value="3">3</option>
+                    </select>
+                </div>
+                <!--
+                |stringformat:"i"
+                -->
+            </td>
             <td class="">
                     <button class="btn btn-outline-primary btn-sm" type="submit">검색</button>
+
+                    {% if read_list %}
+                        {% for read in read_list %}
+                            {{ read.read }}
+                        {% endfor %}
+                    {% endif %}
+
             </td>
             </form>
         </tr>
@@ -71,7 +92,7 @@
 <script>
     var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
-    $('#post_ajax').load('test_post_ajax.html',function(){
+    $('#post_ajax').load('dummy',function(){
         var page = $("#page").val();
         callMorePostAjax(page);
         $("#page").val(parseInt(page));
@@ -91,15 +112,17 @@
     function callMorePostAjax(page) {
         var title = $("#title").val();
         var content = $("#content").val();
+        var read = $("#read").val();
 
         $.ajax( {
         type : 'POST',
         url: "{% url 'post_ajax' %}",
         data: {
-        'title': title,
-        'content': content,
-        'page': page,
-        'csrfmiddlewaretoken': token
+            'title': title,
+            'content': content,
+            'page': page,
+            'read': read,
+            'csrfmiddlewaretoken': token
         },
         success: addMorePostAjax,
         dataType: 'html'

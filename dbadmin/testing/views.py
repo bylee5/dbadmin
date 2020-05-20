@@ -10,11 +10,17 @@ from .models import *
 from .forms import FaqForm
 
 
+#########################################################################
+# main page
+#########################################################################
 # Create your views here.
 def main(request):
     return render(request, 'test_main.html')
 
 
+#########################################################################
+# custom function
+#########################################################################
 # 테스팅 용도
 def get_key():
     with open('static/other/keyfile.lst', encoding='utf-8') as txtfile:
@@ -22,6 +28,10 @@ def get_key():
             key = row
 
     return key
+
+#########################################################################
+# testing page
+#########################################################################
 
 def page(request):
     if request.method == 'POST':
@@ -94,38 +104,33 @@ def page_update(request):
     return render(request, 'test_page.html', {'form': form})
 
 
-########################################################################
-
-def test1(request):
-    #faq_list = Faq.objects.filter(faq_id="test@test.com")
-    faq_list = Faq.objects.all()
-    paginator = Paginator(faq_list, 15)
-    page = request.GET.get('page')
-    faqs = paginator.get_page(page)
-    context = {'faqs': faqs}
-    return render(request, 'test_page.html', context)
+#########################################################################
+# testing graph
+#########################################################################
 
 def graph(request):
     return render(request, 'test_graph.html')
 
 
+#########################################################################
+# testing post
 # AJAX UnLimit Scrolling Test
+#########################################################################
 
 def post(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         content = request.POST.get('content')
+        read = request.POST.get('read')
 
-        #print("title : " + title)
-        #print("content : " + content )
-
-        context = {'title': title, 'content': content}
-
+        read_list = Post.objects.all().values('read').distinct()
+        context = {'read_list': read_list, 'title': title, 'content': content, 'read': read}
         return render(request, 'test_post.html', context)
 
     else:
-        return render(request, 'test_post.html')
-
+        read_list = Post.objects.all().values('read').distinct()
+        context = {'read_list': read_list}
+        return render(request, 'test_post.html', context)
 
     #try:
     #    post_list = paginator.page(page)
@@ -148,14 +153,17 @@ def post_ajax(request): #Ajax 로 호출하는 함수
 
     if request.method == 'POST':
 
-        title = request.POST['title']
-        content = request.POST['content']
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        read = request.POST.get('read')
         callmorepostFlag = 'true'
 
+        print("--------------------------------------------------------------------------------------------------- read : " + read)
 
         post_list = Post.objects.filter(
             title__contains=title,
-			content__contains=content
+			content__contains=content,
+            read__contains=read
 		).order_by('-id')
 
         page = int(request.POST.get('page'))
@@ -188,7 +196,7 @@ def post_ajax(request): #Ajax 로 호출하는 함수
 
         context = {'post_list': post_list,
                    'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-				   'title': title, 'content': content}
+                   'title': title, 'content': content, 'read': read}
         return render(request, 'test_post_ajax.html', context)
 
     else:

@@ -33,10 +33,9 @@ urlpatterns = [
     # account app
     #########################################################################
     # account manage
-    path('account/', account.views.account, name='account_select'),
+    path('account/', account.views.account, name='account'),
+    path('account/select', account.views.account_select, name='account_select'),
     path('account/select_fast', account.views.account_select_fast, name='account_select_fast'),
-    path('account/select_ajax', account.views.account_select_ajax, name='account_select_ajax'),
-    #url(r'^list/ajax/$', home.views.post_list_ajax, name='post_list_ajax')
 
     path('account/insert/', account.views.account_insert, name='account_insert'),
     path('account/update/', account.views.account_update, name='account_update'),

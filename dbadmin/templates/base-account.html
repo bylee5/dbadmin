@@ -73,7 +73,7 @@
 
 	<form class="form-inline my-2 my-lg-0" action="{% url 'account_select_fast' %}" method="post">
 		{% csrf_token %}
-		<input class="form-control form-control-sm mr-sm-2" type="text" id="account_user" name="account_user" placeholder="빠른 계정검색" aria-label="Search">
+		<input class="form-control form-control-sm mr-sm-2" type="text" id="account_search" name="account_search" placeholder="빠른 계정검색" aria-label="Search">
 		<button class="btn btn-outline-success my-2 my-sm-0 btn-sm" type="submit">Search</button>
 	</form>
 
@@ -93,7 +93,7 @@
 <!-- NAV TOP MENU-->
 <div class="nav-scroller bg-white shadow-sm">
   <nav class="nav nav-underline">
-    <a class="nav-link small" style="font-size: 13px;" href="{% url 'account_select' %}">조회</a>
+    <a class="nav-link small" style="font-size: 13px;" href="{% url 'account' %}">조회</a>
 	<a class="nav-link small" style="font-size: 13px;" href="{% url 'account_select_del' %}">조회(삭제계정)</a>
 	<a class="nav-link small" style="font-size: 13px;" href="{% url 'account_insert' %}">입력</a>
 	<a class="nav-link small" style="font-size: 13px;" href="{% url 'account_repository_select' %}">Repository 계정관리</a>

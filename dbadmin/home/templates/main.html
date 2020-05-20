@@ -10,16 +10,16 @@
 <body>
     {% block content %}
 
-
-        <div class="">
-            <h1>Welcome to DBA admin page!</h1>
-            <p>
-                본 어드민 페이지는 공사중입니다..<br>
-                문의가 필요하시면 인프라팀 DB파트로 문의주세요.
-            </p>
-        </div>
-
+    <div class="">
+        <h1>Welcome to DBA admin page!</h1>
+        <p>
+            본 어드민 페이지는 공사중입니다..<br>
+            문의가 필요하시면 인프라팀 DB파트로 문의주세요.
+        </p>
     </div>
+    <a role="button" class="btn btn-info btn-lg btn-sm" href="/account">계정관리 이동</a>
+    <a role="button" class="btn btn-warning btn-lg btn-sm" href="/testing">테스트 이동</a>
+
     {% endblock %}
 </body>
 </html>
