@@ -26,7 +26,10 @@
 <body class="text-center">
 
 <!--<form class="form-signin" method="POST" action="login/">-->
+<!--
 <form class="form-signin" action="{% url 'login' %}" method="post">
+-->
+<form class="form-signin" action="{% url 'home' %}" method="post">
 	{% csrf_token %}
 
 	<!-- Custom Image -->

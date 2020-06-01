@@ -75,9 +75,20 @@
     </div>
     -->
 
+	<!--
+		<a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+			Collapse 테스트
+        </a>
+        <div class="collapse" id="collapseExample">
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+        </div>
+	-->
+
     <div class="query_menu my-1 p-1 border rounded small" style="font-size: 12px;">
-        << 입력란 >>
-        <table class="table table-sm text-center" style="table-layout: fixed">
+		<a class="" data-toggle="collapse" href="#collapseInsert" role="button" aria-expanded="false" aria-controls="collapseInsert">
+			<< 입력란 >>
+		</a>
+        <table class="table table-sm text-center collapse" id="collapseInsert" style="table-layout: fixed">
         <tr class="bg-dark text-white">
             <th class="rounded-left">요청자명</th>
             <th class="">요청팀</th>
@@ -195,6 +206,8 @@
                                 {% csrf_token %}
 								<!-- hidden id (pk) -->
 								<input class="form-control form-control-sm" id="id" name="id" type="hidden">
+								<input class="form-control form-control-sm" id="page" name="page" value="{{ page }}" type="hidden">
+
 								<table class="table table-sm table-hover text-center">
 								<tr class="">
 									<td class="bg-dark text-white align-middle" style="width: 12%">생성일</td>
@@ -279,6 +292,8 @@
                                 {% csrf_token %}
 								<!-- hidden id (pk) -->
 								<input class="form-control form-control-sm" id="id" name="id" type="hidden">
+								<input id="page" name="page" value="{{ page }}" type="hidden">
+
 								<table class="table table-sm table-hover text-center">
 								<tr class="">
 									<td class="bg-dark text-white align-middle" style="width: 12%">생성일</td>
@@ -332,13 +347,15 @@
 									<td class="bg-dark text-white align-middle">SQL</td>
 									<td colspan="3">
 										<input class="form-control form-control-sm" id="account_sql" name="account_sql" type="text" data-placement="bottom" title="클릭 : 클립보드 복사" data-toggle="tooltip" readonly onclick="copy_clipboard()">
-										<!-- 클립보드 복사 -->
+									</td>
+									<!-- 클립보드 복사 -->
 										<script>
 											function copy_clipboard() {
 												var copyText = document.getElementById("account_sql");
 												copyText.select();
 												document.execCommand("Copy");
 											}
+
 											$(function(){
 												$('#account_sql').tooltip({
 													animation: true,
@@ -352,7 +369,7 @@
 												});
 											});
 										</script>
-									</td>
+
 								</tr>
 								</table>
 								<p class="text-right">수정 하시겠습니까?</p>

@@ -146,7 +146,7 @@ def account_insert(request):
             "' identified by '" + form.cleaned_data['account_pass'] + "';"
 
             # 패스워드 암호화 적용
-            query = "insert into adminaccount_account_hash(password_encrypt,password_hash)" \
+            query = "insert ignore into account_hash(password_encrypt,password_hash)" \
                     "values (HEX(AES_ENCRYPT('" + form.cleaned_data['account_pass'] + "', '" + get_key() + "')), \
                      password('" + form.cleaned_data['account_pass'] + "'))"
             print("query : " + query)
@@ -154,8 +154,18 @@ def account_insert(request):
             cursor = connection.cursor()
             cursor.execute(query)
 
+            query = "SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1')"
+            print("query1 : " + query)
+            cursor = connection.cursor()
+            #modify_form.account_hash = cursor.execute(query)
+            modify_form.account_hash = "test1234567"
+            #print("result : " + modify_form.account_hash)
+
+
             # ex) /*ARCG-9999*/grant select, insert, update, delete on admdb.* to 'deal_detail'@'10.11.12.%' identified by 'password';
             #print(modify_form.account_sql)
+
+            #SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1');
 
             # 암복호화
             # select HEX(AES_ENCRYPT('Manger!1', '암복호키'));
@@ -168,7 +178,7 @@ def account_insert(request):
             modify_form.save()
             return redirect('/account')
         else:
-            print('test')
+            print('insert fail........................................................................')
             return redirect('/account')
 
     else:
@@ -179,6 +189,8 @@ def account_insert(request):
 def account_update(request):
     if request.method == 'POST':
         account = Account.objects.get(id=request.POST['id'])
+        page = request.POST['page']
+        print("========================================================== page 값 확인: " + page)
         form = AccountUpdateForm(request.POST)
 
         if form.is_valid():

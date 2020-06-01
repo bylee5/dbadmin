@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% extends 'base-testing.html' %}
 {% load static %}
-<html lang="en">
+<html lang="en" xmlns:reads.read xmlns:reads.read>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -31,10 +31,12 @@
             <td>
                 <div class="input-group input-group-sm mb-3">
                     <select class="custom-select" id="read" name="read">
-                            <option value="">All</option>
-                            <option {% if read == "1" %} selected {% endif %} value="1">1</option>
-                            <option {% if read == "2" %} selected {% endif %} value="2">2</option>
-                            <option {% if read == "3" %} selected {% endif %} value="3">3</option>
+                        <option value="">All</option>
+                        {% if read_list %}
+                            {% for reads in read_list %}
+                                <option {% if read == reads.read|stringformat:"i" %} selected {% endif %} value="{{ reads.read }}">{{ reads.read }}</option>
+                            {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
                 <!--
@@ -43,13 +45,6 @@
             </td>
             <td class="">
                     <button class="btn btn-outline-primary btn-sm" type="submit">검색</button>
-
-                    {% if read_list %}
-                        {% for read in read_list %}
-                            {{ read.read }}
-                        {% endfor %}
-                    {% endif %}
-
             </td>
             </form>
         </tr>

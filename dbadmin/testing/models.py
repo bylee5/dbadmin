@@ -18,15 +18,15 @@ class Faq(models.Model):
         return self.faq_id
 
 class Post(models.Model):
-    title = models.CharField(max_length=30)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    title = models.CharField(max_length=50)
     content = models.TextField()
     read = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
-    updated_date = models.DateTimeField(auto_now_add=False, auto_now=True)
-    created_date = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
     class Meta:
         db_table = u'testing_post'
 
     def __str__(self):
-        return self.title
+        return self.created

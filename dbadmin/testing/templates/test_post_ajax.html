@@ -7,27 +7,27 @@
 <body>
 
 <!-- ajax 추가 부분 -->
-    << 총 <span class="badge badge-dark">{{ total_count }}</span> 건의 데이터 >>
+    << 총 <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>
     <table class="table table-bordered table-sm table-hover">
         <tr class="bg-dark text-white">
-            <th style = "width: 10%;">id</th>
+            <th style = "width: 5%;">id</th>
+            <th style = "width: 10%;">created_date</th>
             <th style = "width: 20%;">title</th>
-            <th style = "width: 20%;">content</th>
+            <th style = "width: 35%;">content</th>
             <th style = "width: 10%;">read</th>
             <th style = "width: 10%;">likes</th>
-            <th style = "width: 15%;">updated_date</th>
-            <th style = "width: 15%;">created_date</th>
+            <th style = "width: 10%;">updated_date</th>
         </tr>
         {% if post_list %}
             {% for post in post_list %}
             <tr class="">
-                <td style = "width: 10%;">{{ post.id}}</td>
+                <td style = "width: 5%;">{{ post.id}}</td>
+                <td style = "width: 10%;">{{ post.created|date:'Y/m/d H:i:s' }}</td>
                 <td style = "width: 20%;">{{ post.title }}</td>
-                <td style = "width: 20%;">{{ post.content | truncatewords:"50" }}</td>
+                <td style = "width: 35%;">{{ post.content | truncatewords:"50" }}</td>
                 <td style = "width: 10%;">{{ post.read }}</td>
                 <td style = "width: 10%;">{{ post.likes }}</td>
-                <td style = "width: 15%;">{{ post.updated_date|date:'Y/m/d H:i:s' }}</td>
-                <td style = "width: 15%;">{{ post.created_date|date:'Y/m/d H:i:s' }}</td>
+                <td style = "width: 10%;">{{ post.updated|date:'Y/m/d H:i:s' }}</td>
             </tr>
             {% endfor %}
         {% endif %}

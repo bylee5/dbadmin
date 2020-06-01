@@ -12,7 +12,7 @@ from bootstrap_modal_forms.forms import BSModalForm
 class AccountForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ['account_requestor', 'account_devteam', 'account_svr', 'account_user', 'account_host', 'account_pass', 'account_grant',
+        fields = ['account_requestor', 'account_devteam', 'account_svr', 'account_user', 'account_host', 'account_pass', 'account_hash', 'account_grant',
                   'account_db', 'account_table', 'account_info', 'account_url']
 # account delete
 class AccountDelForm(forms.ModelForm):
