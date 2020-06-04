@@ -24,6 +24,13 @@ def get_key():
 
     return key
 
+def get_password():
+    with open('static/other/keyfile.lst', encoding='utf-8') as txtfile:
+        for row in txtfile.readlines():
+            key = row
+
+    return key
+
 #########################################################################
 # Account page
 #########################################################################
@@ -149,21 +156,30 @@ def account_insert(request):
             query = "insert ignore into account_hash(password_encrypt,password_hash)" \
                     "values (HEX(AES_ENCRYPT('" + form.cleaned_data['account_pass'] + "', '" + get_key() + "')), \
                      password('" + form.cleaned_data['account_pass'] + "'))"
-            #print("query : " + query)
-
-            #test123 account = Account_hash.objects.get(id=request.POST['id'])
 
             cursor = connection.cursor()
             cursor.execute(query)
 
-            query = "SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1')"
-            account_hash = Account_hash.objects.raw(query)
-            print("account_hash : " + account_hash.password_hash)
+            ####################################################################################################
+            #query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + form.cleaned_data['account_pass'] + "')"
+            query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + form.cleaned_data['account_pass'] + "')"
+
+            for result in Account_hash.objects.raw(query):
+                print("--------------------------------------------------------------------")
+                print("query : " + query)
+                print(form.cleaned_data['account_pass'])
+                print("result : ")
+                print(result.password_hash)
+                #print("%s" % (result.password_hash))
+                print("--------------------------------------------------------------------")
+                modify_form.account_hash = result.password_hash
+
+            #print("account_hash : " + account_hash)
             #cursor = connection.cursor()
             #modify_form.account_hash = cursor.execute(query)
-            modify_form.account_hash = "test1234567"
             #print("result : " + modify_form.account_hash)
 
+            ####################################################################################################
 
             # ex) /*ARCG-9999*/grant select, insert, update, delete on admdb.* to 'deal_detail'@'10.11.12.%' identified by 'password';
             #print(modify_form.account_sql)
