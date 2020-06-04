@@ -35,7 +35,16 @@
                 <input class="form-control form-control-sm" id="account_devteam" name="account_devteam" value="{{ account_devteam }}" type="text" placeholder="">
             </td>
             <td class="">
-                <input class="form-control form-control-sm" id="account_svr" name="account_svr" value="{{ account_svr }}" type="text" placeholder="">
+				<div class="input-group input-group-sm mb-3">
+					<select class="custom-select" id="account_svr" name="account_svr">
+						<option value="">All</option>
+						{% if account_svr_list %}
+							{% for account_svr_lists in account_svr_list %}
+								<option {% if account_svr == account_svr_lists.account_svr %} selected {% endif %} value="{{ account_svr_lists.account_svr }}">{{ account_svr_lists.account_svr }}</option>
+							{% endfor %}
+						{% endif %}
+					</select>
+				</div>
             </td>
             <td class="">
                 <input class="form-control form-control-sm" id="account_user" name="account_user" value="{{ account_user }}" type="text" placeholder="">

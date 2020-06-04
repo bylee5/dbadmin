@@ -46,6 +46,8 @@ def account(request):
         account_table = request.POST.get('account_table')
         account_url = request.POST.get('account_url')
 
+        account_svr_list = Account.objects.all().values('account_svr').distinct()
+
         context = {
             'account_requestor': account_requestor,
             'account_devteam': account_devteam,
@@ -55,12 +57,19 @@ def account(request):
             'account_grant': account_grant,
             'account_db': account_db,
             'account_table': account_table,
-            'account_url': account_url
+            'account_url': account_url,
+            'account_svr_list': account_svr_list
         }
         return render(request, 'account.html', context)
 
     else:
-        return render(request, 'account.html')
+        account_svr_list = Account.objects.all().values('account_svr').distinct()
+
+        context = {
+            'account_svr_list': account_svr_list
+        }
+
+        return render(request, 'account.html', context)
 
 def account_select(request):
     if request.method == 'POST':
