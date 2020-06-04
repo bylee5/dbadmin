@@ -149,14 +149,17 @@ def account_insert(request):
             query = "insert ignore into account_hash(password_encrypt,password_hash)" \
                     "values (HEX(AES_ENCRYPT('" + form.cleaned_data['account_pass'] + "', '" + get_key() + "')), \
                      password('" + form.cleaned_data['account_pass'] + "'))"
-            print("query : " + query)
+            #print("query : " + query)
+
+            #test123 account = Account_hash.objects.get(id=request.POST['id'])
 
             cursor = connection.cursor()
             cursor.execute(query)
 
             query = "SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1')"
-            print("query1 : " + query)
-            cursor = connection.cursor()
+            account_hash = Account_hash.objects.raw(query)
+            print("account_hash : " + account_hash.password_hash)
+            #cursor = connection.cursor()
             #modify_form.account_hash = cursor.execute(query)
             modify_form.account_hash = "test1234567"
             #print("result : " + modify_form.account_hash)
