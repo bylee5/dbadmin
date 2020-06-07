@@ -24,7 +24,7 @@ class AccountDelForm(forms.ModelForm):
 class AccountUpdateForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ['account_requestor', 'account_devteam', 'account_svr', 'account_user', 'account_host', 'account_pass', 'account_grant',
+        fields = ['account_requestor', 'account_devteam', 'account_svr', 'account_user', 'account_host', 'account_pass', 'account_hash', 'account_grant',
                   'account_grant_with', 'account_db', 'account_table', 'account_info', 'account_url']
 
 #########################################################################

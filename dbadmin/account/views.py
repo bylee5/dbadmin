@@ -24,12 +24,19 @@ def get_key():
 
     return key
 
-def get_password():
-    with open('static/other/keyfile.lst', encoding='utf-8') as txtfile:
-        for row in txtfile.readlines():
-            key = row
+def get_password(account_pass):
+    query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + account_pass + "') limit 0,1"
 
-    return key
+    for result in Account_hash.objects.raw(query):
+       return result.password_hash
+
+def put_password(account_pass):
+    query = "insert ignore into account_hash(password_encrypt,password_hash)" \
+            "values (HEX(AES_ENCRYPT('" + account_pass + "', '" + get_key() + "')), \
+             password('" + account_pass + "'))"
+
+    cursor = connection.cursor()
+    cursor.execute(query)
 
 #########################################################################
 # Account page
@@ -162,36 +169,25 @@ def account_insert(request):
             "' identified by '" + form.cleaned_data['account_pass'] + "';"
 
             # 패스워드 암호화 적용
-            query = "insert ignore into account_hash(password_encrypt,password_hash)" \
-                    "values (HEX(AES_ENCRYPT('" + form.cleaned_data['account_pass'] + "', '" + get_key() + "')), \
-                     password('" + form.cleaned_data['account_pass'] + "'))"
+            put_password(form.cleaned_data['account_pass'])
+            modify_form.account_hash  = get_password(form.cleaned_data['account_pass'])
 
-            cursor = connection.cursor()
-            cursor.execute(query)
-
-            ####################################################################################################
-            #query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + form.cleaned_data['account_pass'] + "')"
-            query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + form.cleaned_data['account_pass'] + "')"
-
-            for result in Account_hash.objects.raw(query):
-                print("--------------------------------------------------------------------")
-                print("query : " + query)
-                print(form.cleaned_data['account_pass'])
-                print("result : ")
-                print(result.password_hash)
-                #print("%s" % (result.password_hash))
-                print("--------------------------------------------------------------------")
-                modify_form.account_hash = result.password_hash
-
-            #print("account_hash : " + account_hash)
-            #cursor = connection.cursor()
-            #modify_form.account_hash = cursor.execute(query)
-            #print("result : " + modify_form.account_hash)
+            #print("--------------------------------------------------------------------")
+            #print("건네받은 값 :")
+            #print(form.cleaned_data['account_pass'])
+            #print("해쉬 변환값 : ")
+            #print(modify_form.account_hash)
+            #print("--------------------------------------------------------------------")
 
             ####################################################################################################
 
             # ex) /*ARCG-9999*/grant select, insert, update, delete on admdb.* to 'deal_detail'@'10.11.12.%' identified by 'password';
             #print(modify_form.account_sql)
+
+            # 계정 생성 예제
+            # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.20.%' IDENTIFIED BY PASSWORD '*6A654172F7C08BAA30B145980AA553792E9DFFC3';
+            # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.22.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA30B145980AA553792E9DFFC3';
+            # CREATE USER 'test'@'10.11.19.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA30B145980AA553792E9DFFC3
 
             #SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1');
 
@@ -242,6 +238,22 @@ def account_update(request):
                                   " to " + "'" + form.cleaned_data['account_user'] + "'@'" + form.cleaned_data[
                                       'account_host'] + \
                                   "' identified by '" + form.cleaned_data['account_pass'] + "';"
+            # 패스워드 암호화 적용
+            put_password(account.account_pass)
+
+            print("업데이트 해쉬 변환 이전값 : ")
+            print(account.account_hash)
+            print("--------------------------------------------------------------------")
+
+            account.account_hash = get_password(account.account_pass)
+
+            print("--------------------------------------------------------------------")
+            print("건네받은 값 :")
+            print(form.cleaned_data['account_pass'])
+            print("업데이트 해쉬 변환 이후값 : ")
+            print(account.account_hash)
+            print("--------------------------------------------------------------------")
+
             account.save()
 
         return redirect('/account')
