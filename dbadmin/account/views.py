@@ -53,7 +53,7 @@ def account(request):
         account_table = request.POST.get('account_table')
         account_url = request.POST.get('account_url')
 
-        account_svr_list = Account.objects.all().values('account_svr').distinct()
+        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
         context = {
             'account_requestor': account_requestor,
@@ -70,7 +70,7 @@ def account(request):
         return render(request, 'account.html', context)
 
     else:
-        account_svr_list = Account.objects.all().values('account_svr').distinct()
+        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
         context = {
             'account_svr_list': account_svr_list
@@ -105,21 +105,16 @@ def account_select(request):
 		).order_by('-id')
 
         page = int(request.POST.get('page'))
-
         total_count = account_list.count()
         page_max = round(account_list.count() / 15)
-
-
         paginator = Paginator(account_list, page * 15)
 
         try:
             if int(page) >= page_max : # 마지막 페이지 멈춤 구현
                 account_list = paginator.get_page(1)
                 callmorepostFlag = 'false'
-
             else:
                 account_list = paginator.get_page(1)
-
         except PageNotAnInteger:
             account_list = paginator.get_page(1)
         except EmptyPage:
@@ -200,7 +195,14 @@ def account_insert(request):
             #print("============ 'sql' :" + modify_form.account_sql)
 
             modify_form.save()
-            return redirect('/account')
+
+            account_user = form.cleaned_data['account_user']
+            context = {
+                'account_user': account_user
+            }
+
+            return render(request, 'account.html', context)
+
         else:
             print('insert fail........................................................................')
             return redirect('/account')
@@ -241,22 +243,26 @@ def account_update(request):
             # 패스워드 암호화 적용
             put_password(account.account_pass)
 
-            print("업데이트 해쉬 변환 이전값 : ")
-            print(account.account_hash)
-            print("--------------------------------------------------------------------")
+            #print("업데이트 해쉬 변환 이전값 : ")
+            #print(account.account_hash)
+            #print("--------------------------------------------------------------------")
 
             account.account_hash = get_password(account.account_pass)
 
-            print("--------------------------------------------------------------------")
-            print("건네받은 값 :")
-            print(form.cleaned_data['account_pass'])
-            print("업데이트 해쉬 변환 이후값 : ")
-            print(account.account_hash)
-            print("--------------------------------------------------------------------")
+            #print("--------------------------------------------------------------------")
+            #print("건네받은 값 :")
+            #print(form.cleaned_data['account_pass'])
+            #print("업데이트 해쉬 변환 이후값 : ")
+            #print(account.account_hash)
+            #print("--------------------------------------------------------------------")
 
             account.save()
 
-        return redirect('/account')
+        context = {
+            'account_user': account.account_user
+        }
+
+        return render(request, 'account.html', context)
 
     else:
         form = AccountForm()
@@ -278,7 +284,10 @@ def account_delete(request):
             account.account_del_note = form.cleaned_data['account_del_note']
             account.save()
 
-        return redirect('/account')
+        context = {
+            'account_user': account.account_user
+        }
+        return render(request, 'account.html', context)
 
     else:
         form = AccountForm()

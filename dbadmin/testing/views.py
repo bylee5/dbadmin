@@ -123,12 +123,12 @@ def post(request):
         content = request.POST.get('content')
         read = request.POST.get('read')
 
-        read_list = Post.objects.all().values('read').distinct()
+        read_list = Post.objects.all().order_by('read').values('read').distinct()
         context = {'read_list': read_list, 'title': title, 'content': content, 'read': read}
         return render(request, 'test_post.html', context)
 
     else:
-        read_list = Post.objects.all().values('read').distinct()
+        read_list = Post.objects.all().order_by('read').values('read').distinct()
         context = {'read_list': read_list}
         return render(request, 'test_post.html', context)
 
