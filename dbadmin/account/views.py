@@ -8,6 +8,8 @@ from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, 
 from django.db import connection
 from django.templatetags.static import static
 
+from django.conf import settings, os
+
 from .models import *
 from .forms import *
 from django.template import Context, Engine, TemplateDoesNotExist, loader
@@ -17,7 +19,14 @@ from django.template import Context, Engine, TemplateDoesNotExist, loader
 #########################################################################
 # Encrypt key
 def get_key():
-    with open('static/other/keyfile.lst', encoding='utf-8') as txtfile:
+    file_path = os.path.join(settings.KEY_URL, 'other/keyfile.lst')
+
+    print("=================================================")
+    print(file_path)
+    print("=================================================")
+
+
+    with open(file_path, encoding='utf-8') as txtfile:
         for row in txtfile.readlines():
             key = row
 
@@ -100,7 +109,8 @@ def account_select(request):
             account_grant__contains=account_grant,
             account_db__contains=account_db,
             account_table__contains=account_table,
-            account_url__contains=account_url
+            account_url__contains=account_url,
+            account_del_yn = 'N'
 		).order_by('-id')
 
         page = int(request.POST.get('page'))
