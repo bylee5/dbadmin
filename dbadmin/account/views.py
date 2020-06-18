@@ -6,12 +6,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from django.db import connection
+from django.templatetags.static import static
 
 from .models import *
 from .forms import *
-
-# faq_list = Faq.objects.filter(faq_id="test@test.com")
-# Create your views here.
+from django.template import Context, Engine, TemplateDoesNotExist, loader
 
 #########################################################################
 # custom function
