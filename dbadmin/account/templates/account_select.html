@@ -80,29 +80,29 @@
 		});
 
 		function callMoreListAjax(page) {
-			var account_requestor = $("#account_requestor").val();
-			var account_devteam = $("#account_devteam").val();
-			var account_svr = $("#account_svr").val();
-			var account_user = $("#account_user").val();
-			var account_host = $("#account_host").val();
-			var account_grant = $("#account_grant").val();
-			var account_db = $("#account_db").val();
-			var account_table = $("#account_table").val();
-			var account_url = $("#account_url").val();
+			var s_account_requestor = $("#s_account_requestor").val();
+			var s_account_devteam = $("#s_account_devteam").val();
+			var s_account_svr = $("#s_account_svr").val();
+			var s_account_user = $("#s_account_user").val();
+			var s_account_host = $("#s_account_host").val();
+			var s_account_grant = $("#s_account_grant").val();
+			var s_account_db = $("#s_account_db").val();
+			var s_account_table = $("#s_account_table").val();
+			var s_account_url = $("#s_account_url").val();
 
 			$.ajax( {
 				type : 'POST',
 				url: "{% url 'account_select' %}",
 				data: {
-					'account_requestor': account_requestor,
-					'account_devteam': account_devteam,
-					'account_svr': account_svr,
-					'account_user': account_user,
-					'account_host': account_host,
-					'account_grant': account_grant,
-					'account_db': account_db,
-					'account_table': account_table,
-					'account_url': account_url,
+					's_account_requestor': s_account_requestor,
+					's_account_devteam': s_account_devteam,
+					's_account_svr': s_account_svr,
+					's_account_user': s_account_user,
+					's_account_host': s_account_host,
+					's_account_grant': s_account_grant,
+					's_account_db': s_account_db,
+					's_account_table': s_account_table,
+					's_account_url': s_account_url,
 					'page': page,
 					'csrfmiddlewaretoken': token,
 				},

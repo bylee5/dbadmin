@@ -20,12 +20,6 @@ from django.template import Context, Engine, TemplateDoesNotExist, loader
 # Encrypt key
 def get_key():
     file_path = os.path.join(settings.KEY_URL, 'other/keyfile.lst')
-
-    print("=================================================")
-    print(file_path)
-    print("=================================================")
-
-
     with open(file_path, encoding='utf-8') as txtfile:
         for row in txtfile.readlines():
             key = row
@@ -51,15 +45,15 @@ def put_password(account_pass):
 #########################################################################
 def account(request):
     if request.method == 'POST':
-        account_requestor = request.POST.get('account_requestor')
-        account_devteam = request.POST.get('account_devteam')
-        account_svr = request.POST.get('account_svr')
-        account_user = request.POST.get('account_user')
-        account_host = request.POST.get('account_host')
-        account_grant = request.POST.get('account_grant')
-        account_db = request.POST.get('account_db')
-        account_table = request.POST.get('account_table')
-        account_url = request.POST.get('account_url')
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
 
         account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
@@ -88,15 +82,15 @@ def account(request):
 
 def account_select(request):
     if request.method == 'POST':
-        account_requestor = request.POST.get('account_requestor')
-        account_devteam = request.POST.get('account_devteam')
-        account_svr = request.POST.get('account_svr')
-        account_user = request.POST.get('account_user')
-        account_host = request.POST.get('account_host')
-        account_grant = request.POST.get('account_grant')
-        account_db = request.POST.get('account_db')
-        account_table = request.POST.get('account_table')
-        account_url = request.POST.get('account_url')
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
 
         #account_list = Account.objects.all().order_by('-id')
@@ -143,6 +137,9 @@ def account_select(request):
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag
         }
 
+        print("page : " + str(page))
+        print("==========================================================")
+
         return render(request, 'account_select.html', context)
 
     else:
@@ -153,7 +150,8 @@ def account_select_fast(request):
         account_user = request.POST.get('account_search')
 
         context = {
-            'account_user': account_user
+            'account_user': account_user,
+            'page' : 50
         }
         return render(request, 'account.html', context)
 
@@ -224,8 +222,35 @@ def account_insert(request):
 def account_update(request):
     if request.method == 'POST':
         account = Account.objects.get(id=request.POST['id'])
+
+        print("========================================================== page 값 확인")
         page = request.POST['page']
-        print("========================================================== page 값 확인: " + page)
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
+        callmorepostFlag = 'true'
+
+        print(page)
+        print(account_requestor)
+        print(account_devteam)
+        print(account_svr)
+        print(account_user)
+        print(account_host)
+        print(account_grant)
+        print(account_db)
+        print(account_table)
+        print(account_url)
+        print(callmorepostFlag)
+
+        print("==========================================================")
+
+
         form = AccountUpdateForm(request.POST)
 
         if form.is_valid():
@@ -249,29 +274,79 @@ def account_update(request):
                                   " to " + "'" + form.cleaned_data['account_user'] + "'@'" + form.cleaned_data[
                                       'account_host'] + \
                                   "' identified by '" + form.cleaned_data['account_pass'] + "';"
-            # 패스워드 암호화 적용
+
             put_password(account.account_pass)
-
-            #print("업데이트 해쉬 변환 이전값 : ")
-            #print(account.account_hash)
-            #print("--------------------------------------------------------------------")
-
             account.account_hash = get_password(account.account_pass)
-
-            #print("--------------------------------------------------------------------")
-            #print("건네받은 값 :")
-            #print(form.cleaned_data['account_pass'])
-            #print("업데이트 해쉬 변환 이후값 : ")
-            #print(account.account_hash)
-            #print("--------------------------------------------------------------------")
 
             account.save()
 
-        context = {
-            'account_user': account.account_user
-        }
+            ########################################## 페이지 원래대로 테스트
 
-        return render(request, 'account.html', context)
+            account_requestor = request.POST.get('s_account_requestor')
+            account_devteam = request.POST.get('s_account_devteam')
+            account_svr = request.POST.get('s_account_svr')
+            account_user = request.POST.get('s_account_user')
+            account_host = request.POST.get('s_account_host')
+            account_grant = request.POST.get('s_account_grant')
+            account_db = request.POST.get('s_account_db')
+            account_table = request.POST.get('s_account_table')
+            account_url = request.POST.get('s_account_url')
+            callmorepostFlag = 'true'
+
+            # account_list = Account.objects.all().order_by('-id')
+            account_list = Account.objects.filter(
+                account_requestor__contains=account_requestor,
+                account_devteam__contains=account_devteam,
+                account_svr__contains=account_svr,
+                account_user__contains=account_user,
+                account_host__contains=account_host,
+                account_grant__contains=account_grant,
+                account_db__contains=account_db,
+                account_table__contains=account_table,
+                account_url__contains=account_url,
+                account_del_yn='N'
+            ).order_by('-id')
+
+            page = int(request.POST.get('page'))
+            total_count = account_list.count()
+            page_max = round(account_list.count() / 15)
+            paginator = Paginator(account_list, page * 15)
+
+            try:
+                if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                    account_list = paginator.get_page(1)
+                    callmorepostFlag = 'false'
+                else:
+                    account_list = paginator.get_page(1)
+            except PageNotAnInteger:
+                account_list = paginator.get_page(1)
+            except EmptyPage:
+                account_list = paginator.get_page(paginator.num_pages)
+
+            context = {
+                'account_requestor': account_requestor,
+                'account_devteam': account_devteam,
+                'account_svr': account_svr,
+                'account_user': account_user,
+                'account_host': account_host,
+                'account_grant': account_grant,
+                'account_db': account_db,
+                'account_table': account_table,
+                'account_url': account_url,
+                'account_list': account_list,
+                'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+                'page': page
+            }
+
+            return render(request, 'account.html', context)
+
+
+        #context = {
+        #    'account_user': account.account_user,
+        #    #'page': page
+        #}
+
+        #return render(request, 'account.html', context)
 
     else:
         form = AccountForm()
