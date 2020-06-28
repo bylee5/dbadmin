@@ -18,6 +18,7 @@ from django.template import Context, Engine, TemplateDoesNotExist, loader
 # custom function
 #########################################################################
 # Encrypt key
+# test
 def get_key():
     file_path = os.path.join(settings.KEY_URL, 'other/keyfile.lst')
     with open(file_path, encoding='utf-8') as txtfile:
