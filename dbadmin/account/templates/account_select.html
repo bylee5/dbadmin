@@ -76,7 +76,7 @@
 		$('#morelist').click(function(){
 			var page = parseInt($("#page").val())+1;
 			callMoreListAjax(page);
-			$("#page").val(parseInt(page)+1);
+			$("#page").val(parseInt(page));
 		});
 
 		function callMoreListAjax(page) {

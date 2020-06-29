@@ -226,6 +226,7 @@ def account_update(request):
 
         print("========================================================== page 값 확인")
         page = request.POST['page']
+        scrollHeight = request.POST['scrollHeight']
         account_requestor = request.POST.get('s_account_requestor')
         account_devteam = request.POST.get('s_account_devteam')
         account_svr = request.POST.get('s_account_svr')
@@ -237,7 +238,10 @@ def account_update(request):
         account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
 
+        print("페이지")
         print(page)
+        print("스크롤 위치")
+        print(scrollHeight)
         print(account_requestor)
         print(account_devteam)
         print(account_svr)
@@ -336,7 +340,8 @@ def account_update(request):
                 'account_url': account_url,
                 'account_list': account_list,
                 'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-                'page': page
+                'page': page,
+                'scrollHeight': scrollHeight
             }
 
             return render(request, 'account.html', context)

@@ -10,7 +10,7 @@
     {% block content %}
     <!-- 검색란 -->
     <div class="query_menu my-1 p-1 border rounded small" style="font-size: 12px;">
-        << 검색란 >> (page : {{ page }})
+        << 검색란 >> (page : {{ page }}), (height : {{ scrollHeight }})
         <table class="table table-sm text-center" style="table-layout: fixed">
         <tr class="bg-dark text-white">
             <!--<th class="">서버/호스트</th>-->
@@ -186,6 +186,13 @@
 	{% else %}
 		<input id="page" type="hidden" value="{{ page }}">
 	{% endif %}
+
+	{% if scrollHeight is none %}
+	<input id="scrollHeight" type="hidden" value="0">
+	{% else %}
+	<input id="scrollHeight" type="hidden" value="{{ scrollHeight}}">
+	{% endif %}
+
 	<div class="board small" id="account_list_ajax" style="font-size: 12px;">
 
 	</div>
@@ -317,7 +324,7 @@
 									<td class="bg-dark text-white align-middle" style="width: 12%">page</td>
 									<td style="width: 38%"><input class="form-control form-control-sm" id="page" name="page" type="text" readonly></td>
 									<td class="bg-dark text-white align-middle" style="width: 12%"></td>
-									<td style="width: 38%"><input class="form-control form-control-sm" id="" name="" type="text" readonly></td>
+									<td style="width: 38%"><input class="form-control form-control-sm" id="scrollHeight" name="scrollHeight" type="text" readonly></td>
 								</tr>
 								<tr class="">
 									<td class="bg-dark text-white align-middle" style="width: 12%">생성일</td>
@@ -493,6 +500,7 @@
 		var s_account_url = $("#s_account_url").val();
 
 		var page = $("#page").val();
+		var scrollHeight = $(window).scrollTop()
 
         var modal = $('#deleteTab')
 		modal.find('#id').val(id);
@@ -519,6 +527,7 @@
 		modal.find('#account_del_reason').val(account_del_reason);
 		modal.find('#account_del_note').val(account_del_note);
 		modal.find('#page').val(page);
+		modal.find('#scrollHeight').val(scrollHeight);
 
         var modal = $('#updateTab')
 		modal.find('#id').val(id);
@@ -545,6 +554,7 @@
 		modal.find('#account_del_reason').val(account_del_reason);
 		modal.find('#account_del_note').val(account_del_note);
 		modal.find('#page').val(page);
+		modal.find('#scrollHeight').val(scrollHeight);
 
 		modal.find('#s_account_requestor').val(s_account_requestor);
 		modal.find('#s_account_devteam').val(s_account_devteam);
@@ -565,8 +575,11 @@
 
         $('#account_list_ajax').load('dummy',function(){
             var page = $("#page").val();
+            var scrollHeight = $("#scrollHeight").val();
+
             callMoreListAjax(page);
             $("#page").val(parseInt(page));
+            $('html').animate({scrollTop: scrollHeight}, 100);
         });
 
 		$(window).scroll(function(){
