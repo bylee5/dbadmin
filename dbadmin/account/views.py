@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from django.db import connection
 from django.templatetags.static import static
+from django.utils import timezone
 
 from django.conf import settings, os
 
@@ -223,8 +224,8 @@ def account_insert(request):
 def account_update(request):
     if request.method == 'POST':
         account = Account.objects.get(id=request.POST['id'])
+        form = AccountUpdateForm(request.POST)
 
-        print("========================================================== page 값 확인")
         page = request.POST['page']
         scrollHeight = request.POST['scrollHeight']
         account_requestor = request.POST.get('s_account_requestor')
@@ -237,29 +238,10 @@ def account_update(request):
         account_table = request.POST.get('s_account_table')
         account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
-
-        print("페이지")
-        print(page)
-        print("스크롤 위치")
-        print(scrollHeight)
-        print(account_requestor)
-        print(account_devteam)
-        print(account_svr)
-        print(account_user)
-        print(account_host)
-        print(account_grant)
-        print(account_db)
-        print(account_table)
-        print(account_url)
-        print(callmorepostFlag)
-
-        print("==========================================================")
-
-
-        form = AccountUpdateForm(request.POST)
+        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
         if form.is_valid():
-            account.account_update_dt = datetime.now()
+            account.account_update_dt = timezone.localtime()
             account.account_requestor = form.cleaned_data['account_requestor']
             account.account_devteam = form.cleaned_data['account_devteam']
             account.account_svr = form.cleaned_data['account_svr']
@@ -341,52 +323,117 @@ def account_update(request):
                 'account_list': account_list,
                 'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
                 'page': page,
-                'scrollHeight': scrollHeight
+                'scrollHeight': scrollHeight,
+                'account_svr_list': account_svr_list
             }
 
             return render(request, 'account.html', context)
 
-
-        #context = {
-        #    'account_user': account.account_user,
-        #    #'page': page
-        #}
-
-        #return render(request, 'account.html', context)
-
     else:
-        form = AccountForm()
+        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
-    return render(request, 'account.html', {'form': form})
+        context = {
+            'account_svr_list': account_svr_list
+        }
+
+        return render(request, 'account.html', context)
 
 def account_delete(request):
     if request.method == 'POST':
-        account = Account.objects.get(id = request.POST['id']) # pk에 해당하는 업데이트 대상을 가져옴
+        account = Account.objects.get(id=request.POST['id']) # pk에 해당하는 업데이트 대상을 가져옴
         form = AccountDelForm(request.POST) # 입력값 가져옴
 
-        if form.is_valid():
-            #print(form.cleaned_data) # 콘솔 찍기. 디버깅
+        page = request.POST['page']
+        scrollHeight = request.POST['scrollHeight']
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
+        callmorepostFlag = 'true'
+        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
+        if form.is_valid():
             account.account_del_yn = 'Y'
-            account.account_update_dt = datetime.now()
-            account.account_del_dt = datetime.now()
+            account.account_update_dt = timezone.localtime()
+            account.account_del_dt = timezone.localtime()
             account.account_del_reason = form.cleaned_data['account_del_reason']
             account.account_del_note = form.cleaned_data['account_del_note']
             account.save()
 
-        context = {
-            'account_user': account.account_user
-        }
-        return render(request, 'account.html', context)
+            ########################################## 페이지 원래대로 테스트
+
+            account_requestor = request.POST.get('s_account_requestor')
+            account_devteam = request.POST.get('s_account_devteam')
+            account_svr = request.POST.get('s_account_svr')
+            account_user = request.POST.get('s_account_user')
+            account_host = request.POST.get('s_account_host')
+            account_grant = request.POST.get('s_account_grant')
+            account_db = request.POST.get('s_account_db')
+            account_table = request.POST.get('s_account_table')
+            account_url = request.POST.get('s_account_url')
+            callmorepostFlag = 'true'
+
+            account_list = Account.objects.filter(
+                account_requestor__contains=account_requestor,
+                account_devteam__contains=account_devteam,
+                account_svr__contains=account_svr,
+                account_user__contains=account_user,
+                account_host__contains=account_host,
+                account_grant__contains=account_grant,
+                account_db__contains=account_db,
+                account_table__contains=account_table,
+                account_url__contains=account_url,
+                account_del_yn='N'
+            ).order_by('-id')
+
+            page = int(request.POST.get('page'))
+            total_count = account_list.count()
+            page_max = round(account_list.count() / 15)
+            paginator = Paginator(account_list, page * 15)
+
+            try:
+                if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                    account_list = paginator.get_page(1)
+                    callmorepostFlag = 'false'
+                else:
+                    account_list = paginator.get_page(1)
+            except PageNotAnInteger:
+                account_list = paginator.get_page(1)
+            except EmptyPage:
+                account_list = paginator.get_page(paginator.num_pages)
+
+            context = {
+                'account_requestor': account_requestor,
+                'account_devteam': account_devteam,
+                'account_svr': account_svr,
+                'account_user': account_user,
+                'account_host': account_host,
+                'account_grant': account_grant,
+                'account_db': account_db,
+                'account_table': account_table,
+                'account_url': account_url,
+                'account_list': account_list,
+                'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+                'page': page,
+                'scrollHeight': scrollHeight,
+                'account_svr_list': account_svr_list
+            }
+
+            return render(request, 'account.html', context)
 
     else:
-        form = AccountForm()
+        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
-    return render(request, 'account.html', {'form': form})
+        context = {
+            'account_svr_list': account_svr_list
+        }
 
-
-
-
+        return render(request, 'account.html', context)
 
 #########################################################################
 # Account Delete='Y' page
