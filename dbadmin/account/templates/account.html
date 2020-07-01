@@ -164,15 +164,15 @@
 
     <!-- 결과란 -->
 	{% if page is none %}
-		<input id="page" type="hidden" value="1">
+		<input id="page" name="page" type="hidden" value="1">
 	{% else %}
-		<input id="page" type="hidden" value="{{ page }}">
+		<input id="page" name="page" type="hidden" value="{{ page }}">
 	{% endif %}
 
 	{% if scrollHeight is none %}
-	<input id="scrollHeight" type="hidden" value="0">
+		<input id="scrollHeight" name="scrollHeight" type="hidden" value="0">
 	{% else %}
-	<input id="scrollHeight" type="hidden" value="{{ scrollHeight}}">
+		<input id="scrollHeight" name="scrollHeight" type="hidden" value="{{ scrollHeight }}">
 	{% endif %}
 
 	<div class="board small" id="account_list_ajax" style="font-size: 12px;">
@@ -557,7 +557,7 @@
 
             callMoreListAjax(page);
             $("#page").val(parseInt(page));
-            $('html').animate({scrollTop: scrollHeight}, 100);
+            $('html').animate({scrollTop: scrollHeight}, 300);
         });
 
 		$(window).scroll(function(){
