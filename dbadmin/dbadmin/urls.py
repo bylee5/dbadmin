@@ -70,6 +70,9 @@ urlpatterns = [
     path('testing/post/', testing.views.post, name='post'),
     path('testing/post/select/', testing.views.post_ajax, name='post_ajax'),
 
+    #serverlist test
+    path('test1/', testing.views.test1, name='test1'),
+    path('test2/', testing.views.test2, name='test2'),
     #########################################################################
 
 ]

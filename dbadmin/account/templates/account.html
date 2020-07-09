@@ -74,6 +74,7 @@
     </div>
 
     <!-- 입력란 -->
+    <!--
     <div class="query_menu my-1 p-1 border rounded small" style="font-size: 12px;">
 		<a class="" data-toggle="collapse" href="#collapseInsert" role="button" aria-expanded="false" aria-controls="collapseInsert">
 			<< 입력란 >>
@@ -185,50 +186,42 @@
 
         </table>
     </div>
+    -->
 
-	<!-- 입력란_BAK -->
+	<!-- 입력란 -->
     <div class="query_menu my-1 p-1 border rounded small" style="font-size: 12px;">
-		<a class="" data-toggle="collapse" href="#collapseInsert_bak" role="button" aria-expanded="false" aria-controls="collapseInsert_bak">
+		<a class="" data-toggle="collapse" href="#collapseInsert" role="button" aria-expanded="false" aria-controls="collapseInsert">
 			<< 입력란 >>
 		</a>
-        <table class="table table-sm text-center collapse1" id="collapseInsert_bak" style="table-layout: fixed">
+        <table class="table table-sm text-center collapse11111" id="collapseInsert" style="table-layout: fixed">
 		<tr class="">
-			<td class="bg-dark text-white align-middle" style="width: 8%">요청자명</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">서버</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">DB</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">패스워드</td>
-			<td style="width: 25%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="">
-                <button class="btn btn-outline-danger btn-sm" onclick="insertBox();" type="submit">입력</button>
-            </td>
+			<td class="bg-dark text-white align-middle" style="width: 6%">요청자명</td>
+			<td style="width: 14%"><input class="form-control form-control-sm" id="account_requestor" name="account_requestor" type="text"></td>
+			<td class="bg-dark text-white align-middle" style="width: 6%">요청팀</td>
+			<td style="width: 14%"><input class="form-control form-control-sm" id="account_devteam" name="account_devteam" type="text"></td>
+			<td class="bg-dark text-white align-middle" style="width: 6%">INFO</td>
+			<td style="width: 22%"><input class="form-control form-control-sm" id="account_info" name="account_info" type="text"></td>
+			<td class="bg-dark text-white align-middle" style="width: 6%">URL</td>
+			<td style="width: 22%"><input class="form-control form-control-sm" id="account_url" name="account_url" type="text"></td>
 		</tr>
 		<tr class="">
-			<td class="bg-dark text-white align-middle" style="width: 8%">요청팀</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">아이디</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">TABLE</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">INFO</td>
-			<td style="width: 25%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="">
-                <button class="btn btn-outline-danger btn-sm" onclick="insertBox();" type="submit">입력</button>
-            </td>
+			<td class="bg-dark text-white align-middle">서버</td>
+			<td><input class="form-control form-control-sm" id="account_svr" name="account_svr" type="text"></td>
+			<td class="bg-dark text-white align-middle">아이디</td>
+			<td><input class="form-control form-control-sm" id="account_user" name="account_user" type="text"></td>
+			<td class="bg-dark text-white align-middle">호스트</td>
+			<td><input class="form-control form-control-sm" id="account_host" name="account_host" type="text"></td>
+			<td class="bg-dark text-white align-middle">패스워드</td>
+			<td><input class="form-control form-control-sm" id="account_pass" name="account_pass" type="text"></td>
 		</tr>
 		<tr class="">
-			<td class="bg-dark text-white align-middle" style="width: 8%">page</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">호스트</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">권한</td>
-			<td style="width: 12%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="bg-dark text-white align-middle" style="width: 8%">URL</td>
-			<td style="width: 25%"><input class="form-control form-control-sm" id="" name="" type="text"></td>
-			<td class="">
-                <button class="btn btn-outline-danger btn-sm" onclick="insertBox();" type="submit">입력</button>
+			<td class="bg-dark text-white align-middle">DB</td>
+			<td><input class="form-control form-control-sm" id="account_db" name="account_db" type="text"></td>
+			<td class="bg-dark text-white align-middle">TABLE</td>
+			<td><input class="form-control form-control-sm" id="account_table" name="account_table" type="text"></td>
+			<td class="bg-dark text-white align-middle">권한</td>
+			<td><input class="form-control form-control-sm" id="account_grant" name="account_grant" type="text"></td>
+			<td colspan="2"><button class="btn btn-outline-danger btn-sm" onclick="insertBox();" type="submit">입력</button></td>
 
                     <script type="text/javascript">
                         function insertBox() {
@@ -644,7 +637,7 @@
 
             callMoreListAjax(page);
             $("#page").val(parseInt(page));
-            $('html').animate({scrollTop: scrollHeight}, 300);
+            $('html').animate({scrollTop: scrollHeight}, 800);
         });
 
 		$(window).scroll(function(){

@@ -204,3 +204,14 @@ def post_ajax(request): #Ajax 로 호출하는 함수
 
 
 
+
+
+#########################################################################
+# server_list test
+#########################################################################
+
+def test1(request):
+    return render(request, 'test1.html')
+
+def test2(request):
+    return render(request, 'test2.html')

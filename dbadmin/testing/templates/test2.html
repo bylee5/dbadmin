@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% extends 'base-testing.html' %}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+</head>
+<body>
+    {% block content %}
+
+    <div class="">
+        <h1>job_list 테스트 페이지</h1>
+    </div>
+
+	<!-- Modal windows button open -->
+    <div class="buttons">
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">Modal 테스트</button>
+        <button type="button" class="btn btn-primary btn-sm btnAdd" id="btnAdd" name="btnAdd">버튼 추가 테스트</button>
+
+        <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Collapse 테스트
+        </a>
+        <div class="collapse" id="collapseExample">
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready (function () {
+            $('.btnAdd').click (function () {
+                $('.buttons').append (
+                    '<input type="text" name="txt"> <input type="button" class="btnRemove" value="Remove"><br>'
+                ); // end append
+                $('.btnRemove').on('click', function () {
+                    $(this).prev().remove(); // remove the textbox
+                    $(this).next().remove(); // remove the <br>
+                    $(this).remove(); // remove the button
+                });
+            }); // end click
+        }); // end ready
+    </script>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <!--
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                -->
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-pills" role="tablist">
+
+                <li>
+                    <a class="nav-link active modal-title small btn-outline-secondary" href="#uploadTab" aria-controls="uploadTab" role="tab" aria-selected="true" data-toggle="tab">상세</a>
+                </li>
+                <li>
+                    <a class="nav-link small btn-outline-secondary" href="#browseTab" aria-controls="browseTab" role="tab" data-toggle="tab">수정</a>
+                </li>
+                <li>
+                    <a class="nav-link small btn-outline-secondary" href="#testTab" aria-controls="testTab" role="tab" data-toggle="tab">삭제</a>
+                </li>
+
+            </ul>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div role="tabpanel">
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+
+                        <div role="tabpanel" class="tab-pane active fade show" id="uploadTab">
+                            상세 탭
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary save">상세 확인</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane fade" id="browseTab">
+                           수정 탭
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary save">수정 확인</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane fade" id="testTab">
+                           삭제 탭
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary save">삭제 확인</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+	<!-- Modal window option script -->
+	<script>
+	$('#myModal').on('show.bs.modal', function (event) { // myModal 윈도우가 오픈할때 아래의 옵션을 적용
+	  var button = $(event.relatedTarget) // 모달 윈도우를 오픈하는 버튼
+	  var titleTxt = button.data('title') // 버튼에서 data-title 값을 titleTxt 변수에 저장
+	  var modal = $(this)
+	  modal.find('.modal-title').text(titleTxt) // 모달위도우에서 .modal-title을 찾아 titleTxt 값을 치환
+	})
+	</script>
+
+    {% endblock %}
+</body>
+</html>
