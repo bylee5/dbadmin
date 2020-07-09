@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'login',
     'account',
     'testing',
+    'monitoring',
 ]
 
 MIDDLEWARE = [

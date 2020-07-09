@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% extends 'base-testing.html' %}
+{% extends 'base-monitoring.html' %}
 {% load static %}
 <html lang="en">
 <head>
@@ -11,40 +11,21 @@
     {% block content %}
 
     <div class="">
-        <h1>server_list 테스트 페이지</h1>
-        <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1 multiCollapseExample2">Toggle both elements</button>
+        <h1>job_list 테스트 페이지</h1>
     </div>
-    <hr>
 
 	<!-- Modal windows button open -->
-        <table>
-        <tr>
-            <td>
-            <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Collapse 1</a>
-            </td>
-            <td>
-            <div class="collapse multi-collapse" id="multiCollapseExample1">
-                <div class="card card-body">
-                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-                </div>
-            </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-        <button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">Collapse 2</button>
-            </td>
-            <td>
-        <div class="">
-            <div class="collapse multi-collapse" id="multiCollapseExample2">
-                <div class="card card-body">
-                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-                </div>
-            </div>
+    <div class="buttons">
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">Modal 테스트</button>
+        <button type="button" class="btn btn-primary btn-sm btnAdd" id="btnAdd" name="btnAdd">버튼 추가 테스트</button>
+
+        <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Collapse 테스트
+        </a>
+        <div class="collapse" id="collapseExample">
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
         </div>
-            </td>
-        </tr>
-        </table>
+    </div>
 
 
     <script>

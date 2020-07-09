@@ -6,6 +6,7 @@ import login.views
 import home.views
 import account.views
 import testing.views
+import monitoring.views
 
 urlpatterns = [
     #url(r'^$', login.views.login),
@@ -50,6 +51,15 @@ urlpatterns = [
     # account test
     path('account/select_del/', account.views.account_select_del, name='account_select_del'),
 
+
+    #########################################################################
+    # monitoring app
+    #########################################################################
+
+    # serverlist test
+    path('monitoring', monitoring.views.server_list, name='server_list'),
+    path('monitoring/server_list/', monitoring.views.server_list, name='server_list'),
+    path('monitoring/server_job_list/', monitoring.views.server_job_list, name='server_job_list'),
 
     #########################################################################
     # testing app
