@@ -1,3 +1,73 @@
+
+#서버 베이스
+SELECT sl.svr, ji.job_info_name, jsm.use_yn
+FROM server_list AS sl
+LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno
+LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno
+ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC
+
+SELECT 'ar.airtkt.tmonc.net', SUBSTRING_INDEX('ar.airtkt.tmonc.net','.',1) AS txt,
+'adb2.tmonc.net', REPLACE(sl.svr,'.tmonc.net','') AS txt
+
+#잡 베이스
+SELECT ji.job_info_name, sl.svr, jsm.use_yn
+FROM job_info AS ji
+LEFT OUTER JOIN job_server_map AS jsm ON ji.job_info_seqno = jsm.job_info_seqno
+LEFT OUTER JOIN server_list AS sl ON jsm.server_list_seqno = sl.server_list_seqno
+ORDER BY ji.job_info_seqno ASC, jsm.use_yn DESC, sl.svr ASC
+
+
+SELECT * FROM job_server_map WHERE server_list_seqno=381;
+SELECT * FROM server_list WHERE svr LIKE '%admindb1%';
+
+
+
+UPDATE job_server_map SET use_yn=0 WHERE job_info_seqno=3 AND server_list_seqno=334;
+UPDATE job_server_map SET use_yn=0 WHERE job_info_seqno=5 AND server_list_seqno=334;
+
+
+#서버 베이스
+
+SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, ji.job_info_name AS job_info_name, jsm.use_yn AS use_yn
+FROM server_list AS sl
+LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno
+LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno
+WHERE sl.svr LIKE '%bastion.airtkt%'
+ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC
+
+
+SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(*) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt
+FROM server_list AS sl
+LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno
+LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno
+GROUP BY REPLACE(sl.svr,'.tmonc.net','')
+ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC
+
+
+
+#서버 베이스
+
+SELECT a.svr, a.job_info_name, a.use_yn, b.cnt, b.use_yn_on_cnt FROM (
+SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, ji.job_info_name AS job_info_name, ji.job_info_seqno , jsm.use_yn AS use_yn
+FROM server_list AS sl
+LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno
+LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno
+ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC) a
+INNER JOIN
+(SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(*) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt
+FROM server_list AS sl
+LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno
+LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno
+GROUP BY REPLACE(sl.svr,'.tmonc.net','')) b
+ON a.svr=b.svr
+ORDER BY a.svr ASC, a.job_info_seqno, a.use_yn DESC
+
+
+
+
+
+
+
 #truncate table adminaccount_accountrepository;
 #select * from adminaccount_accountrepository;
 #desc adminaccount_accountrepository;
