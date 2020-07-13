@@ -22,14 +22,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'gv*h!6#pif^*4wr@4tue7o=_%p3$kyi_f(4(+q%2g@jwf-8a$9'
+ENC_KEY = 'savy~!!1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 12000
+# sessoin lifetime, timeout setting
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True # if no action, close this session (default = false)
+SESSION_COOKIE_AGE = 1800 # session life time. second
+SESSION_SAVE_EVERY_REQUEST = True # if action, current session life time is refresh
 
 # Application definition
 
@@ -145,4 +148,4 @@ STATICFILES_DIRS = (
 )
 
 LOGIN_REDIRECT_URL = '/login/'
-LOGIN_URL = '/home/'
+LOGIN_URL = '/login/'

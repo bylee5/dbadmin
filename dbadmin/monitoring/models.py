@@ -19,7 +19,7 @@ class JobServerMap(models.Model):
     job_server_map_seqno = models.BigAutoField(primary_key=True)
     job_info_seqno = models.PositiveIntegerField()
     server_list_seqno = models.PositiveSmallIntegerField()
-    use_yn = models.PositiveIntegerField()
+    use_yn = models.PositiveIntegerField(null=True)
 
     class Meta:
         managed = False

@@ -21,10 +21,11 @@ from django.template import Context, Engine, TemplateDoesNotExist, loader
 # Encrypt key
 # test
 def get_key():
-    file_path = os.path.join(settings.KEY_URL, 'other/keyfile.lst')
-    with open(file_path, encoding='utf-8') as txtfile:
-        for row in txtfile.readlines():
-            key = row
+    #file_path = os.path.join(settings.KEY_URL, 'other/keyfile.lst')
+    #with open(file_path, encoding='utf-8') as txtfile:
+    #    for row in txtfile.readlines():
+    #        key = row
+    key = settings.ENC_KEY
 
     return key
 

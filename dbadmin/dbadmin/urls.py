@@ -56,9 +56,12 @@ urlpatterns = [
     # monitoring app
     #########################################################################
 
-    # serverlist test
+    # server_list
     path('monitoring', monitoring.views.server_list, name='server_list'),
     path('monitoring/server_list/', monitoring.views.server_list, name='server_list'),
+    path('monitoring/server_list_update/', monitoring.views.server_list_update, name='server_list_update'),
+
+    # server_job_list
     path('monitoring/server_job_list/', monitoring.views.server_job_list, name='server_job_list'),
 
     #########################################################################
