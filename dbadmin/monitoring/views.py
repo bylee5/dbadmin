@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.conf import settings, os
 #from django.contrib.auth.decorators import login_required
 
+from django.db import connections
 from .models import *
 from .forms import *
 from django.template import Context, Engine, TemplateDoesNotExist, loader
@@ -52,7 +53,7 @@ def server_list(request):
     			GROUP BY REPLACE(sl.svr,'.tmonc.net','')"
     # ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
 
-    with connection.cursor() as cursor:
+    with connections['tmon_dba'].cursor() as cursor:
 
         # 서버리스트 및 JOB 스케줄 가져오기
         # svr = row[0]
@@ -105,31 +106,50 @@ def server_list_update(request):
         print("server_list : " + str(server_list[0]))
         print("server_list2 : " + str(server_list2))
         print("server_list4 : " + str(server_list4))
+        print("length server_list4 : " + str(len(server_list4)))
         print("=================================================")
 
-        query_update_use_yn_y = "UPDATE server_list AS sl \
-                JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
-                LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
-                SET jsm.use_yn=1 \
-                WHERE 1=1 \
-                AND sl.svr = '" + svr + "' \
-                AND ji.job_info_name IN (" + server_list4 + ")"
 
-        query_update_use_yn_n = "UPDATE server_list AS sl \
-                JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
-                LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
-                SET jsm.use_yn=0 \
-                WHERE 1=1 \
-                AND sl.svr = '" + svr + "' \
-                AND ji.job_info_name NOT IN (" + server_list4 + ")"
+        if len(server_list4) != 0: # 하나라도 ON 입력값이 있는 경우
+            query_update_use_yn_y = "UPDATE server_list AS sl \
+            		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+            		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+            		SET jsm.use_yn=1 \
+            		WHERE 1=1 \
+            		AND sl.svr = '" + svr + "' \
+            		AND ji.job_info_name IN (" + server_list4 + ")"
 
-        try:
-            cursor = connection.cursor()
-            cursor.execute(query_update_use_yn_y)
-            cursor.execute(query_update_use_yn_n)
-            connection.commit()
-        finally:
-            cursor.close()
+            query_update_use_yn_n = "UPDATE server_list AS sl \
+            		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+            		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+            		SET jsm.use_yn=0 \
+            		WHERE 1=1 \
+            		AND sl.svr = '" + svr + "' \
+            		AND ji.job_info_name NOT IN (" + server_list4 + ")"
+
+            try:
+                cursor = connections['tmon_dba'].cursor()
+                cursor.execute(query_update_use_yn_y)
+                cursor.execute(query_update_use_yn_n)
+                connection.commit()
+            finally:
+                cursor.close()
+
+        else: # ON 변경값이 하나라도 없는경우. 전부 OFF 처리
+            print("=========== 여기오는건가?")
+            query_update_use_yn_n = "UPDATE server_list AS sl \
+             		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+             		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+             		SET jsm.use_yn=0 \
+             		WHERE 1=1 \
+             		AND sl.svr = '" + svr + "'"
+
+            try:
+                cursor = connections['tmon_dba'].cursor()
+                cursor.execute(query_update_use_yn_n)
+                connection.commit()
+            finally:
+                cursor.close()
 
         svr = request.POST.get('svr') # 리턴을 위함 (select)
     else:
@@ -154,7 +174,7 @@ def server_list_update(request):
     			GROUP BY REPLACE(sl.svr,'.tmonc.net','')"
     # ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
 
-    with connection.cursor() as cursor:
+    with connections['tmon_dba'].cursor() as cursor:
 
         # 서버리스트 및 JOB 스케줄 가져오기
         # svr = row[0]

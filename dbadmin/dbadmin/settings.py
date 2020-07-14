@@ -93,10 +93,21 @@ WSGI_APPLICATION = 'dbadmin.wsgi.application'
 #    }
 #}
 
+#DATABASE_APPS_MAPPING = {'tmon_dba': 'monitoring'}
+DATABASE_ROUTERS = ['dbadmin.router.Router']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dbadmin',
+        'USER': 'test',
+        'PASSWORD': 'manager',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    'tmon_dba': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tmon_dba',
         'USER': 'test',
         'PASSWORD': 'manager',
         'HOST': 'localhost',
