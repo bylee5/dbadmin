@@ -103,6 +103,7 @@ def server_list_update(request):
         print("=================================================")
         print("svr : " + str(svr))
         print("server_list : " + str(server_list[0]))
+        print("server_list2 : " + str(server_list2))
         print("server_list4 : " + str(server_list4))
         print("=================================================")
 

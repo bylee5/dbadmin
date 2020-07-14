@@ -35,6 +35,12 @@
     <!-- 결과 리턴 화면 -->
     <div>
     <table class="table table-sm">
+    <!--
+    <input id="server_list" name="server_list" type="hidden" value="{{ server_list.0 }}">
+    <input id="server_list1" name="server_list1" type="hidden" value="{{ server_list.1 }}">
+    <input id="server_list3" name="server_list3" type="hidden" value="{{ server_list.2 }}">
+    -->
+
     {% for server_list_distinct in server_lists_distinct %}
     <tr>
         <td style = "width: 10%;">
@@ -50,45 +56,22 @@
             <div class="card card-body">
                 <form class="form-inline" name="insertForm" action="{% url 'server_list_update' %}" method="post">
                 {% csrf_token %}
-
+                <input id="svr" name="svr" type="hidden" value="{{ svr }}">
+                <input id="server_list" name="server_list" type="hidden" value="{{ server_list_distinct.0 }}">
                 <table class="table table-sm table-hover small">
-
                     <tr>
-                        <!--
-                        <th style = "width: 20%;">호스트</th>
-                        -->
-                        <th style = "width: 40%;">잡 스케줄</th>
-                        <th style = "width: 40%;">ON/OFF</th>
+                        <th style = "width: 35%;">잡 스케줄</th>
+                        <th style = "width: 65%;">ON/OFF</th>
                     </tr>
-
-                    {% for server_list in server_lists %}
-                    {% if server_list_distinct.0 == server_list.0 %}
-
-                        <!-- View에 데이터 전달하기 위한 용도. hidden 처리 -->
-                        <input id="svr" name="svr" type="hidden" value="{{ svr }}">
-                        <input id="server_list" name="server_list" type="hidden" value="{{ server_list.0 }}">
-                        <input id="server_list1" name="server_list1" type="hidden" value="{{ server_list.1 }}">
-                        <input id="server_list3" name="server_list3" type="hidden" value="{{ server_list.2 }}">
-
+                    {% for server_list in server_lists %}{% if server_list_distinct.0 == server_list.0 %}
                         <tr>
-                            <!--
-                            <td>{{ server_list.0 }}</td>
-                            -->
                             <td>{{ server_list.1 }}</td>
-                            <td>
-                                <input type="checkbox" id="server_list2" name="server_list2" {% if server_list.2 == 1 %} checked {% endif %} data-toggle="toggle" data-size="xs" data-onstyle="info"  data-on="on" data-off="off" value="{{ server_list.1 }}">
-                            </td>
+                            <td><input type="checkbox" id="server_list2" name="server_list2" {% if server_list.2 == 1 %} checked {% endif %} data-toggle="toggle" data-size="xs" data-onstyle="danger"  data-on="on" data-off="off" value="{{ server_list.1 }}"></td>
                         </tr>
-
-                    {% endif %}
-                    {% endfor %}
-
+                    {% endif %}{% endfor %}
                 </table>
-
                 <button class="btn btn-outline-danger btn-sm" type="submit">저장</button>
                 </form>
-
-
             </div>
         </div>
         </td>
