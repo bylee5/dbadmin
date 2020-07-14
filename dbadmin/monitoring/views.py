@@ -33,24 +33,47 @@ def server_list(request):
 
     else:
         # 서버 베이스 입력값. 입력값이 없는경우
-        svr = '%adb'
+        svr = ''
 
 
     # 서버리스트 및 JOB 스케줄 가져오기
-    query = "SELECT REPLACE(sl.svr,'.tmonc.net','') as svr, ji.job_info_name as job_info_name, jsm.use_yn as use_yn \
-    			FROM server_list AS sl \
-    			JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
-    			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
-    			where sl.svr like '" + svr + "%' \
-    			ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
+    query = "SELECT a.svr, IFNULL(a.row_number,1), b.cnt, b.use_yn_on_cnt, a.job_info_name, a.use_yn FROM ( \
+    SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, ji.job_info_name AS job_info_name, jsm.jsm.row_number, ji.job_info_seqno , jsm.use_yn AS use_yn \
+    FROM server_list AS sl \
+    LEFT OUTER JOIN ( \
+    	SELECT server_list_seqno, job_info_seqno, use_yn, @ROW_NUM := IF(@PREV_VALUE = jsm.server_list_seqno, @ROW_NUM + 1, 1) AS row_number \
+    		  , @PREV_VALUE := jsm.server_list_seqno AS dummy \
+    	FROM job_server_map jsm \
+    	 , (SELECT @ROW_NUM := 1) X \
+    	 , (SELECT @PREV_VALUE := '') Y \
+    	ORDER BY jsm.server_list_seqno \
+    ) AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC) a \
+    INNER JOIN \
+    (SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(*) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
+    FROM server_list AS sl \
+    LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    GROUP BY REPLACE(sl.svr,'.tmonc.net','')) b \
+    ON a.svr=b.svr \
+    WHERE a.svr LIKE '" + svr + "%' \
+    ORDER BY a.svr ASC, a.row_number, a.use_yn DESC"
+
+    #query = "SELECT REPLACE(sl.svr,'.tmonc.net','') as svr, ji.job_info_name as job_info_name, jsm.use_yn as use_yn \
+    #			FROM server_list AS sl \
+    #			JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    #			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    #			where sl.svr like '" + svr + "%' \
+    #			ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
 
     # 서버리스트 및 DATA 카운트 가져오기 (집계)
-    query_cnt = "SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(ji.job_info_seqno) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
-    			FROM server_list AS sl \
-    			LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
-    			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
-    			where sl.svr like '" + svr + "%' \
-    			GROUP BY REPLACE(sl.svr,'.tmonc.net','')"
+    #query_cnt = "SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(ji.job_info_seqno) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
+    #			FROM server_list AS sl \
+    #			LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    #			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    #			where sl.svr like '" + svr + "%' \
+    #			GROUP BY REPLACE(sl.svr,'.tmonc.net','')"
     # ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
 
     with connections['tmon_dba'].cursor() as cursor:
@@ -73,16 +96,16 @@ def server_list(request):
         # cnt = row[1]
         # use_yn_on_cnt = row[2]
 
-        results_server_list = []
-        cursor.execute(query_cnt)
-        rows = cursor.fetchall()
+        #results_server_list = []
+        #cursor.execute(query_cnt)
+        #rows = cursor.fetchall()
 
-        for row in rows:
-            results_server_list.append(row)
+        #for row in rows:
+        #    results_server_list.append(row)
 
     context = {
         'server_lists': results,
-        'server_lists_distinct': results_server_list,
+        #'server_lists_distinct': results_server_list,
         'svr': svr
     }
 
@@ -94,19 +117,18 @@ def server_list_update(request):
     if request.method == 'POST':
 
         server_list = request.POST.getlist('server_list') # 서버명
-        server_list1 = request.POST.getlist('server_list1') # JOB_NAME
-        server_list2 = request.POST.getlist('server_list2') # 저장해야 할 변환값
-        server_list3 = request.POST.getlist('server_list3') # 원래 입력값
-        server_list4 = ", ".join( repr(e) for e in server_list2) # QUERY에 쓰일 JOB_NAME 값
+        server_list4 = request.POST.getlist('server_list4') # 저장해야 할 변환값
+        server_list5 = request.POST.getlist('server_list5') # 원래 입력값
+        server_list4 = ", ".join( repr(e) for e in server_list4) # QUERY에 쓰일 JOB_NAME 값
 
         svr = server_list[0] + ".tmonc.net"
 
         print("=================================================")
         print("svr : " + str(svr))
-        print("server_list : " + str(server_list[0]))
-        print("server_list2 : " + str(server_list2))
-        print("server_list4 : " + str(server_list4))
-        print("length server_list4 : " + str(len(server_list4)))
+        print("server_list. 서버명 : " + str(server_list[0]))
+        print("server_list4. 변경값 대상 잡 : " + str(server_list4))
+        print("server_list5. 원래값 : " + str(server_list5))
+        print("length server_list4. 변경 대상 잡 포함여부 : " + str(len(server_list4)))
         print("=================================================")
 
 
@@ -152,25 +174,47 @@ def server_list_update(request):
 
         svr = request.POST.get('svr') # 리턴을 위함 (select)
     else:
-        svr = '%adb' # 리턴을 위함
+        svr = '' # 리턴을 위함
 
     ########################################################## SELECT
     # 서버리스트 및 JOB 스케줄 가져오기
+    query = "SELECT a.svr, IFNULL(a.row_number,1), b.cnt, b.use_yn_on_cnt, a.job_info_name, a.use_yn FROM ( \
+    SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, ji.job_info_name AS job_info_name, jsm.jsm.row_number, ji.job_info_seqno , jsm.use_yn AS use_yn \
+    FROM server_list AS sl \
+    LEFT OUTER JOIN ( \
+    	SELECT server_list_seqno, job_info_seqno, use_yn, @ROW_NUM := IF(@PREV_VALUE = jsm.server_list_seqno, @ROW_NUM + 1, 1) AS row_number \
+    		  , @PREV_VALUE := jsm.server_list_seqno AS dummy \
+    	FROM job_server_map jsm \
+    	 , (SELECT @ROW_NUM := 1) X \
+    	 , (SELECT @PREV_VALUE := '') Y \
+    	ORDER BY jsm.server_list_seqno \
+    ) AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC) a \
+    INNER JOIN \
+    (SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(*) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
+    FROM server_list AS sl \
+    LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    GROUP BY REPLACE(sl.svr,'.tmonc.net','')) b \
+    ON a.svr=b.svr \
+    WHERE a.svr LIKE '" + svr + "%' \
+    ORDER BY a.svr ASC, a.row_number, a.use_yn DESC"
 
-    query = "SELECT REPLACE(sl.svr,'.tmonc.net','') as svr, ji.job_info_name as job_info_name, jsm.use_yn as use_yn \
-    			FROM server_list AS sl \
-    			JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
-    			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
-    			where sl.svr like '" + svr + "%' \
-    			ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
+    #query = "SELECT REPLACE(sl.svr,'.tmonc.net','') as svr, ji.job_info_name as job_info_name, jsm.use_yn as use_yn \
+    #			FROM server_list AS sl \
+    #			JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    #			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    #			where sl.svr like '" + svr + "%' \
+    #			ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
 
     # 서버리스트 및 DATA 카운트 가져오기 (집계)
-    query_cnt = "SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(ji.job_info_seqno) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
-    			FROM server_list AS sl \
-    			LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
-    			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
-    			where sl.svr like '" + svr + "%' \
-    			GROUP BY REPLACE(sl.svr,'.tmonc.net','')"
+    #query_cnt = "SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, COUNT(ji.job_info_seqno) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
+    #			FROM server_list AS sl \
+    #			LEFT OUTER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    #			LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    #			where sl.svr like '" + svr + "%' \
+    #			GROUP BY REPLACE(sl.svr,'.tmonc.net','')"
     # ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC"
 
     with connections['tmon_dba'].cursor() as cursor:
@@ -192,16 +236,16 @@ def server_list_update(request):
         # cnt = row[1]
         # use_yn_on_cnt = row[2]
 
-        results_server_list = []
-        cursor.execute(query_cnt)
-        rows = cursor.fetchall()
+        #results_server_list = []
+        #cursor.execute(query_cnt)
+        #rows = cursor.fetchall()
 
-        for row in rows:
-            results_server_list.append(row)
+        #for row in rows:
+        #    results_server_list.append(row)
 
     context = {
         'server_lists': results,
-        'server_lists_distinct': results_server_list,
+        #'server_lists_distinct': results_server_list,
         'svr': svr
     }
 

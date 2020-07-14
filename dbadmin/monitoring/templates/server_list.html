@@ -32,49 +32,74 @@
         </div>
     </div>
 
-    <!-- 결과 리턴 화면 -->
-    <div>
-    <table class="table table-sm">
     <!--
     <input id="server_list" name="server_list" type="hidden" value="{{ server_list.0 }}">
     <input id="server_list1" name="server_list1" type="hidden" value="{{ server_list.1 }}">
     <input id="server_list3" name="server_list3" type="hidden" value="{{ server_list.2 }}">
     -->
 
-    {% for server_list_distinct in server_lists_distinct %}
+        <!--
+        {{ server_list.0 }}
+        {{ server_list.1 }}
+        {{ server_list.2 }}
+        {{ server_list.3 }}
+        {{ server_list.4 }}
+        {{ server_list.5 }}<br>
+        -->
+        <!--
+        <form class="form-inline" name="insertForm" action="{% url 'server_list_update' %}" method="post">
+            {% csrf_token %}
+        </form>
+        -->
+
+    <!-- 결과 리턴 화면 -->
+    <div>
+    <table class="table table-sm">
+    {% for server_list in server_lists %}
     <tr>
+        {% if server_list.1 == 1 %}
         <td style = "width: 10%;">
-            <a class="btn btn-primary btn-sm btn-block" data-toggle="collapse" href="#{{ server_list_distinct.0 }}" role="button" aria-expanded="false" aria-controls="{{ server_list_distinct.0 }}">
-                {{ server_list_distinct.0 }} <!-- SERVER_LIST_DISTINCT -->
-                <span class="badge badge-light">{{ server_list_distinct.1 }}</span> <!-- TOTAL_CNT -->
-                <span class="badge badge-dark">{{ server_list_distinct.2 }}</span> <!-- ON_CNT -->
+            <a class="btn btn-primary btn-sm btn-block" data-toggle="collapse" href="#{{ server_list.0 }}" role="button" aria-expanded="false" aria-controls="{{ server_list.0 }}">
+                {{ server_list.0 }}
+                <span class="badge badge-light">{{ server_list.2 }}</span>
+                <span class="badge badge-dark">{{ server_list.3 }}</span>
             </a>
         </td>
 
         <td style = "width: 90%;">
-        <div class="collapse multi-collapse" id="{{ server_list_distinct.0 }}">
+        <div class="collapse multi-collapse" id="{{ server_list.0 }}">
             <div class="card card-body">
                 <form class="form-inline" name="insertForm" action="{% url 'server_list_update' %}" method="post">
                 {% csrf_token %}
-                <input id="svr" name="svr" type="hidden" value="{{ svr }}">
-                <input id="server_list" name="server_list" type="hidden" value="{{ server_list_distinct.0 }}">
+
                 <table class="table table-sm table-hover small">
                     <tr>
                         <th style = "width: 35%;">잡 스케줄</th>
                         <th style = "width: 65%;">ON/OFF</th>
                     </tr>
-                    {% for server_list in server_lists %}{% if server_list_distinct.0 == server_list.0 %}
-                        <tr>
-                            <td>{{ server_list.1 }}</td>
-                            <td><input type="checkbox" id="server_list2" name="server_list2" {% if server_list.2 == 1 %} checked {% endif %} data-toggle="toggle" data-size="xs" data-onstyle="danger"  data-on="on" data-off="off" value="{{ server_list.1 }}"></td>
-                        </tr>
-                    {% endif %}{% endfor %}
+        {% endif %}
+
+                        <input id="svr" name="svr" type="hidden" value="{{ svr }}">
+                        <input id="server_list" name="server_list" type="hidden" value="{{ server_list.0 }}">
+                        <input id="server_list5" name="server_list5" type="hidden" value="{{ server_list.5 }}">
+
+                            {% if server_list.4 != None %}
+                            <tr>
+                                <td>{{ server_list.4 }}</td>
+                                <td><input type="checkbox" id="server_list4" name="server_list4" {% if server_list.5 == 1 %} checked {% endif %} data-toggle="toggle" data-size="xs" data-onstyle="danger"  data-width="50" data-on="on" data-off="off" value="{{ server_list.4 }}"></td>
+                            </tr>
+                            {% endif %}
+                        </form>
+        {% if server_list.1 == server_list.2 %}
                 </table>
-                <button class="btn btn-outline-danger btn-sm" type="submit">저장</button>
+                {% if server_list.4 != None %}
+                    <div><button class="btn btn-outline-danger btn-sm" type="submit">저장</button></div>
+                {% endif %}
                 </form>
             </div>
         </div>
         </td>
+        {% endif %}
     </tr>
 
     {% endfor %}
