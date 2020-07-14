@@ -136,7 +136,6 @@ def server_list_update(request):
                 cursor.close()
 
         else: # ON 변경값이 하나라도 없는경우. 전부 OFF 처리
-            print("=========== 여기오는건가?")
             query_update_use_yn_n = "UPDATE server_list AS sl \
              		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
              		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
