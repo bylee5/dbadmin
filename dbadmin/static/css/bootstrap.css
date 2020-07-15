@@ -5213,6 +5213,7 @@ a.badge-danger:focus, a.badge-danger.focus {
 .badge-light {
   color: #212529;
   background-color: #f8f9fa;
+  float: left;
 }
 
 a.badge-light:hover, a.badge-light:focus {
@@ -5228,6 +5229,7 @@ a.badge-light:focus, a.badge-light.focus {
 .badge-dark {
   color: #fff;
   background-color: #343a40;
+  float: left;
 }
 
 a.badge-dark:hover, a.badge-dark:focus {

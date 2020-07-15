@@ -27,7 +27,7 @@ ENC_KEY = 'savy~!!1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.5.220.201']
 
 # sessoin lifetime, timeout setting
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True # if no action, close this session (default = false)
