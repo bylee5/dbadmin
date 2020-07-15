@@ -30,59 +30,49 @@
             <div class="col-sm">
             </div>
         </div>
-    </div>
-
-    <!--
-    <input id="server_list" name="server_list" type="hidden" value="{{ server_list.0 }}">
-    <input id="server_list1" name="server_list1" type="hidden" value="{{ server_list.1 }}">
-    <input id="server_list3" name="server_list3" type="hidden" value="{{ server_list.2 }}">
-    -->
-
-        <!--
-        {{ server_list.0 }}
-        {{ server_list.1 }}
-        {{ server_list.2 }}
-        {{ server_list.3 }}
-        {{ server_list.4 }}
-        {{ server_list.5 }}<br>
-        -->
-        <!--
-        <form class="form-inline" name="insertForm" action="{% url 'server_list_update' %}" method="post">
-            {% csrf_token %}
-        </form>
-        -->
+    </div><hr>
 
     <!-- 결과 리턴 화면 -->
     <div>
     <table class="table table-sm">
+        <!--
+        ======================================================================================================
+        객체 파라미터 값 설명
+        ======================================================================================================
+        server_lists : QUERY 결과 서버리스트 객체들. 리스트*리스트
+        server_list :  QUERY 결과 서버리스트 객체. 리스트 구현. server_list.0-5
+        server_list.0 : svr. 서버명. ex) adb1
+        server_list.1 : row_number. 서버별 순서. 반복 중첩문을 피해 한번의 루프로 모든 데이터를 뿌리기 위해 추가됨. ex) 1
+        server_list.2 : cnt. 등록 잡 카운트. ex) 5
+        server_list.3 : user_yn_on_cnt. 등록된 잡 중, ON 설정된 카운트 수. ex) 1
+        server_list.4 : job_info_name. 잡 네임. ex) daily_p_s_accounts
+        server_list.5 : use_yn. 사용여부. ON : 1, OFF : 0
+        -->
+
     {% for server_list in server_lists %}
-    <tr>
+    <tr class="table-default">
         {% if server_list.1 == 1 %}
-        <td style = "width: 10%;">
+        <td style = "width: 10%; border: 0px solid">
             <a class="btn btn-primary btn-sm btn-block" data-toggle="collapse" href="#{{ server_list.0 }}" role="button" aria-expanded="false" aria-controls="{{ server_list.0 }}">
                 {{ server_list.0 }}
                 <span class="badge badge-light">{{ server_list.2 }}</span>
                 <span class="badge badge-dark">{{ server_list.3 }}</span>
             </a>
         </td>
-
-        <td style = "width: 90%;">
+        <td style = "width: 90%; border: 0px solid">
         <div class="collapse multi-collapse" id="{{ server_list.0 }}">
             <div class="card card-body">
                 <form class="form-inline" name="insertForm" action="{% url 'server_list_update' %}" method="post">
                 {% csrf_token %}
-
                 <table class="table table-sm table-hover small">
                     <tr>
                         <th style = "width: 35%;">잡 스케줄</th>
                         <th style = "width: 65%;">ON/OFF</th>
                     </tr>
         {% endif %}
-
                         <input id="svr" name="svr" type="hidden" value="{{ svr }}">
                         <input id="server_list" name="server_list" type="hidden" value="{{ server_list.0 }}">
                         <input id="server_list5" name="server_list5" type="hidden" value="{{ server_list.5 }}">
-
                             {% if server_list.4 != None %}
                             <tr>
                                 <td>{{ server_list.4 }}</td>
@@ -90,7 +80,13 @@
                             </tr>
                             {% endif %}
                         </form>
-        {% if server_list.1 == server_list.2 %}
+                <!--
+                svr       row_number(1) cnt(2)  use_yn_on_cnt(3)  job_info_name(4)  use_yn(5)
+                --------  ----------   ------  -------------     -------------      --------
+                admindb1           1        1  1                 daily_df           1
+                blog-dev           1        1  0                 (NULL)             (NULL)
+                -->
+            {% if server_list.1 == server_list.2 or server_list.2 == 0 %}
                 </table>
                 {% if server_list.4 != None %}
                     <div><button class="btn btn-outline-danger btn-sm" type="submit">저장</button></div>
@@ -99,9 +95,8 @@
             </div>
         </div>
         </td>
-        {% endif %}
+            {% endif %}
     </tr>
-
     {% endfor %}
     </table>
     </div>
