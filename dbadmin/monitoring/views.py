@@ -222,15 +222,172 @@ def server_list_update(request):
 
     return render(request, 'server_list.html', context)
 
-
 def server_job_list(request):
+    if request.method == 'POST':
+        # 서버 베이스 입력값
+        job_info_name = request.POST.get('job_info_name')
 
-    # 잡 베이스
-    query = "SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') as svr, jsm.use_yn \
-    FROM job_info AS ji \
-    LEFT OUTER JOIN job_server_map AS jsm ON ji.job_info_seqno = jsm.job_info_seqno \
-    LEFT OUTER JOIN server_list AS sl ON jsm.server_list_seqno = sl.server_list_seqno \
-    ORDER BY ji.job_info_seqno ASC, jsm.use_yn DESC, sl.svr ASC"
+    else:
+        # 서버 베이스 입력값. 입력값이 없는경우
+        job_info_name = ''
 
-    return render(request, 'server_job_list.html')
 
+    # 잡 리스트 및 JOB 스케줄 가져오기
+    query = "SELECT a.job_info_name, IFNULL(a.row_number,1) AS row_number, b.cnt, b.use_yn_on_cnt, a.svr, a.use_yn FROM ( \
+    SELECT ji.job_info_name AS job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.jsm.row_number, ji.job_info_seqno , jsm.use_yn AS use_yn \
+    FROM server_list AS sl \
+    INNER JOIN ( \
+    SELECT job_info_seqno, server_list_seqno, use_yn, @ROW_NUM := IF(@PREV_VALUE = jsm.job_info_seqno, @ROW_NUM + 1, 1) AS row_number \
+    	  , @PREV_VALUE := jsm.job_info_seqno AS dummy \
+    FROM job_server_map jsm \
+     , (SELECT @ROW_NUM := 1) X \
+     , (SELECT @PREV_VALUE := '') Y \
+    ORDER BY jsm.job_info_seqno \
+    ) AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    ORDER BY ji.job_info_name ASC, ji.job_info_seqno ASC, jsm.use_yn DESC) a \
+    INNER JOIN \
+    (SELECT ji.job_info_name AS job_info_name, COUNT(ji.job_info_seqno) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
+    FROM server_list AS sl \
+    INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    GROUP BY ji.job_info_name) b \
+    ON a.job_info_name=b.job_info_name \
+    WHERE a.job_info_name LIKE '%" + job_info_name + "%' \
+    ORDER BY a.job_info_name ASC, a.row_number, a.use_yn DESC"
+
+    with connections['tmon_dba'].cursor() as cursor:
+
+        # 서버리스트 및 JOB 스케줄 가져오기
+        # svr = row[0]
+        # job_info_name = row[1]
+        # use_yn = row[2]
+
+        results = []
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            results.append(row)
+
+    context = {
+        'server_job_lists': results,
+        'job_info_name': job_info_name
+    }
+
+    return render(request, 'server_job_list.html', context)
+
+
+def server_job_list_update(request):
+    ########################################################## INSERT
+    if request.method == 'POST':
+
+        server_job_list = request.POST.getlist('server_job_list') # 잡명
+        server_job_list4 = request.POST.getlist('server_job_list4') # 저장해야 할 변환값
+        server_job_list5 = request.POST.getlist('server_job_list5') # 원래 입력값
+        server_job_list4 = ", ".join( repr(e) for e in server_job_list4) # QUERY에 쓰일 서버명
+
+        server_job_name = server_job_list[0]
+
+        print("=================================================")
+        print("server_job_list: 잡명: " + str(server_job_list[0]))
+        print("server_job_list4: 변경값 대상 서버: " + str(server_job_list4))
+        print("server_job_list5: 원래값 : " + str(server_job_list5))
+        print("length server_job_list4: 변경 대상 서버 포함여부 : " + str(len(server_job_list4)))
+        print("=================================================")
+        #svr = server_list[0] + ".tmonc.net"
+
+
+        if len(server_job_list4) != 0: # 하나라도 ON 입력값이 있는 경우
+            query_update_use_yn_y = "UPDATE server_list AS sl \
+            		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+            		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+            		SET jsm.use_yn=1 \
+            		WHERE 1=1 \
+            		AND ji.job_info_name = '" + server_job_name + "' \
+            		AND sl.svr IN (" + server_job_list4 + ")"
+
+            query_update_use_yn_n = "UPDATE server_list AS sl \
+            		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+            		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+            		SET jsm.use_yn=0 \
+            		WHERE 1=1 \
+            		AND ji.job_info_name = '" + server_job_name + "' \
+            		AND sl.svr NOT IN (" + server_job_list4 + ")"
+
+            print("하나라도ON : " + str(query_update_use_yn_y))
+            print("하나라도ON : " + str(query_update_use_yn_n))
+
+            try:
+                cursor = connections['tmon_dba'].cursor()
+                cursor.execute(query_update_use_yn_y)
+                cursor.execute(query_update_use_yn_n)
+                connection.commit()
+            finally:
+                cursor.close()
+
+        else: # ON 변경값이 하나라도 없는경우. 전부 OFF 처리
+            query_update_use_yn_n = "UPDATE server_list AS sl \
+             		JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+             		LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+             		SET jsm.use_yn=0 \
+             		WHERE 1=1 \
+                    AND ji.job_info_name = '" + server_job_name + "'"
+
+            print("전부 OFF : " + str(query_update_use_yn_n))
+            try:
+                cursor = connections['tmon_dba'].cursor()
+                cursor.execute(query_update_use_yn_n)
+                connection.commit()
+            finally:
+                cursor.close()
+
+        job_info_name = request.POST.get('job_info_name') # 리턴을 위함 (select)
+    else:
+        job_info_name = '' # 리턴을 위함
+
+    ########################################################## SELECT
+    # 서버리스트 및 JOB 스케줄 가져오기
+    query = "SELECT a.job_info_name, IFNULL(a.row_number,1) AS row_number, b.cnt, b.use_yn_on_cnt, a.svr, a.use_yn FROM ( \
+    SELECT ji.job_info_name AS job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.jsm.row_number, ji.job_info_seqno , jsm.use_yn AS use_yn \
+    FROM server_list AS sl \
+    INNER JOIN ( \
+    SELECT job_info_seqno, server_list_seqno, use_yn, @ROW_NUM := IF(@PREV_VALUE = jsm.job_info_seqno, @ROW_NUM + 1, 1) AS row_number \
+    	  , @PREV_VALUE := jsm.job_info_seqno AS dummy \
+    FROM job_server_map jsm \
+     , (SELECT @ROW_NUM := 1) X \
+     , (SELECT @PREV_VALUE := '') Y \
+    ORDER BY jsm.job_info_seqno \
+    ) AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    ORDER BY ji.job_info_name ASC, ji.job_info_seqno ASC, jsm.use_yn DESC) a \
+    INNER JOIN \
+    (SELECT ji.job_info_name AS job_info_name, COUNT(ji.job_info_seqno) AS cnt, IFNULL(SUM(jsm.use_yn),0) AS use_yn_on_cnt \
+    FROM server_list AS sl \
+    INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
+    LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
+    GROUP BY ji.job_info_name) b \
+    ON a.job_info_name=b.job_info_name \
+    WHERE a.job_info_name LIKE '%" + job_info_name + "%' \
+    ORDER BY a.job_info_name ASC, a.row_number, a.use_yn DESC"
+
+    with connections['tmon_dba'].cursor() as cursor:
+
+        # 서버리스트 및 JOB 스케줄 가져오기
+        # svr = row[0]
+        # job_info_name = row[1]
+        # use_yn = row[2]
+
+        results = []
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            results.append(row)
+
+    context = {
+        'server_job_lists': results,
+        'job_info_name': job_info_name
+    }
+
+    return render(request, 'server_job_list.html', context)
