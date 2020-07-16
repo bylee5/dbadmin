@@ -9,7 +9,7 @@ from django.db import connection
 from django.templatetags.static import static
 from django.utils import timezone
 from django.conf import settings, os
-#from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 
 from django.db import connections
 from .models import *
@@ -24,7 +24,7 @@ from django.template import Context, Engine, TemplateDoesNotExist, loader
 #：
 #:
 
-#@login_required
+@login_required
 
 def server_list(request):
     if request.method == 'POST':

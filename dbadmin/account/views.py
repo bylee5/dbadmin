@@ -8,8 +8,8 @@ from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, 
 from django.db import connection
 from django.templatetags.static import static
 from django.utils import timezone
-
 from django.conf import settings, os
+from django.contrib.auth.decorators import login_required
 
 from .models import *
 from .forms import *
@@ -42,6 +42,8 @@ def put_password(account_pass):
 
     cursor = connection.cursor()
     cursor.execute(query)
+
+@login_required
 
 #########################################################################
 # Account page

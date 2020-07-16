@@ -5,10 +5,12 @@ from datetime import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
+from django.contrib.auth.decorators import login_required
 
 from .models import *
 from .forms import FaqForm
 
+@login_required
 
 #########################################################################
 # main page
