@@ -1,0 +1,149 @@
+.callout {
+    padding: 0.8rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    margin-top: 1.25rem;
+    border: 1px solid #eee;
+    border-left-width: .25rem;
+    border-radius: .25rem
+}
+
+.callout h4 {
+    margin-top: 0;
+    margin-bottom: .25rem
+}
+
+.callout h5 {
+    margin-top: 0;
+    margin-bottom: .25rem
+}
+
+.callout h6 {
+    margin-top: 0;
+    margin-bottom: .25rem
+}
+
+.callout p:last-child {
+    margin-bottom: 0
+}
+
+.callout code {
+    border-radius: .25rem
+}
+
+.callout+.callout {
+    margin-top: -.25rem
+}
+
+.callout-info {
+    border-left-color: #5bc0de
+}
+
+.callout-info h4 {
+    color: #5bc0de
+}
+
+.callout-info h5 {
+    color: #5bc0de
+}
+
+.callout-info h6 {
+    color: #5bc0de
+}
+
+.callout-warning {
+    border-left-color: #f0ad4e
+}
+
+.callout-warning h4 {
+    color: #f0ad4e
+}
+
+.callout-warning h5 {
+    color: #f0ad4e
+}
+
+.callout-warning h6 {
+    color: #f0ad4e
+}
+
+.callout-danger {
+    border-left-color: #d9534f
+}
+
+.callout-danger h4 {
+    color: #d9534f
+}
+
+.callout-danger h5 {
+    color: #d9534f
+}
+
+.callout-danger h6 {
+    color: #d9534f
+}
+
+.callout-primary {
+    border-left-color: #007bff
+}
+
+.callout-primary h4 {
+    color: #007bff
+}
+
+.callout-primary h5 {
+    color: #007bff
+}
+
+.callout-primary h6 {
+    color: #007bff
+}
+
+.callout-success {
+    border-left-color: #28a745
+}
+
+.callout-success h4 {
+    color: #28a745
+}
+
+.callout-success h5 {
+    color: #28a745
+}
+
+.callout-success h6 {
+    color: #28a745
+}
+
+.callout-dark-success {
+    border-left-color: #006400
+}
+
+.callout-dark-success h4 {
+    color: #006400
+}
+
+.callout-dark-success h5 {
+    color: #006400
+}
+
+.callout-dark-success h6 {
+    color: #006400
+}
+
+
+.callout-dark {
+    border-left-color: #343a40
+}
+
+.callout-dark h4 {
+    color: #343a40
+}
+
+.callout-dark h5 {
+    color: #343a40
+}
+
+.callout-dark h6 {
+    color: #343a40
+}

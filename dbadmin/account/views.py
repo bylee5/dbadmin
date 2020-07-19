@@ -98,7 +98,6 @@ def account_select(request):
         account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
 
-        #account_list = Account.objects.all().order_by('-id')
         account_list = Account.objects.filter(
             account_requestor__contains=account_requestor,
             account_devteam__contains=account_devteam,
@@ -139,11 +138,11 @@ def account_select(request):
             'account_table': account_table,
             'account_url': account_url,
             'account_list': account_list,
-            'total_count': total_count, 'callmorepostFlag': callmorepostFlag
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+            'page_max': page_max
         }
 
-        print("page : " + str(page))
-        print("==========================================================")
+        print("================= page : " + str(page) + ",    page_max : " + str(page_max))
 
         return render(request, 'account_select.html', context)
 
@@ -169,8 +168,34 @@ def account_insert(request):
         if form.is_valid():
             modify_form = form.save(commit=False)
 
+
+            #print(form.cleaned_data['account_requestor'])
+            #print(form.cleaned_data['account_devteam'])
+            #print(form.cleaned_data['account_info'])
+            #print(form.cleaned_data['account_url'])
+            #print(form.cleaned_data['account_svr'])
+            #print(form.cleaned_data['account_user'])
+            #print(form.cleaned_data['account_host'])
+            #print(form.cleaned_data['account_pass'])
+            #print(form.cleaned_data['account_db'])
+            #print(form.cleaned_data['account_table'])
+
+            if form.cleaned_data['account_grant'] == '': # 직접 입력인경우
+                account_grant = request.POST.get('account_grant_direct')
+
+            else: # 직접 입력이 아닌경우
+                account_grant =  form.cleaned_data['account_grant']
+
+
+            account_host_lists = form.cleaned_data['account_host'].split(',')
+            print("============================================================")
+            print(account_host_lists)
+            for account_host_list in account_host_lists:
+                print(account_host_list.replace(" ", ""))
+            print("============================================================")
+
             modify_form.account_sql = "/*" + form.cleaned_data['account_url'] + \
-            "*/" + " grant " + form.cleaned_data['account_grant'] + " on " + \
+            "*/" + " grant " + account_grant + " on " + \
             form.cleaned_data['account_db'] + "." + form.cleaned_data['account_table'] + \
             " to " + "'" + form.cleaned_data['account_user'] + "'@'" + form.cleaned_data['account_host'] + \
             "' identified by '" + form.cleaned_data['account_pass'] + "';"
@@ -179,12 +204,9 @@ def account_insert(request):
             put_password(form.cleaned_data['account_pass'])
             modify_form.account_hash  = get_password(form.cleaned_data['account_pass'])
 
-            #print("--------------------------------------------------------------------")
-            #print("건네받은 값 :")
-            #print(form.cleaned_data['account_pass'])
-            #print("해쉬 변환값 : ")
-            #print(modify_form.account_hash)
-            #print("--------------------------------------------------------------------")
+            print("================================================")
+            print(modify_form.account_hash)
+            print(modify_form.account_sql)
 
             ####################################################################################################
 
@@ -206,7 +228,7 @@ def account_insert(request):
             #modify_form.account_sql = form.cleaned_data['account_svr']+' show '+form.cleaned_data['account_user']
             #print("============ 'sql' :" + modify_form.account_sql)
 
-            modify_form.save()
+            #modify_form.save()
 
             account_user = form.cleaned_data['account_user']
             context = {
