@@ -166,50 +166,41 @@ def account_insert(request):
     if request.method == 'POST':
         form = AccountForm(request.POST)
         if form.is_valid():
-            modify_form = form.save(commit=False)
-
-
-            #print(form.cleaned_data['account_requestor'])
-            #print(form.cleaned_data['account_devteam'])
-            #print(form.cleaned_data['account_info'])
-            #print(form.cleaned_data['account_url'])
-            #print(form.cleaned_data['account_svr'])
-            #print(form.cleaned_data['account_user'])
-            #print(form.cleaned_data['account_host'])
-            #print(form.cleaned_data['account_pass'])
-            #print(form.cleaned_data['account_db'])
-            #print(form.cleaned_data['account_table'])
-
+            # GRANT 직접 입력 처리
             if form.cleaned_data['account_grant'] == '': # 직접 입력인경우
-                account_grant = request.POST.get('account_grant_direct')
-
-            else: # 직접 입력이 아닌경우
-                account_grant =  form.cleaned_data['account_grant']
-
-
-            account_host_lists = form.cleaned_data['account_host'].split(',')
-            print("============================================================")
-            print(account_host_lists)
-            for account_host_list in account_host_lists:
-                print(account_host_list.replace(" ", ""))
-            print("============================================================")
-
-            modify_form.account_sql = "/*" + form.cleaned_data['account_url'] + \
-            "*/" + " grant " + account_grant + " on " + \
-            form.cleaned_data['account_db'] + "." + form.cleaned_data['account_table'] + \
-            " to " + "'" + form.cleaned_data['account_user'] + "'@'" + form.cleaned_data['account_host'] + \
-            "' identified by '" + form.cleaned_data['account_pass'] + "';"
+                form.cleaned_data['account_grant'] = request.POST.get('account_grant_direct')
 
             # 패스워드 암호화 적용
             put_password(form.cleaned_data['account_pass'])
-            modify_form.account_hash  = get_password(form.cleaned_data['account_pass'])
 
-            print("================================================")
-            print(modify_form.account_hash)
-            print(modify_form.account_sql)
+            # HOST 여러대역 처리
+            account_host_lists = form.cleaned_data['account_host'].split(',')
+            print("============================================================")
+            print(account_host_lists)
+            print("------------------------------------------------------------")
+
+            for account_host_list in account_host_lists:
+                modify_form = form.save(commit=False)
+
+                modify_form.account_grant = request.POST.get('account_grant')
+                modify_form.account_hash = get_password(form.cleaned_data['account_pass'])
+                modify_form.account_host = account_host_list.replace(" ", "")
+
+                modify_form.account_sql =   "/*" + form.cleaned_data['account_url'] + \
+                                            "*/" + " grant " + modify_form.account_grant  + " on " + \
+                                            form.cleaned_data['account_db'] + "." + form.cleaned_data['account_table'] + \
+                                            " to " + "'" + form.cleaned_data['account_user'] + "'@'" + modify_form.account_host + \
+                                            "' identified by '" + form.cleaned_data['account_pass'] + "';"
+                print(modify_form.account_host)
+                print(modify_form.account_sql)
+
+                # insert
+                modify_form.save()
+                modify_form.save()
+
+            print("============================================================")
 
             ####################################################################################################
-
             # ex) /*ARCG-9999*/grant select, insert, update, delete on admdb.* to 'deal_detail'@'10.11.12.%' identified by 'password';
             #print(modify_form.account_sql)
 
@@ -224,15 +215,21 @@ def account_insert(request):
             # select HEX(AES_ENCRYPT('Manger!1', '암복호키'));
             # select AES_DECRYPT(UNHEX('23D5F3AF5041ABADF64E89F1FCE0A994'), '암복호키');
             # grant select on admdb.* to 'test'@'10.11.22.%' identified by password '*5CE39A29BB2B3BBE6293BC10E9404F058109A152';
+            ####################################################################################################
 
-            #modify_form.account_sql = form.cleaned_data['account_svr']+' show '+form.cleaned_data['account_user']
-            #print("============ 'sql' :" + modify_form.account_sql)
-
-            #modify_form.save()
-
-            account_user = form.cleaned_data['account_user']
             context = {
-                'account_user': account_user
+                'account_user': form.cleaned_data['account_user'],
+                'i_account_requestor': form.cleaned_data['account_requestor'],
+                'i_account_devteam': form.cleaned_data['account_devteam'],
+                'i_account_info': form.cleaned_data['account_info'],
+                'i_account_url': form.cleaned_data['account_url'],
+                'i_account_svr': form.cleaned_data['account_svr'],
+                'i_account_user': form.cleaned_data['account_user'],
+                'i_account_host': form.cleaned_data['account_host'],
+                'i_account_pass': form.cleaned_data['account_pass'],
+                'i_account_db': form.cleaned_data['account_db'],
+                'i_account_table': form.cleaned_data['account_table'],
+                'i_account_grant': form.cleaned_data['account_grant']
             }
 
             return render(request, 'account.html', context)
