@@ -10,6 +10,7 @@ from django.templatetags.static import static
 from django.utils import timezone
 from django.conf import settings, os
 from django.contrib.auth.decorators import login_required
+from django.db import connections
 
 from .models import *
 from .forms import *
@@ -163,42 +164,94 @@ def account_select_fast(request):
         return render(request, 'account.html')
 
 def account_insert(request):
+    global cursor
     if request.method == 'POST':
-        form = AccountForm(request.POST)
-        if form.is_valid():
-            # GRANT 직접 입력 처리
-            if form.cleaned_data['account_grant'] == '': # 직접 입력인경우
-                form.cleaned_data['account_grant'] = request.POST.get('account_grant_direct')
+        account_requestor = request.POST.get('account_requestor')
+        account_devteam = request.POST.get('account_devteam')
+        account_info = request.POST.get('account_info')
+        account_url = request.POST.get('account_url')
+        account_svr = request.POST.get('account_svr')
+        account_user = request.POST.get('account_user')
+        account_host = request.POST.get('account_host')
+        account_pass = request.POST.get('account_pass')
+        account_db = request.POST.get('account_db')
+        account_table = request.POST.get('account_table')
+        account_grant = request.POST.get('account_grant')
+        account_grant_direct = request.POST.get('account_grant_direct')
 
-            # 패스워드 암호화 적용
-            put_password(form.cleaned_data['account_pass'])
+        if account_grant == '':  # 권한 직접 입력인경우
+            account_grant = request.POST.get('account_grant_direct')
 
-            # HOST 여러대역 처리
-            account_host_lists = form.cleaned_data['account_host'].split(',')
-            print("============================================================")
-            print(account_host_lists)
-            print("------------------------------------------------------------")
+        # 패스워드 암호화 적용
+        put_password(account_pass)
+        account_hash = get_password(account_pass)
 
-            for account_host_list in account_host_lists:
-                modify_form = form.save(commit=False)
+        # print("============================================================")
+        # print("테스트 선입니다.")
+        # print("============================================================")
+        # print(account_requestor)
+        # print(account_devteam)
+        # print(account_info)
+        # print(account_url)
+        # print(account_svr)
+        # print(account_user)
+        # print(account_host)
+        # print(account_pass)
+        # print(account_db)
+        # print(account_table)
+        # print(account_grant)
+        # print(account_hash)
+        # print("============================================================")
 
-                modify_form.account_grant = request.POST.get('account_grant')
-                modify_form.account_hash = get_password(form.cleaned_data['account_pass'])
-                modify_form.account_host = account_host_list.replace(" ", "")
+        # HOST 여러대역 처리
+        account_host_lists = account_host.split(',')
+        print("============================================================")
+        print(account_host_lists)
 
-                modify_form.account_sql =   "/*" + form.cleaned_data['account_url'] + \
-                                            "*/" + " grant " + modify_form.account_grant  + " on " + \
-                                            form.cleaned_data['account_db'] + "." + form.cleaned_data['account_table'] + \
-                                            " to " + "'" + form.cleaned_data['account_user'] + "'@'" + modify_form.account_host + \
-                                            "' identified by '" + form.cleaned_data['account_pass'] + "';"
-                print(modify_form.account_host)
-                print(modify_form.account_sql)
+        for account_host_list in account_host_lists:
+            account_host = account_host_list.replace(" ", "")
 
-                # insert
-                modify_form.save()
-                modify_form.save()
+            account_sql = "/*" + account_url + \
+                            "*/" + " grant " + account_grant  + " on " + \
+                            account_db + "." + account_table + \
+                            " to " + "'" + account_user + "'@'" + account_host + \
+                            "' identified by '" + account_pass + "';"
+            print("host : " + account_host)
+            print("sql : " + account_sql)
 
-            print("============================================================")
+            insert_sql = "insert into account_account(account_create_dt, account_update_dt, \
+            account_requestor, account_devteam, account_svr, account_user, \
+            account_host, account_pass, account_hash, account_grant, account_grant_with, \
+            account_db, account_table, account_info, account_sql, account_url, account_del_yn) values( \
+            now(), \
+            now(), \
+            '" + account_requestor + "', \
+            '" + account_devteam + "', \
+            '" + account_svr + "', \
+            '" + account_user + "', \
+            '" + account_host + "', \
+            '" + account_pass + "', \
+            '" + account_hash + "', \
+            '" + account_grant + "', \
+            'N', \
+            '" + account_db + "', \
+            '" + account_table + "', \
+            '" + account_info + "', " + \
+            '"' + account_sql + '"' + ", \
+            '" + account_url + "', \
+            'N')"
+
+            print("insert_sql : " + insert_sql)
+
+            try:
+                cursor = connections['default'].cursor()
+                cursor.execute(insert_sql)
+                connection.commit()
+            finally:
+                cursor.close()
+
+
+        print("============================================================")
 
             ####################################################################################################
             # ex) /*ARCG-9999*/grant select, insert, update, delete on admdb.* to 'deal_detail'@'10.11.12.%' identified by 'password';
@@ -217,31 +270,26 @@ def account_insert(request):
             # grant select on admdb.* to 'test'@'10.11.22.%' identified by password '*5CE39A29BB2B3BBE6293BC10E9404F058109A152';
             ####################################################################################################
 
-            context = {
-                'account_user': form.cleaned_data['account_user'],
-                'i_account_requestor': form.cleaned_data['account_requestor'],
-                'i_account_devteam': form.cleaned_data['account_devteam'],
-                'i_account_info': form.cleaned_data['account_info'],
-                'i_account_url': form.cleaned_data['account_url'],
-                'i_account_svr': form.cleaned_data['account_svr'],
-                'i_account_user': form.cleaned_data['account_user'],
-                'i_account_host': form.cleaned_data['account_host'],
-                'i_account_pass': form.cleaned_data['account_pass'],
-                'i_account_db': form.cleaned_data['account_db'],
-                'i_account_table': form.cleaned_data['account_table'],
-                'i_account_grant': form.cleaned_data['account_grant']
-            }
+        context = {
+            'account_user': account_user,
+            'i_account_requestor': account_requestor,
+            'i_account_devteam': account_devteam,
+            'i_account_info': account_info,
+            'i_account_url': account_url,
+            'i_account_svr': account_svr,
+            'i_account_user': account_user,
+            'i_account_host': request.POST.get('account_host'), # 입력값 그대로 리턴하기 위함
+            'i_account_pass': account_pass,
+            'i_account_db': account_db,
+            'i_account_table': account_table,
+            'i_account_grant': request.POST.get('account_grant'), # 입력값 그대로 리턴하기 위함
+            'i_account_grant_direct': account_grant_direct
+        }
 
-            return render(request, 'account.html', context)
+        return render(request, 'account.html', context)
 
-        else:
-            print('insert fail........................................................................')
-            return redirect('/account')
-
-    else:
-        form = AccountForm()
-
-    return render(request, 'account_insert.html', {'form': form})
+    # else
+    return render(request, 'account.html')
 
 def account_update(request):
     if request.method == 'POST':

@@ -37,8 +37,8 @@ class Account(models.Model):
 	account_url = models.CharField(blank=True, max_length=100, default='')            			# url         	-- 지라 혹은 위키
 	account_del_yn = models.CharField(blank=True, max_length=100, default='N')       # 삭제여부		-- N/Y
 	account_del_dt = models.DateTimeField(null=True)                   				# 삭제조치일
-	account_del_reason = models.CharField(blank=True, max_length=100, default='')     			# 삭제사유
-	account_del_note = models.CharField(blank=True, max_length=100, default='')       			# 삭제비고
+	account_del_reason = models.CharField(null=True, blank=True, max_length=100, default='')     			# 삭제사유
+	account_del_note = models.CharField(null=True, blank=True, max_length=100, default='')       			# 삭제비고
 
 	class Meta:
 		db_table = u'account_account'
