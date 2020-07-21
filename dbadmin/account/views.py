@@ -222,7 +222,7 @@ def account_insert(request):
             insert_sql = "insert into account_account(account_create_dt, account_update_dt, \
             account_requestor, account_devteam, account_svr, account_user, \
             account_host, account_pass, account_hash, account_grant, account_grant_with, \
-            account_db, account_table, account_info, account_sql, account_url, account_del_yn) values( \
+            account_db, account_table, account_info, account_sql, account_url, account_del_yn, account_del_reason, account_del_note) values( \
             now(), \
             now(), \
             '" + account_requestor + "', \
@@ -239,7 +239,7 @@ def account_insert(request):
             '" + account_info + "', " + \
             '"' + account_sql + '"' + ", \
             '" + account_url + "', \
-            'N')"
+            'N','','')"
 
             print("insert_sql : " + insert_sql)
 
