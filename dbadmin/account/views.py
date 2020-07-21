@@ -236,7 +236,7 @@ def account_insert(request):
             # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.22.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA30B145980AA553792E9DFFC3';
             # CREATE USER 'test'@'10.11.19.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA30B145980AA553792E9DFFC3
 
-            #SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1');
+            # SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1');
 
             # 암복호화
             # select HEX(AES_ENCRYPT('Manger!1', '암복호키'));
