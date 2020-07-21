@@ -79,6 +79,7 @@ def account(request):
 
     else:
         account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+        print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 
         context = {
             'account_svr_list': account_svr_list
@@ -148,6 +149,7 @@ def account_select(request):
         return render(request, 'account_select.html', context)
 
     else:
+        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
         return render(request, 'account.html')
 
 def account_select_fast(request):

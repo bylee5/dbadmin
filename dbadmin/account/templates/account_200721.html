@@ -32,7 +32,7 @@
 					<th class="rounded-right"></th>
 				</tr>
 				<tr>
-					<form class="form-inline" onsubmit="return false" name="selectForm">
+					<form class="form-inline" action="{% url 'account' %}" method="post">
 						{% csrf_token %}
 						<td class="">
 							<input class="form-control form-control-sm" id="s_account_requestor" name="s_account_requestor" value="{{ account_requestor }}" type="text" placeholder="">
@@ -71,7 +71,7 @@
 							<input class="form-control form-control-sm" id="s_account_url" name="s_account_url" value="{{ account_url }}" type="text" placeholder="">
 						</td>
 						<td class="">
-							<button id="search" class="btn btn-outline-primary btn-sm">검색</button>
+							<button class="btn btn-outline-primary btn-sm" type="submit">검색</button>
 						</td>
 					</form>
 				</tr>
@@ -575,12 +575,6 @@
 	<!-- account list ajax script -->
 	<script>
 		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
-
-		$('#search').click(function(){
-			var page = parseInt($("#page").val());
-			callMoreListAjax(page);
-			$("#page").val(parseInt(page));
-		});
 
         $('#account_list_ajax').load('dummy',function(){
             var page = $("#page").val();
