@@ -51,7 +51,6 @@ def put_password(account_pass):
 #########################################################################
 def account(request):
     account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
-    print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 
     context = {
         'account_svr_list': account_svr_list
@@ -116,12 +115,12 @@ def account_select(request):
             'page_max': page_max
         }
 
-        print("================= page : " + str(page) + ",    page_max : " + str(page_max))
+        # print("================= page : " + str(page) + ",    page_max : " + str(page_max))
 
         return render(request, 'account_select.html', context)
 
     else:
-        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+        print("========================== account로 이동 ===========================")
         return render(request, 'account.html')
 
 def account_select_fast(request):
@@ -138,44 +137,44 @@ def account_select_fast(request):
         return render(request, 'account.html')
 
 def account_insert(request):
-    global cursor
+
     if request.method == 'POST':
-        account_requestor = request.POST.get('account_requestor')
-        account_devteam = request.POST.get('account_devteam')
-        account_info = request.POST.get('account_info')
-        account_url = request.POST.get('account_url')
-        account_svr = request.POST.get('account_svr')
-        account_user = request.POST.get('account_user')
-        account_host = request.POST.get('account_host')
-        account_pass = request.POST.get('account_pass')
-        account_db = request.POST.get('account_db')
-        account_table = request.POST.get('account_table')
-        account_grant = request.POST.get('account_grant')
-        account_grant_direct = request.POST.get('account_grant_direct')
+        account_requestor = request.POST.get('i_account_requestor')
+        account_devteam = request.POST.get('i_account_devteam')
+        account_info = request.POST.get('i_account_info')
+        account_url = request.POST.get('i_account_url')
+        account_svr = request.POST.get('i_account_svr')
+        account_user = request.POST.get('i_account_user')
+        account_host = request.POST.get('i_account_host')
+        account_pass = request.POST.get('i_account_pass')
+        account_db = request.POST.get('i_account_db')
+        account_table = request.POST.get('i_account_table')
+        account_grant = request.POST.get('i_account_grant')
+        account_grant_direct = request.POST.get('i_account_grant_direct')
 
         if account_grant == '':  # 권한 직접 입력인경우
-            account_grant = request.POST.get('account_grant_direct')
+            account_grant = request.POST.get('i_account_grant_direct')
 
         # 패스워드 암호화 적용
         put_password(account_pass)
         account_hash = get_password(account_pass)
 
-        # print("============================================================")
-        # print("테스트 선입니다.")
-        # print("============================================================")
-        # print(account_requestor)
-        # print(account_devteam)
-        # print(account_info)
-        # print(account_url)
-        # print(account_svr)
-        # print(account_user)
-        # print(account_host)
-        # print(account_pass)
-        # print(account_db)
-        # print(account_table)
-        # print(account_grant)
-        # print(account_hash)
-        # print("============================================================")
+        print("============================================================")
+        print("테스트 선입니다.")
+        print("============================================================")
+        print(account_requestor)
+        print(account_devteam)
+        print(account_info)
+        print(account_url)
+        print(account_svr)
+        print(account_user)
+        print(account_host)
+        print(account_pass)
+        print(account_db)
+        print(account_table)
+        print(account_grant)
+        print(account_hash)
+        print("============================================================")
 
         # HOST 여러대역 처리
         account_host_lists = account_host.split(',')
@@ -217,12 +216,12 @@ def account_insert(request):
 
             print("insert_sql : " + insert_sql)
 
-            try:
-                cursor = connections['default'].cursor()
-                cursor.execute(insert_sql)
-                connection.commit()
-            finally:
-                cursor.close()
+            # try:
+            #     cursor = connections['default'].cursor()
+            #     cursor.execute(insert_sql)
+            #     connection.commit()
+            # finally:
+            #     cursor.close()
 
 
         print("============================================================")
@@ -244,23 +243,55 @@ def account_insert(request):
             # grant select on admdb.* to 'test'@'10.11.22.%' identified by password '*5CE39A29BB2B3BBE6293BC10E9404F058109A152';
             ####################################################################################################
 
+        callmorepostFlag = 'true'
+
+        account_list = Account.objects.filter(
+            account_user__contains=account_user,
+            account_del_yn='N'
+        ).order_by('-id')
+
+        page = int(request.POST.get('page'))
+        total_count = account_list.count()
+        page_max = round(account_list.count() / 15)
+        paginator = Paginator(account_list, page * 15)
+
+        try:
+            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                account_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                account_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            account_list = paginator.get_page(1)
+        except EmptyPage:
+            account_list = paginator.get_page(paginator.num_pages)
+
         context = {
             'account_user': account_user,
-            'i_account_requestor': account_requestor,
-            'i_account_devteam': account_devteam,
-            'i_account_info': account_info,
-            'i_account_url': account_url,
-            'i_account_svr': account_svr,
-            'i_account_user': account_user,
-            'i_account_host': request.POST.get('account_host'), # 입력값 그대로 리턴하기 위함
-            'i_account_pass': account_pass,
-            'i_account_db': account_db,
-            'i_account_table': account_table,
-            'i_account_grant': request.POST.get('account_grant'), # 입력값 그대로 리턴하기 위함
-            'i_account_grant_direct': account_grant_direct
+            'account_list': account_list,
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+            'page_max': page_max
         }
 
-        return render(request, 'account.html', context)
+        return render(request, 'account_select.html', context)
+
+        # context = {
+        #     'account_user': account_user,
+        #     'i_account_requestor': account_requestor,
+        #     'i_account_devteam': account_devteam,
+        #     'i_account_info': account_info,
+        #     'i_account_url': account_url,
+        #     'i_account_svr': account_svr,
+        #     'i_account_user': account_user,
+        #     'i_account_host': request.POST.get('account_host'), # 입력값 그대로 리턴하기 위함
+        #     'i_account_pass': account_pass,
+        #     'i_account_db': account_db,
+        #     'i_account_table': account_table,
+        #     'i_account_grant': request.POST.get('account_grant'), # 입력값 그대로 리턴하기 위함
+        #     'i_account_grant_direct': account_grant_direct
+        # }
+        #
+        # return render(request, 'account_select.html', context)
 
     # else
     return render(request, 'account.html')
