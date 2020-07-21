@@ -50,42 +50,14 @@ def put_password(account_pass):
 # Account page
 #########################################################################
 def account(request):
-    if request.method == 'POST':
-        account_requestor = request.POST.get('s_account_requestor')
-        account_devteam = request.POST.get('s_account_devteam')
-        account_svr = request.POST.get('s_account_svr')
-        account_user = request.POST.get('s_account_user')
-        account_host = request.POST.get('s_account_host')
-        account_grant = request.POST.get('s_account_grant')
-        account_db = request.POST.get('s_account_db')
-        account_table = request.POST.get('s_account_table')
-        account_url = request.POST.get('s_account_url')
+    account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
 
-        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    context = {
+        'account_svr_list': account_svr_list
+    }
 
-        context = {
-            'account_requestor': account_requestor,
-            'account_devteam': account_devteam,
-            'account_svr': account_svr,
-            'account_user': account_user,
-            'account_host': account_host,
-            'account_grant': account_grant,
-            'account_db': account_db,
-            'account_table': account_table,
-            'account_url': account_url,
-            'account_svr_list': account_svr_list
-        }
-        return render(request, 'account.html', context)
-
-    else:
-        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
-        print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
-
-        context = {
-            'account_svr_list': account_svr_list
-        }
-
-        return render(request, 'account.html', context)
+    return render(request, 'account.html', context)
 
 def account_select(request):
     if request.method == 'POST':

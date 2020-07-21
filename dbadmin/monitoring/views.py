@@ -123,13 +123,13 @@ def server_list_update(request):
 
         svr = server_list[0] + ".tmonc.net"
 
-        print("=================================================")
-        print("svr : " + str(svr))
-        print("server_list. 서버명 : " + str(server_list[0]))
-        print("server_list4. 변경값 대상 잡 : " + str(server_list4))
-        print("server_list5. 원래값 : " + str(server_list5))
-        print("length server_list4. 변경 대상 잡 포함여부 : " + str(len(server_list4)))
-        print("=================================================")
+        # print("=================================================")
+        # print("svr : " + str(svr))
+        # print("server_list. 서버명 : " + str(server_list[0]))
+        # print("server_list4. 변경값 대상 잡 : " + str(server_list4))
+        # print("server_list5. 원래값 : " + str(server_list5))
+        # print("length server_list4. 변경 대상 잡 포함여부 : " + str(len(server_list4)))
+        # print("=================================================")
 
 
         if len(server_list4) != 0: # 하나라도 ON 입력값이 있는 경우
@@ -289,13 +289,13 @@ def server_job_list_update(request):
 
         server_job_name = server_job_list[0]
 
-        print("=================================================")
-        print("server_job_list: 잡명: " + str(server_job_list[0]))
-        print("server_job_list4: 변경값 대상 서버: " + str(server_job_list4))
-        print("server_job_list5: 원래값 : " + str(server_job_list5))
-        print("length server_job_list4: 변경 대상 서버 포함여부 : " + str(len(server_job_list4)))
-        print("=================================================")
-        #svr = server_list[0] + ".tmonc.net"
+        # print("=================================================")
+        # print("server_job_list: 잡명: " + str(server_job_list[0]))
+        # print("server_job_list4: 변경값 대상 서버: " + str(server_job_list4))
+        # print("server_job_list5: 원래값 : " + str(server_job_list5))
+        # print("length server_job_list4: 변경 대상 서버 포함여부 : " + str(len(server_job_list4)))
+        # print("=================================================")
+        # #svr = server_list[0] + ".tmonc.net"
 
 
         if len(server_job_list4) != 0: # 하나라도 ON 입력값이 있는 경우
@@ -315,8 +315,8 @@ def server_job_list_update(request):
             		AND ji.job_info_name = '" + server_job_name + "' \
             		AND sl.svr NOT IN (" + server_job_list4 + ")"
 
-            print("하나라도ON : " + str(query_update_use_yn_y))
-            print("하나라도ON : " + str(query_update_use_yn_n))
+            # print("하나라도ON : " + str(query_update_use_yn_y))
+            # print("하나라도ON : " + str(query_update_use_yn_n))
 
             try:
                 cursor = connections['tmon_dba'].cursor()
@@ -334,7 +334,7 @@ def server_job_list_update(request):
              		WHERE 1=1 \
                     AND ji.job_info_name = '" + server_job_name + "'"
 
-            print("전부 OFF : " + str(query_update_use_yn_n))
+            # print("전부 OFF : " + str(query_update_use_yn_n))
             try:
                 cursor = connections['tmon_dba'].cursor()
                 cursor.execute(query_update_use_yn_n)
