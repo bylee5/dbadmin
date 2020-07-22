@@ -216,12 +216,12 @@ def account_insert(request):
 
             print("insert_sql : " + insert_sql)
 
-            # try:
-            #     cursor = connections['default'].cursor()
-            #     cursor.execute(insert_sql)
-            #     connection.commit()
-            # finally:
-            #     cursor.close()
+            try:
+                cursor = connections['default'].cursor()
+                cursor.execute(insert_sql)
+                connection.commit()
+            finally:
+                cursor.close()
 
 
         print("============================================================")
@@ -266,11 +266,15 @@ def account_insert(request):
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
 
+        # alert 테스트
+        alert_type = 1
+
         context = {
             'account_user': account_user,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-            'page_max': page_max
+            'page_max': page_max,
+            'alert_type': alert_type
         }
 
         return render(request, 'account_select.html', context)

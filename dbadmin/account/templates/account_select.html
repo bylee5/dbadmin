@@ -8,7 +8,43 @@
 
 <!-- ajax 추가 부분 -->
 
-    <hr><< 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>, MAX_PAGE : {{ page_max }}
+    <hr>
+    <!-- alert_type에 따른 에러뿌리기 -->
+    {% if alert_type == 1 %}
+
+    <table>
+        <tr>
+            <td>
+				<div class="alert alert-danger alert-dismissible fade show role="alert">
+				<h6 class="alert-danger">입력에 실패했습니다.</h6>
+					원인 : 테스트용 alert 입니다. (alert_type 값을 리턴받아 사용.현재는 계정 입력 시, 출력중)
+                    <br>입력 아이디값 : {{ account_user }}
+
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				</div>
+
+			</td>
+        </tr>
+    </table>
+
+<!--
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h6 class="alert-danger">입력에 실패했습니다.</h6>
+        <p>
+            원인 : 테스트용 alert 입니다.
+        </p>
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+
+    </div>
+    -->
+    {% endif %}
+
+<< 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>, MAX_PAGE : {{ page_max }}
     <table class="table table-bordered table-sm table-hover">
         <tr class="bg-dark text-white">
             <th class="rounded-left">ID</th>
@@ -71,6 +107,8 @@
 {% if callmorepostFlag == 'true' %}
     <button id="morelist" type="button" class="btn btn-primary btn-sm btn-block">더 보기</button>
 {% endif %}
+
+    <input class="form-control form-control-sm" id="alert_type" name="alert_type" value="{{ alert_type }}" type="hidden">
 
 	<!-- account list ajax script -->
 	<script>

@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['10.5.220.201','127.0.0.1']
 
 # sessoin lifetime, timeout setting
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True # if no action, close this session (default = false)
-SESSION_COOKIE_AGE = 7200 # session life time. second
+SESSION_COOKIE_AGE = 80000 # session life time. second
 SESSION_SAVE_EVERY_REQUEST = True # if action, current session life time is refresh
 
 # Application definition
