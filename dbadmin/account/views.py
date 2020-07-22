@@ -320,6 +320,7 @@ def account_update(request):
         account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
         if form.is_valid():
+            print("============================== 여길 지나와야....")
             account.account_update_dt = timezone.localtime()
             account.account_requestor = form.cleaned_data['account_requestor']
             account.account_devteam = form.cleaned_data['account_devteam']
@@ -334,12 +335,13 @@ def account_update(request):
             account.account_info = form.cleaned_data['account_info']
             account.account_url = form.cleaned_data['account_url']
 
-            account.account_sql = "/*" + form.cleaned_data['account_url'] + \
-                                  "*/" + " grant " + form.cleaned_data['account_grant'] + " on " + \
-                                  form.cleaned_data['account_db'] + "." + form.cleaned_data['account_table'] + \
-                                  " to " + "'" + form.cleaned_data['account_user'] + "'@'" + form.cleaned_data[
-                                      'account_host'] + \
-                                  "' identified by '" + form.cleaned_data['account_pass'] + "';"
+            account.account_sql = "/*" + account.account_url + \
+                                  "*/" + " grant " + account.account_grant + " on " + \
+                                  account.account_db + "." + account.account_table + \
+                                  " to " + "'" + account.account_user + "'@'" + account.account_host + \
+                                  "' identified by '" + account_pass + "';"
+
+            print(account.account_sql)
 
             put_password(account.account_pass)
             account.account_hash = get_password(account.account_pass)
@@ -403,6 +405,16 @@ def account_update(request):
                 'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
                 'page': page,
                 'scrollHeight': scrollHeight,
+                'account_svr_list': account_svr_list
+            }
+
+            return render(request, 'account.html', context)
+
+        else:
+            print("==============================")
+            account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+
+            context = {
                 'account_svr_list': account_svr_list
             }
 
