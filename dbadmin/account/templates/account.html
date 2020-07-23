@@ -520,7 +520,6 @@
 		var account_info = button.data('account_info');
 		var account_sql = button.data('account_sql');
 		var account_url = button.data('account_url');
-		var account_note = button.data('account_note');
 		var account_del_yn = button.data('account_del_yn');
 		var account_del_dt = button.data('account_del_dt');
 		var account_del_reason = button.data('account_del_reason');
@@ -558,7 +557,6 @@
 		modal.find('#account_info').val(account_info);
 		modal.find('#account_sql').val(account_sql);
 		modal.find('#account_url').val(account_url);
-		modal.find('#account_note').val(account_note);
 		modal.find('#account_del_yn').val(account_del_yn);
 		modal.find('#account_del_dt').val(account_del_dt);
 		modal.find('#account_del_reason').val(account_del_reason);
@@ -595,7 +593,6 @@
 		modal.find('#u_account_info').val(account_info);
 		modal.find('#u_account_sql').val(account_sql);
 		modal.find('#u_account_url').val(account_url);
-		modal.find('#u_account_note').val(account_note);
 		modal.find('#u_account_del_yn').val(account_del_yn);
 		modal.find('#u_account_del_dt').val(account_del_dt);
 		modal.find('#u_account_del_reason').val(account_del_reason);
@@ -684,9 +681,6 @@
 			$('#account_list_ajax').html(data);
 		}
 	</script>
-
-
-
 
     {% endblock %}
 </body>
