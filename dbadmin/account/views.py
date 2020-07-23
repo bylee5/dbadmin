@@ -216,12 +216,12 @@ def account_insert(request):
 
             print("insert_sql : " + insert_sql)
 
-            # try:
-            #     cursor = connections['default'].cursor()
-            #     cursor.execute(insert_sql)
-            #     connection.commit()
-            # finally:
-            #     cursor.close()
+            try:
+                cursor = connections['default'].cursor()
+                cursor.execute(insert_sql)
+                connection.commit()
+            finally:
+                cursor.close()
 
 
         print("============================================================")
