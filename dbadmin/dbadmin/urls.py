@@ -42,14 +42,15 @@ urlpatterns = [
     path('account/update/', account.views.account_update, name='account_update'),
     path('account/delete/', account.views.account_delete, name='account_delete'),
 
+    # account remove
+    path('account/account_remove', account.views.account_remove, name='account_remove'),
+    path('account/account_remove_select', account.views.account_remove_select, name='account_remove_select'),
+
     # account Repository Manage
     path('account/repository/', account.views.account_repository, name='account_repository_select'),
     path('account/repository_insert/', account.views.account_repository_insert, name='account_repository_insert'),
     path('account/repository_update/', account.views.account_repository_update, name='account_repository_update'),
     path('account/repository_delete/', account.views.account_repository_delete, name='account_repository_delete'),
-
-    # account test
-    path('account/select_del/', account.views.account_select_del, name='account_select_del'),
 
 
     #########################################################################

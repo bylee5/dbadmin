@@ -187,7 +187,7 @@ def server_list_update(request):
     	FROM job_server_map jsm \
     	 , (SELECT @ROW_NUM := 1) X \
     	 , (SELECT @PREV_VALUE := '') Y \
-    	ORDER BY jsm.server_list_seqno \
+    	ORDER BY jsm.server_list_seqno, jsm.job_info_seqno \
     ) AS jsm ON sl.server_list_seqno = jsm.server_list_seqno \
     LEFT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno \
     ORDER BY sl.svr ASC, ji.job_info_seqno ASC, jsm.use_yn DESC) a \

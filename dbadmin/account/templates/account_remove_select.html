@@ -8,35 +8,15 @@
 
 <!-- ajax 추가 부분 -->
 
-    <hr>
-    <!-- alert_type에 따른 에러뿌리기 -->
-    {% if alert_type == 1 %}
 
-    <table>
-        <tr>
-            <td>
-				<div class="alert alert-danger alert-dismissible fade show role="alert">
-				<h6 class="alert-danger">입력에 실패했습니다.</h6>
-					원인 : 테스트용 alert 입니다. (alert_type 값을 리턴받아 사용.현재는 계정 입력 시, 출력중)
-                    <br>입력 아이디값 : {{ account_user }}
 
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				</div>
-
-			</td>
-        </tr>
-    </table>
-
-    {% endif %}
-
-<< 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>, MAX_PAGE : {{ page_max }}
+<hr><< 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>
     <table class="table table-bordered table-sm table-hover">
-        <th class="bg-dark text-white">
-            <th class="rounded-left table-borderless"</th>
-            <th>ID</th>
-            <th>생성일</th>
+        <tr class="bg-dark text-white">
+            <th class="rounded-left">ID</th>
+            <th>삭제일</th>
+            <th>삭제사유</th>
+            <th>삭제URL</th>
             <th>요청자</th>
             <th>요청팀</th>
             <th>서버</th>
@@ -53,6 +33,9 @@
             <tr data-toggle="modal" data-target="#myModal"
                 data-id="{{ account.id }}"
                 data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note}}"
                 data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
                 data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
                 data-account_requestor="{{ account.account_requestor }}"
@@ -74,17 +57,16 @@
                 data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
                 data-account_del_reason="{{ account.account_del_reason }}"
                 data-account_del_note="{{ account.account_del_note }}" style = "cursor:pointer;">
-                <td style = "width: 1%;">
-                    <input type="checkbox" id="checkbox" name="checkbox">
-                </td>
                 <td style = "width: 3%;">{{ account.id }}</td>
-                <td style = "width: 8%;">{{ account.account_create_dt|date:'Y/m/d H:i:s' }}</td>
-                <td style = "width: 6%;">{{ account.account_requestor }}</td>
+                <td style = "width: 8%;">{{ account.account_del_dt|date:'Y/m/d H:i:s' }}</td>
+                <td style = "width: 8%;">{{ account.account_del_reason }}</td>
+                <td style = "width: 5%;">{{ account.account_del_note }}</td>
+                <td style = "width: 5%;">{{ account.account_requestor }}</td>
                 <td style = "width: 8%;">{{ account.account_devteam }}</td>
                 <td style = "width: 8%;">{{ account.account_svr }}</td>
                 <td style = "width: 8%;">{{ account.account_user }}</td>
                 <td style = "width: 8%;">{{ account.account_host }}</td>
-                <td style = "width: 25%;">{{ account.account_grant }}</td>
+                <td style = "width: 16%;">{{ account.account_grant }}</td>
                 <td style = "width: 8%;">{{ account.account_db }}</td>
                 <td style = "width: 8%;">{{ account.account_table }}</td>
                 <td style = "width: 10%;">
@@ -124,7 +106,7 @@
 
 			$.ajax( {
 				type : 'POST',
-				url: "{% url 'account_select' %}",
+				url: "{% url 'account_remove_select' %}",
 				data: {
 					's_account_requestor': s_account_requestor,
 					's_account_devteam': s_account_devteam,

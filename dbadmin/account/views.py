@@ -47,10 +47,26 @@ def put_password(account_pass):
 @login_required
 
 #########################################################################
+# fast select
+#########################################################################
+def account_select_fast(request):
+    if request.method == 'POST':
+        account_user = request.POST.get('account_search')
+
+        context = {
+            'account_user': account_user,
+            'page' : 50
+        }
+        return render(request, 'account.html', context)
+
+    else:
+        return render(request, 'account.html')
+
+#########################################################################
 # Account page
 #########################################################################
 def account(request):
-    account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    account_svr_list = Account.objects.all().filter(account_del_yn='N').order_by('account_svr').values('account_svr').distinct()
 
     context = {
         'account_svr_list': account_svr_list
@@ -116,20 +132,6 @@ def account_select(request):
         }
 
         return render(request, 'account_select.html', context)
-
-    else:
-        print("========================== account로 이동 ===========================")
-        return render(request, 'account.html')
-
-def account_select_fast(request):
-    if request.method == 'POST':
-        account_user = request.POST.get('account_search')
-
-        context = {
-            'account_user': account_user,
-            'page' : 50
-        }
-        return render(request, 'account.html', context)
 
     else:
         return render(request, 'account.html')
@@ -484,12 +486,12 @@ def account_delete(request):
         print(delete_sql)
         print("============================================================")
 
-        # try:
-        #     cursor = connections['default'].cursor()
-        #     cursor.execute(delete_sql)
-        #     connection.commit()
-        # finally:
-        #     cursor.close()
+        try:
+            cursor = connections['default'].cursor()
+            cursor.execute(delete_sql)
+            connection.commit()
+        finally:
+            cursor.close()
 
 
         # account = Account.objects.get(id=request.POST['id']) # pk에 해당하는 업데이트 대상을 가져옴
@@ -593,68 +595,78 @@ def account_delete(request):
 #########################################################################
 # Account Delete='Y' page
 #########################################################################
-def account_select_del(request):
-    if request.method == 'POST':
-        account_requestor = request.POST['account_requestor']
-        account_devteam = request.POST['account_devteam']
-        account_svr = request.POST['account_svr']
-        account_user = request.POST['account_user']
-        account_host = request.POST['account_host']
-        account_grant = request.POST['account_grant']
-        account_db = request.POST['account_db']
-        account_table = request.POST['account_table']
-        account_url = request.POST['account_url']
 
-        #print("input val : " + account_user)
+def account_remove(request):
+    account_svr_list = Account.objects.all().filter(account_del_yn='Y').order_by('account_svr').values('account_svr').distinct()
+
+    context = {
+        'account_svr_list': account_svr_list
+    }
+
+    return render(request, 'account_remove.html', context)
+
+def account_remove_select(request):
+    if request.method == 'POST':
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
+        callmorepostFlag = 'true'
 
         account_list = Account.objects.filter(
-            account_requestor__startswith=account_requestor,
-            account_devteam__startswith=account_devteam,
-            account_svr__startswith=account_svr,
+            account_requestor__contains=account_requestor,
+            account_devteam__contains=account_devteam,
+            account_svr__contains=account_svr,
             account_user__contains=account_user,
-            account_host__startswith=account_host,
+            account_host__contains=account_host,
             account_grant__contains=account_grant,
-            account_db__startswith=account_db,
-            account_table__startswith=account_table,
+            account_db__contains=account_db,
+            account_table__contains=account_table,
             account_url__contains=account_url,
-            account_del_yn='Y' # 계정 삭제여부
+            account_del_yn = 'Y'
+		).order_by('-account_del_dt')
 
-        ).order_by('-id')
+        page = int(request.POST.get('page'))
+        total_count = account_list.count()
+        page_max = round(account_list.count() / 15)
+        paginator = Paginator(account_list, page * 15)
 
-        page = request.GET.get('page')
-        pagelist = request.GET.get('pagelist')
+        try:
+            if int(page) >= page_max : # 마지막 페이지 멈춤 구현
+                account_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                account_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            account_list = paginator.get_page(1)
+        except EmptyPage:
+            account_list = paginator.get_page(paginator.num_pages)
 
-        if pagelist is None:
-            pagelist = 15
+        context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
+            'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url,
+            'account_list': account_list,
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+            'page_max': page_max
+        }
 
-        #print(pagelist)
-        paginator = Paginator(account_list, pagelist)
-        accounts = paginator.get_page(page)
-        context = {'accounts': accounts, 'pagelist': pagelist}
-        return render(request, 'account_select_del.html', context)
+        return render(request, 'account_remove_select.html', context)
 
     else:
-        #account_list = Account.objects.all().order_by('-id')
-        page = request.GET.get('page')
-        pagelist = request.GET.get('pagelist')
+        return render(request, 'account_remove.html')
 
-        if pagelist is None:
-            pagelist = 15
-
-        account_list = Account.objects.filter(account_del_yn='Y').order_by('-id')
-        paginator = Paginator(account_list, pagelist)
-        accounts = paginator.get_page(page)
-        context = {'accounts': accounts, 'pagelist': pagelist}
-        return render(request, 'account_select_del.html', context)
-
-def account_fn_search(request):
-    if request.method == 'POST':
-        faq_list = Faq.objects.filter(faq_id="test@test.com")
-        paginator = Paginator(faq_list, 10)
-        page = request.GET.get('page')
-        faqs = paginator.get_page(page)
-        context = {'faqs' : faqs}
-    return render(request, 'account.html', context)
 
 
 #########################################################################
