@@ -11,6 +11,18 @@
 	<!-- 검색/입력 span -->
 	<span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">검색</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
+	<span style="font-size: 12px;" type="button" class="badge badge-info" onclick="multi_deleteBox()">다중 삭제(테스트)</span>
+	<span style="font-size: 12px;" type="button" class="badge badge-dark" onclick="multi_updateBox()">다중 수정(테스트)</span>
+	<script>
+		function multi_deleteBox() {
+			alert("다중 삭제 테스트 메시지");
+		}
+
+		function multi_updateBox() {
+			alert("다중 수정 테스트 메시지");
+			//alert($('.check').val());
+		}
+	</script>
 
     <!-- 검색란 -->
     <div class="collapse" id="collapseSelect" style="font-size: 12px;">
@@ -160,12 +172,6 @@
 				</tr>
 
 				<!-- account insert ajax script -->
-                    <!--
-					var insertForm = document.insertForm;
-					insertForm.action="{% url 'account_insert' %}";
-					insertForm.method="post";
-					insertForm.submit();
-					-->
 				<script>
 				function insertBox() {
 					var retVal = confirm("입력하시겠습니까?");
@@ -382,7 +388,10 @@
 
                             <!-- Modal Update-->
 							<div role="tabpanel" class="tab-pane active fade show" id="updateTab">
+                                <!--
                                 <form class="" action="{% url 'account_update' %}" method="post" name="updateForm">
+                                -->
+								<form class="" onsubmit="return false;" name="updateForm">
                                 {% csrf_token %}
 								<!-- hidden value (pk) -->
 								<!-- view에 조회 데이터 넘기기 및 페이징 처리 원위치 이동을 위해 구현-->
@@ -464,7 +473,7 @@
 												var copyText = document.getElementById("u_account_sql");
 												copyText.select();
 												document.execCommand("Copy");
-											N
+											}
 
 											$(function(){
 												$('#u_account_sql').tooltip({
@@ -485,7 +494,7 @@
 								<p class="text-right">수정 하시겠습니까?</p>
 
 								<div class="modal-footer">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">확인</button>
+									<button class="btn btn-outline-primary btn-sm" onclick="updateBox()" type="submit">입력</button>
                                     <button type="" class="btn btn-sm btn-outline-danger" data-dismiss="modal">취소</button>
 								</div>
                                 </form>
@@ -613,16 +622,87 @@
 		modal.find('#s_account_db').val(s_account_db);
 		modal.find('#s_account_table').val(s_account_table);
 		modal.find('#s_account_url').val(s_account_url);
-
     })
     </script>
+
+	<!-- account update ajax script -->
+	<script>
+		function updateBox() {
+			var page = parseInt($("#page").val());
+			update_callMoreListAjax(page);
+			$("#page").val(parseInt(page));
+		}
+
+		function update_callMoreListAjax(page) {
+			var u_id = $("#id").val();
+			var u_account_requestor = $("#u_account_requestor").val();
+			var u_account_svr = $("#u_account_svr").val();
+			var u_account_user = $("#u_account_user").val();
+			var u_account_devteam = $("#u_account_devteam").val();
+			var u_account_host = $("#u_account_host").val();
+			var u_account_pass = $("#u_account_pass").val();
+			var u_account_grant = $("#u_account_grant").val();
+			var u_account_grant_with = $("#u_account_grant_with").val();
+			var u_account_db = $("#u_account_db").val();
+			var u_account_table = $("#u_account_table").val();
+			var u_account_info = $("#u_account_info").val();
+			var u_account_url = $("#u_account_url").val();
+
+			var s_account_requestor = $("#s_account_requestor").val();
+			var s_account_devteam = $("#s_account_devteam").val();
+			var s_account_svr = $("#s_account_svr").val();
+			var s_account_user = $("#s_account_user").val();
+			var s_account_host = $("#s_account_host").val();
+			var s_account_grant = $("#s_account_grant").val();
+			var s_account_db = $("#s_account_db").val();
+			var s_account_table = $("#s_account_table").val();
+			var s_account_url = $("#s_account_url").val();
+
+			$.ajax( {
+				type : 'POST',
+				url: "{% url 'account_update' %}",
+				data: {
+					'u_id': u_id,
+					'u_account_requestor': u_account_requestor,
+					'u_account_svr': u_account_svr,
+					'u_account_user': u_account_user,
+					'u_account_devteam': u_account_devteam,
+					'u_account_host': u_account_host,
+					'u_account_pass': u_account_pass,
+					'u_account_grant': u_account_grant,
+					'u_account_grant_with': u_account_grant_with,
+					'u_account_db': u_account_db,
+					'u_account_table': u_account_table,
+					'u_account_info': u_account_info,
+					'u_account_url': u_account_url,
+					's_account_requestor': s_account_requestor,
+					's_account_devteam': s_account_devteam,
+					's_account_svr': s_account_svr,
+					's_account_user': s_account_user,
+					's_account_host': s_account_host,
+					's_account_grant': s_account_grant,
+					's_account_db': s_account_db,
+					's_account_table': s_account_table,
+					's_account_url': s_account_url,
+					'page': page,
+					'csrfmiddlewaretoken': token,
+				},
+				success: addMoreAccountAjax,
+				dataType: 'html'
+			});
+		}
+
+		</script>
+
 
 	<!-- account select ajax script -->
 	<script>
 		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
 		$('#search').click(function(){
-			var page = parseInt($("#page").val());
+			//var page = parseInt($("#page").val());
+			// 검색 버튼을 누를 경우엔, page 1로 초기화
+			var page = 1
 			callMoreListAjax(page);
 			$("#page").val(parseInt(page));
 		});
@@ -680,7 +760,10 @@
 				dataType: 'html'
 			});
 		}
+	</script>
 
+	<!-- common ajax script -->
+    <script>
 		function addMoreAccountAjax(data, textStatus, jqXHR) {
 			$('#account_list_ajax').html(data);
 		}

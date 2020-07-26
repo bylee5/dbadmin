@@ -160,7 +160,7 @@ def account_insert(request):
         account_hash = get_password(account_pass)
 
         # print("============================================================")
-        # print("테스트 선입니다.")
+        # print("입력란 테스트 선입니다.")
         # print("============================================================")
         # print(account_requestor)
         # print(account_devteam)
@@ -283,7 +283,7 @@ def account_update(request):
     if request.method == 'POST':
 
         #### UPDATE
-        id = request.POST.get('id')
+        u_id = request.POST.get('u_id')
         u_account_requestor = request.POST.get('u_account_requestor');
         u_account_svr = request.POST.get('u_account_svr');
         u_account_user = request.POST.get('u_account_user');
@@ -297,38 +297,17 @@ def account_update(request):
         u_account_info = request.POST.get('u_account_info');
         u_account_url = request.POST.get('u_account_url');
 
-        print("============================================================")
-        print("UPDATE 리턴값 테스트 선입니다.")
-        print("============================================================")
-        print(id)
-        print(u_account_requestor)
-        print(u_account_devteam)
-        print(u_account_info)
-        print(u_account_url)
-        print(u_account_svr)
-        print(u_account_user)
-        print(u_account_host)
-        print(u_account_pass)
-        print(u_account_db)
-        print(u_account_table)
-        print(u_account_grant)
-        print(u_account_grant_with)
-        print("============================================================")
-
         u_account_sql = "/*" + u_account_svr + "*/ " + "use mysql; " + "/*" + u_account_url + \
                               "*/" + " grant " + u_account_grant + " on " + \
                               u_account_db + "." + u_account_table + \
                               " to " + "'" + u_account_user + "'@'" + u_account_host + \
                               "' identified by '" + u_account_pass + "';"
 
-        print("수정본 u_account_sql : " + u_account_sql)
-
         put_password(u_account_pass)
         u_account_hash = get_password(u_account_pass)
-        print("수정본 account_hash: " + u_account_hash)
-        # print(account_update_dt)
 
-        #account.save()
+        print(u_id)
+
         update_sql = "update account_account " + \
         "set account_update_dt = now() " + \
         ", account_requestor = " + "'" + u_account_requestor + "'" + \
@@ -345,24 +324,39 @@ def account_update(request):
         ", account_grant_with = " + "'" + u_account_grant_with + "'" + \
         ", account_sql = " + '"' + u_account_sql + '"' + \
         ", account_hash = " + "'" + u_account_hash + "'" + \
-        " where id = " + id + ";"
+        " where id = " + u_id + ";"
 
-        print("update_sql : ============================================================")
+        print("============================================================")
+        print("UPDATE 리턴값 테스트 선입니다.")
+        print("============================================================")
+        print(u_id)
+        print(u_account_requestor)
+        print(u_account_devteam)
+        print(u_account_info)
+        print(u_account_url)
+        print(u_account_svr)
+        print(u_account_user)
+        print(u_account_host)
+        print(u_account_pass)
+        print(u_account_db)
+        print(u_account_table)
+        print(u_account_grant)
+        print(u_account_grant_with)
+        print("============================================================")
+        print("수정본 u_account_sql : " + u_account_sql)
+        print("수정본 account_hash: " + u_account_hash)
         print(update_sql)
         print("============================================================")
 
-        try:
-            cursor = connections['default'].cursor()
-            cursor.execute(update_sql)
-            connection.commit()
-        finally:
-            cursor.close()
+        # try:
+        #     cursor = connections['default'].cursor()
+        #     cursor.execute(update_sql)
+        #     connection.commit()
+        # finally:
+        #     cursor.close()
 
         ########################################## 페이지 원래대로 테스트
 
-        #### SELECT 및 현재 입력값 리턴받기
-        page = request.POST['page']
-        scrollHeight = request.POST['scrollHeight']
         account_requestor = request.POST.get('s_account_requestor')
         account_devteam = request.POST.get('s_account_devteam')
         account_svr = request.POST.get('s_account_svr')
@@ -374,9 +368,20 @@ def account_update(request):
         account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
 
-        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+        print("============================================================")
+        print("검색란 리턴값 테스트 선입니다.")
+        print("============================================================")
+        print(account_requestor)
+        print(account_devteam)
+        print(account_svr)
+        print(account_user)
+        print(account_host)
+        print(account_grant)
+        print(account_db)
+        print(account_table)
+        print(account_url)
+        print("============================================================")
 
-        # account_list = Account.objects.all().order_by('-id')
         account_list = Account.objects.filter(
             account_requestor__contains=account_requestor,
             account_devteam__contains=account_devteam,
@@ -418,21 +423,88 @@ def account_update(request):
             'account_url': account_url,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-            'page': page,
-            'scrollHeight': scrollHeight,
-            'account_svr_list': account_svr_list
+            'page_max': page_max
         }
 
-        return render(request, 'account.html', context)
+        return render(request, 'account_select.html', context)
+
 
     else:
-        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+        return render(request, 'account.html')
 
-        context = {
-            'account_svr_list': account_svr_list
-        }
-
-        return render(request, 'account.html', context)
+    #     #### SELECT 및 현재 입력값 리턴받기
+    #     page = request.POST['page']
+    #     scrollHeight = request.POST['scrollHeight']
+    #     account_requestor = request.POST.get('s_account_requestor')
+    #     account_devteam = request.POST.get('s_account_devteam')
+    #     account_svr = request.POST.get('s_account_svr')
+    #     account_user = request.POST.get('s_account_user')
+    #     account_host = request.POST.get('s_account_host')
+    #     account_grant = request.POST.get('s_account_grant')
+    #     account_db = request.POST.get('s_account_db')
+    #     account_table = request.POST.get('s_account_table')
+    #     account_url = request.POST.get('s_account_url')
+    #     callmorepostFlag = 'true'
+    #
+    #     account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    #
+    #     # account_list = Account.objects.all().order_by('-id')
+    #     account_list = Account.objects.filter(
+    #         account_requestor__contains=account_requestor,
+    #         account_devteam__contains=account_devteam,
+    #         account_svr__contains=account_svr,
+    #         account_user__contains=account_user,
+    #         account_host__contains=account_host,
+    #         account_grant__contains=account_grant,
+    #         account_db__contains=account_db,
+    #         account_table__contains=account_table,
+    #         account_url__contains=account_url,
+    #         account_del_yn='N'
+    #     ).order_by('-id')
+    #
+    #     page = int(request.POST.get('page'))
+    #     total_count = account_list.count()
+    #     page_max = round(account_list.count() / 15)
+    #     paginator = Paginator(account_list, page * 15)
+    #
+    #     try:
+    #         if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+    #             account_list = paginator.get_page(1)
+    #             callmorepostFlag = 'false'
+    #         else:
+    #             account_list = paginator.get_page(1)
+    #     except PageNotAnInteger:
+    #         account_list = paginator.get_page(1)
+    #     except EmptyPage:
+    #         account_list = paginator.get_page(paginator.num_pages)
+    #
+    #     context = {
+    #         'account_requestor': account_requestor,
+    #         'account_devteam': account_devteam,
+    #         'account_svr': account_svr,
+    #         'account_user': account_user,
+    #         'account_host': account_host,
+    #         'account_grant': account_grant,
+    #         'account_db': account_db,
+    #         'account_table': account_table,
+    #         'account_url': account_url,
+    #         'account_list': account_list,
+    #         'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+    #         'page': page,
+    #         'scrollHeight': scrollHeight,
+    #         'account_svr_list': account_svr_list
+    #     }
+    #
+    #     return render(request, 'account.html', context)
+    #
+    # else:
+    #     account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    #
+    #     context = {
+    #         'account_svr_list': account_svr_list
+    #     }
+    #
+    #     return render(request, 'account.html', context)
 
 def account_delete(request):
     if request.method == 'POST':
@@ -486,12 +558,12 @@ def account_delete(request):
         print(delete_sql)
         print("============================================================")
 
-        try:
-            cursor = connections['default'].cursor()
-            cursor.execute(delete_sql)
-            connection.commit()
-        finally:
-            cursor.close()
+        # try:
+        #     cursor = connections['default'].cursor()
+        #     cursor.execute(delete_sql)
+        #     connection.commit()
+        # finally:
+        #     cursor.close()
 
 
         # account = Account.objects.get(id=request.POST['id']) # pk에 해당하는 업데이트 대상을 가져옴
@@ -521,76 +593,77 @@ def account_delete(request):
 
         ########################################## 페이지 원래대로 테스트
 
-        page = request.POST['page']
-        scrollHeight = request.POST['scrollHeight']
-        account_requestor = request.POST.get('s_account_requestor')
-        account_devteam = request.POST.get('s_account_devteam')
-        account_svr = request.POST.get('s_account_svr')
-        account_user = request.POST.get('s_account_user')
-        account_host = request.POST.get('s_account_host')
-        account_grant = request.POST.get('s_account_grant')
-        account_db = request.POST.get('s_account_db')
-        account_table = request.POST.get('s_account_table')
-        account_url = request.POST.get('s_account_url')
-        callmorepostFlag = 'true'
-        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
 
-        account_list = Account.objects.filter(
-            account_requestor__contains=account_requestor,
-            account_devteam__contains=account_devteam,
-            account_svr__contains=account_svr,
-            account_user__contains=account_user,
-            account_host__contains=account_host,
-            account_grant__contains=account_grant,
-            account_db__contains=account_db,
-            account_table__contains=account_table,
-            account_url__contains=account_url,
-            account_del_yn='N'
-        ).order_by('-id')
-
-        page = int(request.POST.get('page'))
-        total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
-        paginator = Paginator(account_list, page * 15)
-
-        try:
-            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
-                account_list = paginator.get_page(1)
-                callmorepostFlag = 'false'
-            else:
-                account_list = paginator.get_page(1)
-        except PageNotAnInteger:
-            account_list = paginator.get_page(1)
-        except EmptyPage:
-            account_list = paginator.get_page(paginator.num_pages)
-
-        context = {
-            'account_requestor': account_requestor,
-            'account_devteam': account_devteam,
-            'account_svr': account_svr,
-            'account_user': account_user,
-            'account_host': account_host,
-            'account_grant': account_grant,
-            'account_db': account_db,
-            'account_table': account_table,
-            'account_url': account_url,
-            'account_list': account_list,
-            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-            'page': page,
-            'scrollHeight': scrollHeight,
-            'account_svr_list': account_svr_list
-        }
-
-        return render(request, 'account.html', context)
-
-    else:
-        account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
-
-        context = {
-            'account_svr_list': account_svr_list
-        }
-
-        return render(request, 'account.html', context)
+    #     page = request.POST['page']
+    #     scrollHeight = request.POST['scrollHeight']
+    #     account_requestor = request.POST.get('s_account_requestor')
+    #     account_devteam = request.POST.get('s_account_devteam')
+    #     account_svr = request.POST.get('s_account_svr')
+    #     account_user = request.POST.get('s_account_user')
+    #     account_host = request.POST.get('s_account_host')
+    #     account_grant = request.POST.get('s_account_grant')
+    #     account_db = request.POST.get('s_account_db')
+    #     account_table = request.POST.get('s_account_table')
+    #     account_url = request.POST.get('s_account_url')
+    #     callmorepostFlag = 'true'
+    #     account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    #
+    #     account_list = Account.objects.filter(
+    #         account_requestor__contains=account_requestor,
+    #         account_devteam__contains=account_devteam,
+    #         account_svr__contains=account_svr,
+    #         account_user__contains=account_user,
+    #         account_host__contains=account_host,
+    #         account_grant__contains=account_grant,
+    #         account_db__contains=account_db,
+    #         account_table__contains=account_table,
+    #         account_url__contains=account_url,
+    #         account_del_yn='N'
+    #     ).order_by('-id')
+    #
+    #     page = int(request.POST.get('page'))
+    #     total_count = account_list.count()
+    #     page_max = round(account_list.count() / 15)
+    #     paginator = Paginator(account_list, page * 15)
+    #
+    #     try:
+    #         if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+    #             account_list = paginator.get_page(1)
+    #             callmorepostFlag = 'false'
+    #         else:
+    #             account_list = paginator.get_page(1)
+    #     except PageNotAnInteger:
+    #         account_list = paginator.get_page(1)
+    #     except EmptyPage:
+    #         account_list = paginator.get_page(paginator.num_pages)
+    #
+    #     context = {
+    #         'account_requestor': account_requestor,
+    #         'account_devteam': account_devteam,
+    #         'account_svr': account_svr,
+    #         'account_user': account_user,
+    #         'account_host': account_host,
+    #         'account_grant': account_grant,
+    #         'account_db': account_db,
+    #         'account_table': account_table,
+    #         'account_url': account_url,
+    #         'account_list': account_list,
+    #         'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+    #         'page': page,
+    #         'scrollHeight': scrollHeight,
+    #         'account_svr_list': account_svr_list
+    #     }
+    #
+    #     return render(request, 'account.html', context)
+    #
+    # else:
+    #     account_svr_list = Account.objects.all().order_by('account_svr').values('account_svr').distinct()
+    #
+    #     context = {
+    #         'account_svr_list': account_svr_list
+    #     }
+    #
+    #     return render(request, 'account.html', context)
 
 #########################################################################
 # Account Delete='Y' page

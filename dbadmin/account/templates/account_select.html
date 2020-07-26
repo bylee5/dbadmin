@@ -33,24 +33,76 @@
 
 << 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>, MAX_PAGE : {{ page_max }}
     <table class="table table-bordered table-sm table-hover">
-        <th class="bg-dark text-white">
-            <th class="rounded-left table-borderless"</th>
-            <th>ID</th>
-            <th>생성일</th>
-            <th>요청자</th>
-            <th>요청팀</th>
-            <th>서버</th>
-            <th>아이디</th>
-            <th>호스트</th>
-            <th>권한</th>
-            <th>DB</th>
-            <th>TABLE</th>
+        <tr class="bg-dark text-white">
+            <th style="width: 1%;" class="check-all rounded-left tmp_bg-light table-borderless">
+                <input type="checkbox" id="checkbox" name="checkbox" class="check-all">
+            </th>
+            <th style="width: 3%;">ID</th>
+            <th style="width: 8%;">생성일</th>
+            <th style="width: 6%;">요청자</th>
+            <th style="width: 8%;">요청팀</th>
+            <th style="width: 8%;">서버</th>
+            <th style="width: 8%;">아이디</th>
+            <th style="width: 8%;">호스트</th>
+            <th style="width: 25%;">권한</th>
+            <th style="width: 8%;">DB</th>
+            <th style="width: 8%;">TABLE</th>
             <th class="rounded-right">URL</th>
         </tr>
-        {% if account_list %}
-            {% for account in account_list %}
 
-            <tr data-toggle="modal" data-target="#myModal"
+    {% if account_list %}
+        {% for account in account_list %}
+        <tr>
+            <td class="bg-light">
+                <input type="checkbox" id="checkbox" name="checkbox" class="check" value="{{ account.id }}">
+                <!-- 체크박스 전체선택/해제하기 -->
+                <script>
+                    $(document).ready(function(){
+                        $('.check-all').click(function(){
+                            $('.check').prop('checked', this.checked);
+                        });
+                    });
+                </script>
+            </td>
+            <td style = "cursor:pointer;" id="{{ account.id }}" name="{{ account.id }}" data-toggle="account_id" data-placement="right" title="입력란 복사">
+                {{ account.id }}
+
+                <!-- 입력란 복사 script-->
+                <script>
+                    $(function () {
+				        $('[data-toggle="account_id"]').tooltip()
+				        $('[data-toggle="account_url"]').tooltip()
+			        })
+
+                    $('#{{ account.id }}').click(function(){
+                        $("#i_account_requestor").val('{{ account.account_requestor }}');
+						$("#i_account_devteam").val('{{ account.account_devteam }}');
+						$("#i_account_svr").val('{{ account.account_svr }}');
+						$("#i_account_user").val('{{ account.account_user }}');
+						$("#i_account_host").val('{{ account.account_host }}');
+						$("#i_account_pass").val('{{ account.account_pass }}');
+						$("#i_account_info").val('{{ account.account_info }}');
+						$("#i_account_url").val('{{ account.account_url }}');
+						$("#i_account_db").val('{{ account.account_db }}');
+						$("#i_account_table").val('{{ account.account_table }}');
+						$("#i_account_grant").val('{{ account.account_grant }}');
+
+                        // 선택 옵션 숨기기 위함
+                        $("#i_account_grant").show();
+                        $("#i_account_grant_direct").val('');
+                        $("#i_account_grant_direct").hide();
+
+						// 권한 선택 옵션에 없는 값일 경우. 수동입력 권한일 경우
+						if(!$("#i_account_grant").val()){
+                            $("#i_account_grant_direct").show();
+                            $("#i_account_grant_direct").val('{{ account.account_grant }}');
+                            $("#i_account_grant_direct").attr("disabled",false);
+                            $("#i_account_grant").hide();
+						}
+		            });
+                </script>
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
                 data-id="{{ account.id }}"
                 data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
                 data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
@@ -73,27 +125,226 @@
                 data-account_del_yn="{{ account.account_del_yn }}"
                 data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
                 data-account_del_reason="{{ account.account_del_reason }}"
-                data-account_del_note="{{ account.account_del_note }}" style = "cursor:pointer;">
-                <td style = "width: 1%;">
-                    <input type="checkbox" id="checkbox" name="checkbox">
-                </td>
-                <td style = "width: 3%;">{{ account.id }}</td>
-                <td style = "width: 8%;">{{ account.account_create_dt|date:'Y/m/d H:i:s' }}</td>
-                <td style = "width: 6%;">{{ account.account_requestor }}</td>
-                <td style = "width: 8%;">{{ account.account_devteam }}</td>
-                <td style = "width: 8%;">{{ account.account_svr }}</td>
-                <td style = "width: 8%;">{{ account.account_user }}</td>
-                <td style = "width: 8%;">{{ account.account_host }}</td>
-                <td style = "width: 25%;">{{ account.account_grant }}</td>
-                <td style = "width: 8%;">{{ account.account_db }}</td>
-                <td style = "width: 8%;">{{ account.account_table }}</td>
-                <td style = "width: 10%;">
-                        {{ account.account_url }}
-                </td>
-            </tr>
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_create_dt|date:'Y/m/d H:i:s' }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_requestor }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_devteam }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_svr }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_user }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_host }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_grant }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_db }}
+            </td>
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
+                data-id="{{ account.id }}"
+                data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
+                data-account_update_dt="{{ account.account_update_dt|date:'Y/m/d H:i:s' }}"
+                data-account_end_dt="{{ account.account_end_dt|date:'Y/m/d H:i:s' }}"
+                data-account_requestor="{{ account.account_requestor }}"
+                data-account_svr="{{ account.account_svr }}"
+                data-account_user="{{ account.account_user }}"
+                data-account_devteam="{{ account.account_devteam}}"
+                data-account_host="{{ account.account_host }}"
+                data-account_pass="{{ account.account_pass }}"
+                data-account_hash="{{ account.account_hash }}"
+                data-account_grant="{{ account.account_grant }}"
+                data-account_grant_with="{{ account.account_grant_with }}"
+                data-account_db="{{ account.account_db }}"
+                data-account_table="{{ account.account_table }}"
+                data-account_info="{{ account.account_info}}"
+                data-account_sql="{{ account.account_sql }}"
+                data-account_url="{{ account.account_url }}"
+                data-account_note="{{ account.account_note }}"
+                data-account_del_yn="{{ account.account_del_yn }}"
+                data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
+                data-account_del_reason="{{ account.account_del_reason }}"
+                data-account_del_note="{{ account.account_del_note }}">
+                {{ account.account_table }}
+            </td>
+            <td style = "cursor:pointer;" id="{{ account.account_url}}" name="{{ account.account_url}}" data-toggle="account_url" data-placement="right" title="URL 이동" onClick="window.open('http://naver.com/')">
+                {{ account.account_url }}
+            </td>
+
+
+        </tr>
         {% endfor %}
     </table>
-{% endif %}
+    {% endif %}
 
 {% if callmorepostFlag == 'true' %}
     <button id="morelist" type="button" class="btn btn-primary btn-sm btn-block">더 보기</button>
