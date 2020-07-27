@@ -348,12 +348,12 @@ def account_update(request):
         print(update_sql)
         print("============================================================")
 
-        # try:
-        #     cursor = connections['default'].cursor()
-        #     cursor.execute(update_sql)
-        #     connection.commit()
-        # finally:
-        #     cursor.close()
+        try:
+            cursor = connections['default'].cursor()
+            cursor.execute(update_sql)
+            connection.commit()
+        finally:
+            cursor.close()
 
         ########################################## 페이지 원래대로 테스트
 
@@ -368,7 +368,6 @@ def account_update(request):
         account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
 
-        print("============================================================")
         print("검색란 리턴값 테스트 선입니다.")
         print("============================================================")
         print(account_requestor)
@@ -510,7 +509,7 @@ def account_delete(request):
     if request.method == 'POST':
 
         #### DELETE
-        id = request.POST.get('id')
+        d_id = request.POST.get('d_id')
         d_account_requestor = request.POST.get('d_account_requestor');
         d_account_svr = request.POST.get('d_account_svr');
         d_account_user = request.POST.get('d_account_user');
@@ -529,7 +528,7 @@ def account_delete(request):
         print("============================================================")
         print("DELETE 리턴값 테스트 선입니다.")
         print("============================================================")
-        print(id)
+        print(d_id)
         print(d_account_requestor)
         print(d_account_devteam)
         print(d_account_info)
@@ -552,19 +551,93 @@ def account_delete(request):
         ", account_del_yn = 'Y' " + \
         ", account_del_reason = " + "'" + d_account_del_reason+ "'" + \
         ", account_del_note = " + "'" + d_account_del_note + "'" + \
-        " where id = " + id + ";"
+        " where id = " + d_id + ";"
 
-        print("delete sql: ============================================================")
         print(delete_sql)
         print("============================================================")
 
-        # try:
-        #     cursor = connections['default'].cursor()
-        #     cursor.execute(delete_sql)
-        #     connection.commit()
-        # finally:
-        #     cursor.close()
+        try:
+            cursor = connections['default'].cursor()
+            cursor.execute(delete_sql)
+            connection.commit()
+        finally:
+            cursor.close()
 
+        ########################################## 페이지 원래대로 테스트
+
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
+        callmorepostFlag = 'true'
+
+        print("검색란 리턴값 테스트 선입니다.")
+        print("============================================================")
+        print(account_requestor)
+        print(account_devteam)
+        print(account_svr)
+        print(account_user)
+        print(account_host)
+        print(account_grant)
+        print(account_db)
+        print(account_table)
+        print(account_url)
+        print("============================================================")
+
+        account_list = Account.objects.filter(
+            account_requestor__contains=account_requestor,
+            account_devteam__contains=account_devteam,
+            account_svr__contains=account_svr,
+            account_user__contains=account_user,
+            account_host__contains=account_host,
+            account_grant__contains=account_grant,
+            account_db__contains=account_db,
+            account_table__contains=account_table,
+            account_url__contains=account_url,
+            account_del_yn='N'
+        ).order_by('-id')
+
+        page = int(request.POST.get('page'))
+        total_count = account_list.count()
+        page_max = round(account_list.count() / 15)
+        paginator = Paginator(account_list, page * 15)
+
+        try:
+            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                account_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                account_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            account_list = paginator.get_page(1)
+        except EmptyPage:
+            account_list = paginator.get_page(paginator.num_pages)
+
+        context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
+            'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url,
+            'account_list': account_list,
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+            'page_max': page_max
+        }
+
+        return render(request, 'account_select.html', context)
+
+
+    else:
+        return render(request, 'account.html')
 
         # account = Account.objects.get(id=request.POST['id']) # pk에 해당하는 업데이트 대상을 가져옴
         # form = AccountDelForm(request.POST) # 입력값 가져옴
@@ -592,8 +665,6 @@ def account_delete(request):
         #     account.save()
 
         ########################################## 페이지 원래대로 테스트
-
-
     #     page = request.POST['page']
     #     scrollHeight = request.POST['scrollHeight']
     #     account_requestor = request.POST.get('s_account_requestor')

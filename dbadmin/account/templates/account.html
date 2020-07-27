@@ -285,7 +285,10 @@
 
                             <!-- Modal Delete -->
 							<div role="tabpanel" class="tab-pane fade" id="deleteTab">
+                                <!--
                                 <form class="" action="{% url 'account_delete' %}" method="post" name="deleteForm">
+                                -->
+								<form class="" onsubmit="return false;" name="deleteForm">
                                 {% csrf_token %}
 
 								<!-- hidden value (pk) -->
@@ -360,8 +363,29 @@
 								<tr class="">
 									<td class="bg-dark text-white align-middle">SQL</td>
 									<td colspan="3">
-										<input class="form-control form-control-sm" id="d_account_sql" name="d_account_sql" type="text" readonly>
+										<input class="form-control form-control-sm" id="d_account_sql" name="d_account_sql" type="text" readonly title="클릭 : 클립보드 복사" data-toggle="tooltip" readonly onclick="d_copy_clipboard()">
 									</td>
+									<!-- 클립보드 복사 -->
+									<script>
+										function d_copy_clipboard() {
+											var copyText = document.getElementById("d_account_sql");
+											copyText.select();
+											document.execCommand("Copy");
+										}
+
+										$(function(){
+											$('#d_account_sql').tooltip({
+												animation: true,
+												container: false,
+												delay: {show:50, hide:50},
+												html: false,
+												selector: false,
+												template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
+												trigger: 'hover focus',
+												viewport: { selector: 'body', padding: 0 },
+											});
+										});
+									</script>
 								</tr>
 								<tr class="">
 									<td class="bg-dark text-white align-middle">삭제 사유</td>
@@ -370,7 +394,7 @@
 									</td>
 								</tr>
 								<tr class="">
-									<td class="bg-dark text-white align-middle">비고 (URL)</td>
+									<td class="bg-dark text-white align-middle">삭제 JIRA</td>
 									<td colspan="3">
 										<input class="form-control form-control-sm" id="d_account_del_note" name="d_account_del_note" type="text">
 									</td>
@@ -379,7 +403,7 @@
 								<p class="text-right">삭제 하시겠습니까?</p>
 
 								<div class="modal-footer">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">확인</button>
+									<button class="btn btn-outline-primary btn-sm" onclick="deleteBox()" type="submit">삭제</button>
                                     <button type="" class="btn btn-sm btn-outline-danger" data-dismiss="modal">취소</button>
 								</div>
                                 </form>
@@ -421,7 +445,7 @@
 								</tr>
 								<tr>
 									<td class="bg-dark text-white align-middle" >만료일</td>
-									<td><input class="form-control form-control-sm" id="u_account_end_dt" name="u_account_end_dt" type="text"></td>
+									<td><input class="form-control form-control-sm" id="u_account_end_dt" name="u_account_end_dt" type="text" readonly></td>
 									<td class="bg-dark text-white align-middle">요청자명</td>
 									<td><input class="form-control form-control-sm" id="u_account_requestor" name="u_account_requestor" type="text"></td>
 								</tr>
@@ -464,11 +488,11 @@
 								<tr class="">
 									<td class="bg-dark text-white align-middle">SQL</td>
 									<td colspan="3">
-										<input class="form-control form-control-sm" id="u_account_sql" name="u_account_sql" type="text" data-placement="bottom" title="클릭 : 클립보드 복사" data-toggle="tooltip" readonly onclick="copy_clipboard()">
+										<input class="form-control form-control-sm" id="u_account_sql" name="u_account_sql" type="text" data-placement="bottom" title="클릭 : 클립보드 복사" data-toggle="tooltip" readonly onclick="u_copy_clipboard()">
 									</td>
 									<!-- 클립보드 복사 -->
 										<script>
-											function copy_clipboard() {
+											function u_copy_clipboard() {
 												var copyText = document.getElementById("u_account_sql");
 												copyText.select();
 												document.execCommand("Copy");
@@ -624,12 +648,86 @@
     })
     </script>
 
+	<!-- account delete ajax script -->
+	<script>
+		function deleteBox() {
+			var page = parseInt($("#page").val());
+			delete_callMoreListAjax(page);
+			$("#page").val(parseInt(page));
+			$('#myModal').modal("hide");
+		}
+
+		function delete_callMoreListAjax(page) {
+			var d_id = $("#id").val();
+			var d_account_requestor = $("#d_account_requestor").val();
+			var d_account_svr = $("#d_account_svr").val();
+			var d_account_user = $("#d_account_user").val();
+			var d_account_devteam = $("#d_account_devteam").val();
+			var d_account_host = $("#d_account_host").val();
+			var d_account_pass = $("#d_account_pass").val();
+			var d_account_grant = $("#d_account_grant").val();
+			var d_account_grant_with = $("#d_account_grant_with").val();
+			var d_account_db = $("#d_account_db").val();
+			var d_account_table = $("#d_account_table").val();
+			var d_account_info = $("#d_account_info").val();
+			var d_account_url = $("#d_account_url").val();
+			var d_account_del_reason = $("#d_account_del_reason").val();
+			var d_account_del_note = $("#d_account_del_note").val();
+
+			var s_account_requestor = $("#s_account_requestor").val();
+			var s_account_devteam = $("#s_account_devteam").val();
+			var s_account_svr = $("#s_account_svr").val();
+			var s_account_user = $("#s_account_user").val();
+			var s_account_host = $("#s_account_host").val();
+			var s_account_grant = $("#s_account_grant").val();
+			var s_account_db = $("#s_account_db").val();
+			var s_account_table = $("#s_account_table").val();
+			var s_account_url = $("#s_account_url").val();
+
+			$.ajax( {
+				type : 'POST',
+				url: "{% url 'account_delete' %}",
+				data: {
+					'd_id': d_id,
+					'd_account_requestor': d_account_requestor,
+					'd_account_svr': d_account_svr,
+					'd_account_user': d_account_user,
+					'd_account_devteam': d_account_devteam,
+					'd_account_host': d_account_host,
+					'd_account_pass': d_account_pass,
+					'd_account_grant': d_account_grant,
+					'd_account_grant_with': d_account_grant_with,
+					'd_account_db': d_account_db,
+					'd_account_table': d_account_table,
+					'd_account_info': d_account_info,
+					'd_account_url': d_account_url,
+					'd_account_del_reason': d_account_del_reason,
+					'd_account_del_note': d_account_del_note,
+					's_account_requestor': s_account_requestor,
+					's_account_devteam': s_account_devteam,
+					's_account_svr': s_account_svr,
+					's_account_user': s_account_user,
+					's_account_host': s_account_host,
+					's_account_grant': s_account_grant,
+					's_account_db': s_account_db,
+					's_account_table': s_account_table,
+					's_account_url': s_account_url,
+					'page': page,
+					'csrfmiddlewaretoken': token,
+				},
+				success: addMoreAccountAjax,
+				dataType: 'html'
+			});
+		}
+	</script>
+
 	<!-- account update ajax script -->
 	<script>
 		function updateBox() {
 			var page = parseInt($("#page").val());
 			update_callMoreListAjax(page);
 			$("#page").val(parseInt(page));
+			$('#myModal').modal("hide");
 		}
 
 		function update_callMoreListAjax(page) {
@@ -690,8 +788,7 @@
 				dataType: 'html'
 			});
 		}
-
-		</script>
+	</script>
 
 
 	<!-- account select ajax script -->
