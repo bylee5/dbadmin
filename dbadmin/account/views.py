@@ -410,6 +410,7 @@ def account_update(request):
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
 
+
         context = {
             'account_requestor': account_requestor,
             'account_devteam': account_devteam,
@@ -422,7 +423,8 @@ def account_update(request):
             'account_url': account_url,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-            'page_max': page_max
+            'page_max': page_max,
+            'test_id': str(u_id)
         }
 
         return render(request, 'account_select.html', context)
