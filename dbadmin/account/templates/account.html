@@ -13,6 +13,12 @@
 	<span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-info" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">다중 수정(테스트)</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-dark" data-toggle="collapse" data-target="#collapseDeleteMulti" aria-controls="collapseDeleteMulti">다중 삭제(테스트)</span>
+
+	<!-- 로딩바 -->
+	<div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners">
+		<span class="sr-only">Loading...</span>
+	</div>
+
    	<!--
 	<span style="font-size: 12px;" type="button" class="badge badge-dark" onclick="multi_updateBox()">다중 수정(테스트)</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-info" onclick="multi_deleteBox()">다중 삭제(테스트)</span>
@@ -240,6 +246,19 @@
 	<!-- 다중 수정란 -->
 	<div class="collapse small" id="collapseUpdateMulti" style="1font-size: 12px;">
 		<div class="card card-body mt-2 bg-light callout callout-info">
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						1 of 2
+					</div>
+					<div class="col">
+						2 of 2
+					</div>
+				</div>
+			</div>
+
+
+
 			<h6>다중 수정란</h6>
 			<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
 				(예시 : select, insert, update, execute)</a>
@@ -381,7 +400,10 @@
 			<input id="scrollHeight" name="scrollHeight" type="hidden" value="{{ scrollHeight }}">
 		{% endif %}
 	</div>
+
 	<div class="board small" id="account_list_ajax" style="font-size: 12px;"></div>
+
+
 
     <!-- Modal -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -654,6 +676,22 @@
 		</div>
 	</div>
 
+	<!-- loading control -->
+	<script>
+	$(document).ready(function(){
+    	$('#spinners').hide();
+	})
+
+	.ajaxStart(function(){
+        $('#spinners').fadeIn(20);
+
+	})
+
+	.ajaxStop(function(){
+		$('#spinners').fadeOut(20);
+	});
+	</script>
+
 	<!-- Modal window option script -->
     <script>
     $('#myModal').on('show.bs.modal', function (event) {
@@ -913,7 +951,6 @@
 			});
 		}
 	</script>
-
 
 	<!-- account select ajax script -->
 	<script>

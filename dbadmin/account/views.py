@@ -266,12 +266,16 @@ def account_insert(request):
         # alert 테스트
         alert_type = 1
 
+        # 마지막 수정값
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
         context = {
             'account_user': account_user,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
             'page_max': page_max,
-            'alert_type': alert_type
+            'alert_type': alert_type,
+            'last_modify_dt': last_modify_dt
         }
 
         return render(request, 'account_select.html', context)
@@ -410,6 +414,7 @@ def account_update(request):
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
 
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         context = {
             'account_requestor': account_requestor,
@@ -424,7 +429,7 @@ def account_update(request):
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
             'page_max': page_max,
-            'test_id': str(u_id)
+            'last_modify_dt': last_modify_dt
         }
 
         return render(request, 'account_select.html', context)

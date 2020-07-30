@@ -30,7 +30,7 @@
 
     {% endif %}
 
-<< 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>, MAX_PAGE : {{ page_max }}, 마지막 수정했던 ID값 : {{ test_id }}
+<< 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>, MAX_PAGE : {{ page_max }}, 마지막 수정했던 ID값 : {{ test_id }}, 시간 : {{ test_dt }}
     <table class="table table-bordered table-sm table-hover">
         <tr class="bg-dark text-white">
             <th style="width: 1%;" class="check-all rounded-left tmp_bg-light table-borderless">
@@ -52,12 +52,16 @@
     {% if account_list %}
         {% for account in account_list %}
 
-        {% if test_id == account.id %}
+        {% if account.account_update_dt|date:'Y/m/d H:i:s' == last_modify_dt %}
+        <!--
         <tr style="font-weight:bold">
+        -->
+        <tr style="background-color: #FFDEAD">
         {% else %}
         <tr>
         {% endif %}
-            <td class="bg-light">
+
+            <td>
                 <input type="checkbox" id="checkbox" name="checkbox" class="check" value="{{ account.id }}">
                 <!-- 체크박스 전체선택/해제하기 -->
                 <script>
@@ -106,6 +110,7 @@
 		            });
                 </script>
             </td>
+
             <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
                 data-id="{{ account.id }}"
                 data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
