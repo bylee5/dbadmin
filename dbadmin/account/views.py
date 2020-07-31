@@ -267,7 +267,7 @@ def account_insert(request):
         alert_type = 1
 
         # 마지막 수정값
-        last_modify_dt = timezone.localtime()
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         context = {
             'account_user': account_user,
