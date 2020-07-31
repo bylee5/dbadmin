@@ -416,6 +416,10 @@ def account_update(request):
 
         last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
+        print("------------------------------------------------")
+        print(last_modify_dt)
+        print("------------------------------------------------")
+
         context = {
             'account_requestor': account_requestor,
             'account_devteam': account_devteam,
