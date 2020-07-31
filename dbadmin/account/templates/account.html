@@ -11,8 +11,7 @@
 	<!-- 검색/입력 span -->
 	<span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">검색</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
-	<span style="font-size: 12px;" type="button" class="badge badge-info" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">다중 수정(테스트)</span>
-	<span style="font-size: 12px;" type="button" class="badge badge-dark" data-toggle="collapse" data-target="#collapseDeleteMulti" aria-controls="collapseDeleteMulti">다중 삭제(테스트)</span>
+	<span style="font-size: 12px;" type="button" class="badge badge-info" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">다중 수정/삭제(테스트, 미구현)</span>
 
 	<!-- 로딩바 -->
 	<div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners">
@@ -245,140 +244,94 @@
 
 	<!-- 다중 수정란 -->
 	<div class="collapse small" id="collapseUpdateMulti" style="1font-size: 12px;">
-		<div class="card card-body mt-2 bg-light callout callout-info">
-			<div class="container">
-				<div class="row">
-					<div class="col">
-						1 of 2
-					</div>
-					<div class="col">
-						2 of 2
-					</div>
+		<table>
+			<td>
+				<div class="card card-body mt-2 bg-light callout callout-info">
+					<h6>다중 수정란</h6>
+					<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
+						(예시 : select, insert, update, execute)</a>
+					<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
+						(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
+
+					<table class="table table-sm text-center" style="table-layout: fixed">
+						<form class="form-inline" onsubmit="return false;" name="MultiUpdateForm">
+							{% csrf_token %}
+							<tr class="bg-dark text-white">
+								<th style="width: 30%" class="rounded-left">변경 항목</th>
+								<th style="width: 62%" class="">변경 값</th>
+								<th style="width: 8%" class="rounded-right"></th>
+							<tr class="">
+								<td>
+									<div class="input-group input-group-sm">
+										<select class="custom-select" id="mu_account_grant" name="mu_account_grant">
+											<option value="" selected>요청자</option>
+											<option value="">요청팀</option>
+											<option value="">서버</option>
+											<option value="">아이디</option>
+											<option value="">허용호스트</option>
+											<option value="">패스워드</option>
+											<option value="">권한</option>
+											<option value="">DB</option>
+											<option value="">TABLE</option>
+											<option value="">용도</option>
+											<option value="">URL</option>
+										</select>
+									</div>
+								</td>
+								<td><input class="form-control form-control-sm" id="mu_value" name="mu_value" type="text"></td>
+								<td>
+									<button class="btn btn-outline-info btn-sm" onclick="MultiUpdateBox()" type="submit">수정</button>
+								</td>
+							</tr>
+
+							<!-- account UpdateMulti ajax script -->
+							<script>
+								function MultiUpdateBox() {
+									alert("다중 수정");
+								}
+							</script>
+
+						</form>
+					</table>
 				</div>
-			</div>
+			</td>
+			<td>
+				<div class="card card-body mt-2 bg-light callout callout-dark">
+					<h6>다중 삭제란</h6>
+					<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
+						(예시 : select, insert, update, execute)</a>
+					<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
+						(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
 
+					<table class="table table-sm text-center" style="table-layout: fixed">
+						<form class="form-inline" onsubmit="return false;" name="MultiDeleteForm">
+							{% csrf_token %}
+							<tr class="bg-dark text-white">
+								<th style="width: 62%" class="rounded-left">삭제 사유</th>
+								<th style="width: 30%" class="">삭제 URL(JIRA)</th>
+								<th style="width: 8%" class="rounded-right"></th>
+							<tr class="">
+								<td><input class="form-control form-control-sm" id="md_value" name="md_value" type="text"></td>
+								<td><input class="form-control form-control-sm" id="md_value" name="md_value" type="text"></td>
+								<td>
+									<button class="btn btn-outline-dark btn-sm" onclick="MultiDeleteBox()" type="submit">삭제</button>
+								</td>
+							</tr>
 
+							<!-- account DeleteMulti ajax script -->
+							<script>
+								function MultiDeleteBox() {
+									alert("다중 삭제");
+								}
+							</script>
 
-			<h6>다중 수정란</h6>
-			<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
-				(예시 : select, insert, update, execute)</a>
-			<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
-				(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
-
-			<table class="table table-sm text-center" style="table-layout: fixed">
-				<form class="form-inline" onsubmit="return false;" name="UpdateMultiForm">
-				{% csrf_token %}
-				<tr class="">
-					<td style="width: 5%" class="bg-dark text-white align-middle">요청자명</td>
-					<td style="width: 9%"><input class="form-control form-control-sm" id="mu_account_requestor" name="mu_account_requestor" type="text"></td>
-					<td style="width: 5%" class="bg-dark text-white align-middle">요청팀</td>
-					<td style="width: 9%"><input class="form-control form-control-sm" id="i_account_devteam" name="i_account_devteam" value="{{ i_account_devteam }}" type="text"></td>
-					<td style="width: 5%" class="bg-dark text-white align-middle">서버</td>
-					<td style="width: 9%"><input class="form-control form-control-sm" id="i_account_svr" name="i_account_svr" value="{{ i_account_svr }}" type="text"></td>
-					<td style="width: 5%" class="bg-dark text-white align-middle">아이디</td>
-					<td style="width: 9%"><input class="form-control form-control-sm" id="i_account_user" name="i_account_user" value="{{ i_account_user }}" type="text"></td>
-					<td style="width: 5%" class="bg-dark text-white align-middle">허용 호스트</td>
-					<td colspan="2" style="width: 18%"><input class="form-control form-control-sm" id="i_account_host" name="i_account_host" value="{{ i_account_host }}" type="text"></td>
-					<td style="width: 5%" class="bg-dark text-white align-middle">패스워드</td>
-					<td style="width: 8%"><input class="form-control form-control-sm" id="i_account_pass" name="i_account_pass" value="{{ i_account_pass }}" type="text"></td>
-				</tr>
-				<tr class="">
-					<td class="bg-dark text-white align-middle">INFO</td>
-					<td><input class="form-control form-control-sm" id="i_account_info" name="i_account_info" value="{{ i_account_info }}" type="text"></td>
-					<td class="bg-dark text-white align-middle">URL</td>
-					<td><input class="form-control form-control-sm" id="i_account_url" name="i_account_url" value="{{ i_account_url }}" type="text"></td>
-					<td class="bg-dark text-white align-middle">DB</td>
-					<td><input class="form-control form-control-sm" id="i_account_db" name="i_account_db" value="{{ i_account_db }}" type="text"></td>
-					<td class="bg-dark text-white align-middle">TABLE</td>
-					<td><input class="form-control form-control-sm" id="i_account_table" name="i_account_table" value="{{ i_account_table }}" type="text"></td>
-					<td class="bg-dark text-white align-middle">권한</td>
-					<td colspan="4">
-						<div class="input-group input-group-sm">
-							<select class="custom-select" id="mu_account_grant" name="mu_account_grant">
-								<option value="select" selected>select</option>
-								<option value="select, insert, update, delete">select, insert, update, delete</option>
-								<option value="select, insert, update, delete, alter, drop, create">select, insert, update, delete, alter, drop, create</option>
-								<option value="">직접 입력</option>
-							</select>
-							<input class="form-control form-control-sm" id="mu_account_grant_direct" name="mu_account_grant_direct" type="text">
-
-								<!-- input grant 직접입력 구현 -->
-								<script>
-								$('#mu_account_grant').load('dummy',function(){
-									$("#mu_account_grant_direct").show();
-									$("#mu_account_grant_direct").hide();
-								});
-
-								$('#mu_account_grant').change(function(){
-									$("#mu_account_grant option:selected").each(function () {
-										if($(this).val() == ''){
-											$("#mu_account_grant_direct").show();
-											$("#mu_account_grant_direct").val('');
-											$("#mu_account_grant_direct").attr("disabled",false);
-											$("#mu_account_grant").hide();
-										}else{
-											$("#mu_account_grant").show();
-											$("#mu_account_grant_direct").hide();
-										}
-									});
-								});
-								</script>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2" class="text-left">
-						<button class="btn btn-outline-info btn-sm" onclick="insertBox()" type="submit">수정</button>
-						<input class="btn btn-outline-dark btn-sm" type="button" value="지우기" onClick="UpdateMultiBox_del()">
-					</td>
-				</tr>
-
-				<!-- account UpdateMulti ajax script -->
-				<script>
-
-				</script>
-
-				</form>
-			</table>
-		</div>
+						</form>
+					</table>
+				</div>
+			</td>
+		</table>
 	</div>
 
-	<!-- 다중 삭제란 -->
-	<div class="collapse small" id="collapseDeleteMulti" style="1font-size: 12px;">
-		<div class="card card-body mt-2 bg-light callout callout-dark">
-			<h6>다중 삭제란</h6>
-			<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
-				(예시 : select, insert, update, execute)</a>
-			<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
-				(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
-
-			<table class="table table-sm text-center" style="table-layout: fixed">
-				<form class="form-inline" onsubmit="return false;" name="DeleteMultiForm">
-				{% csrf_token %}
-				<tr class="">
-					<td style="width: 7%" class="bg-dark text-white align-middle">삭제사유</td>
-					<td style="width: 93%"><input class="form-control form-control-sm" id="i_account_requestor" name="i_account_requestor" value="{{ i_account_requestor }}" type="text"></td>
-				</tr>
-					<td class="bg-dark text-white align-middle">삭제지라</td>
-					<td><input class="form-control form-control-sm" id="i_account_devteam" name="i_account_devteam" value="{{ i_account_devteam }}" type="text"></td>
-				</tr>
-				<tr>
-					<td colspan="2" class="text-left">
-						<button class="btn btn-outline-dark btn-sm" onclick="DeleteMultiBox()" type="submit">삭제</button>
-						<input class="btn btn-outline-dark btn-sm" type="button" value="지우기" onClick="DeleteMultiBox_del()">
-					</td>
-				</tr>
-
-				<!-- account DeleteMulti ajax script -->
-				<script>
-
-
-				</script>
-
-				</form>
-			</table>
-		</div>
-	</div>
 
     <!-- 결과란 -->
 	<div>
@@ -683,12 +636,12 @@
 	})
 
 	.ajaxStart(function(){
-        $('#spinners').fadeIn(20);
+        $('#spinners').fadeIn(10);
 
 	})
 
 	.ajaxStop(function(){
-		$('#spinners').fadeOut(20);
+		$('#spinners').fadeOut(10);
 	});
 	</script>
 
