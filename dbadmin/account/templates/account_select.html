@@ -10,23 +10,28 @@
 
     <hr>
     <!-- alert_type에 따른 에러뿌리기 -->
-    {% if alert_type == 1 %}
+    {% if alert_type != "ERR_0" %}
     <table>
         <tr>
             <td>
-				<div class="alert alert-danger alert-dismissible fade show role="alert">
-				<h6 class="alert-danger">입력에 실패했습니다.</h6>
-					원인 : 테스트용 alert 입니다. (alert_type 값을 리턴받아 사용.현재는 계정 입력 시, 출력중)
-                    <br>입력 아이디값 : {{ account_user }}
-
+				<div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertbox" name="alertbox">
+				<h6 class="alert-danger">{{ alert_type }} - 작업에 실패했습니다.</h6>
+                <a style="white-space:pre;">{{ alert_message }}</a>
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 				</div>
-
 			</td>
         </tr>
     </table>
+
+    <!--
+    <script>
+	    $(document).ready(function(){
+            $('#alertbox').fadeOut(10000);
+        });
+    </script>
+    -->
 
     {% endif %}
 

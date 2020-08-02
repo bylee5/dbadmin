@@ -17,10 +17,210 @@ from .forms import *
 from django.template import Context, Engine, TemplateDoesNotExist, loader
 
 #########################################################################
+# 계정 정합성 체크
+#########################################################################
+
+#------------------------------------------------------------------------
+# ※ 이슈 : 계정 한개만 존재 할 경우, 수정 입력등에 이슈 있을 수 있음
+#------------------------------------------------------------------------
+
+
+# 1.패스워드 중복 여부 체크
+# 하나의 아이디에는 같은 패스워드를 사용해야 한다.
+# 운영, 개발간에는 패스워드가 달라야한다.
+# 체크값 : 호스트, 계정, 패스워드
+def check_overlap_password(svr, user, password):
+    # real/stage
+    if svr.find('dev') < 0:
+        print("리얼")
+        query = "SELECT count(*) AS cnt FROM account_account where 1=1 " \
+                " AND account_svr not like '%dev%'" \
+                " AND account_user='" + user + "'" \
+                " AND account_pass!='" + password + "'" \
+                " AND account_del_yn='N'"
+    # dev/qa
+    else:
+        print("DEV")
+        query = "SELECT count(*) AS cnt FROM account_account where 1=1 " \
+                " AND account_svr like '%dev%'" \
+                " AND account_user='" + user + "'" \
+                " AND account_pass!='" + password + "'" \
+                " AND account_del_yn='N'"
+
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    print(row)
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_1"
+        alert_message = "입력하신 패스워드가 동일 계정 내 패스워드와 다릅니다."
+                        # "SQL> SELECT COUNT(*) AS cnt FROM dbadmin.account_account\n" + \
+                        # "WHERE account_svr='SVR' AND account_user='USER' AND account_pass!='PASS'"
+
+    return alert_type, alert_message
+
+# 2. 계정 중복 여부 체크
+# 동일한 계정이 존재해선 안된다.
+# 체크값 : 서버, 아이디, 패스워드, 호스트, 권한, DB, TABLE
+def check_overlap_account(svr, user, host, password, grant, db, table):
+    query = "SELECT count(*) AS cnt FROM account_account WHERE 1=1" \
+            " AND account_svr='" + svr + "'" \
+            " AND account_user='" + user + "'" \
+            " AND account_host='" + host + "'" \
+            " AND account_pass='" + password + "'" \
+            " AND account_grant='" + grant + "'" \
+            " AND account_db='" + db + "'" \
+            " AND account_table='" + table + "'" \
+            " AND account_del_yn='N'"
+
+    print(query)
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_2"
+        alert_message = "입력하신 계정과 중복인 계정이 존재합니다. 호스트, 권한 등을 확인해주세요."
+
+    return alert_type, alert_message
+
+# 3. 동일 패스워드를 사용 타 계정 여부 ing ~
+# 체크값 :
+def check_overlap_test1(svr, user, password):
+    query = "SELECT count(*) AS cnt FROM account_account \
+            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_3"
+        alert_message = "동일 패스워드를 사용하는 타 계정이 존재합니다. 다른 패스워드를 사용해주세요."
+
+    return alert_type, alert_message
+
+# 4. 상위 호환 계정 권한 존재유무 체크 ing ~
+# 체크값 :
+def check_overlap_test2(svr, user, password):
+    query = "SELECT count(*) AS cnt FROM account_account \
+            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_4"
+        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
+
+    return alert_type, alert_message
+
+# 5. 상위 호환 계정 호스트대역 존재유무 체크 ing ~
+# 체크값 :
+def check_overlap_test3(svr, user, password):
+    query = "SELECT count(*) AS cnt FROM account_account \
+            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_5"
+        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
+
+    return alert_type, alert_message
+
+# 6. 상위 호환 계정 테이블 존재유무 체크 ing ~
+# 체크값 :
+def check_overlap_test4(svr, user, password):
+    query = "SELECT count(*) AS cnt FROM account_account \
+            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_6"
+        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
+
+    return alert_type, alert_message
+
+# 7. 리얼, NDEVDB 패스워드 불일치 여부 (* 불일치 해야함)
+# 체크값 :
+def check_overlap_test5(svr, user, password):
+    query = "SELECT count(*) AS cnt FROM account_account \
+            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] == 0:
+        alert_type = "ERR_0"
+        alert_message = ""
+
+    else:
+        alert_type = "ERR_6"
+        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
+
+    return alert_type, alert_message
+
+# 00. 메인 계정 정합성 체크 함수
+def check_account_consistency(svr, user, host, password, db, table, grant):
+
+    alert_type, alert_message = check_overlap_password(svr, user, password)
+    if alert_type == "ERR_1":
+        return alert_type, alert_message
+
+    alert_type, alert_message = check_overlap_account(svr, user, host, password, grant, db, table)
+    if alert_type == "ERR_2":
+        return alert_type, alert_message
+
+    # alert_type, alert_message = check_overlap_test1(svr, user, password)
+    # if alert_type == "ERR_3":
+    #     return alert_type, alert_message
+    #
+    # alert_type, alert_message = check_overlap_test2(svr, user, password)
+    # if alert_type == "ERR_4":
+    #     return alert_type, alert_message
+
+    # 아무 if 조건에도 걸리지 않는다면, 즉, 정합성이 모두 맞다면, ERR_0을 리턴
+    return alert_type, alert_message
+
+#########################################################################
 # custom function
 #########################################################################
 # Encrypt key
-# test
 def get_key():
     #file_path = os.path.join(settings.KEY_URL, 'other/keyfile.lst')
     #with open(file_path, encoding='utf-8') as txtfile:
@@ -30,12 +230,14 @@ def get_key():
 
     return key
 
+# 패스워드 해시값 가져오기
 def get_password(account_pass):
     query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + account_pass + "') limit 0,1"
 
     for result in Account_hash.objects.raw(query):
        return result.password_hash
 
+# 패스워드 해시값 세팅
 def put_password(account_pass):
     query = "insert ignore into account_hash(password_encrypt,password_hash)" \
             "values (HEX(AES_ENCRYPT('" + account_pass + "', '" + get_key() + "')), \
@@ -45,7 +247,6 @@ def put_password(account_pass):
     cursor.execute(query)
 
 @login_required
-
 #########################################################################
 # fast select
 #########################################################################
@@ -128,7 +329,8 @@ def account_select(request):
             'account_url': account_url,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-            'page_max': page_max
+            'page_max': page_max,
+            'alert_type': "ERR_0"
         }
 
         return render(request, 'account_select.html', context)
@@ -137,7 +339,6 @@ def account_select(request):
         return render(request, 'account.html')
 
 def account_insert(request):
-
     if request.method == 'POST':
         account_requestor = request.POST.get('i_account_requestor')
         account_devteam = request.POST.get('i_account_devteam')
@@ -212,14 +413,27 @@ def account_insert(request):
             '" + account_url + "', \
             'N','','')"
 
-            # print("insert_sql : " + insert_sql)
 
-            try:
-                cursor = connections['default'].cursor()
-                cursor.execute(insert_sql)
-                connection.commit()
-            finally:
-                cursor.close()
+            # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
+            alert_type, alert_message = check_account_consistency(account_svr, account_user, account_host, account_pass, account_db, account_table, account_grant)
+
+            # 쿼리 수행
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("alert_type : " + alert_type)
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+
+            if alert_type == "ERR_0":
+                try:
+                    cursor = connections['default'].cursor()
+                    cursor.execute(insert_sql)
+                    connection.commit()
+                except:
+                    connection.rollback()
+                finally:
+                    cursor.close()
+
+            # 마지막 수정값
+            last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         # print("============================================================")
 
@@ -263,18 +477,13 @@ def account_insert(request):
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
 
-        # alert 테스트
-        alert_type = 1
-
-        # 마지막 수정값
-        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-
         context = {
             'account_user': account_user,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
             'page_max': page_max,
             'alert_type': alert_type,
+            'alert_message': alert_message,
             'last_modify_dt': last_modify_dt
         }
 
@@ -309,8 +518,6 @@ def account_update(request):
 
         put_password(u_account_pass)
         u_account_hash = get_password(u_account_pass)
-
-        # print(u_id)
 
         update_sql = "update account_account " + \
         "set account_update_dt = now() " + \
@@ -352,12 +559,45 @@ def account_update(request):
         # print(update_sql)
         # print("============================================================")
 
-        try:
-            cursor = connections['default'].cursor()
-            cursor.execute(update_sql)
-            connection.commit()
-        finally:
-            cursor.close()
+
+        # 정합성 체크간 업데이트 중복계정 이슈로 못하던 문제 예외처리
+        # 하나라도 정합성 체크에 필요한 항목이 업데이트 항목에 포함되있다면
+        old_account = Account.objects.get(id=u_id)
+
+        if old_account.account_svr != u_account_svr \
+            or old_account.account_user != u_account_user \
+            or old_account.account_host != u_account_host \
+            or old_account.account_pass != u_account_pass \
+            or old_account.account_db != u_account_db \
+            or old_account.account_table != u_account_table \
+            or old_account.account_grant != u_account_grant:
+
+            # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
+            print("정합성 체크 ON")
+            alert_type, alert_message = check_account_consistency(u_account_svr, u_account_user, u_account_host, u_account_pass, u_account_db, u_account_table, u_account_grant)
+
+        else:
+            print("정합성 체크 OFF")
+            alert_type = "ERR_0"
+            alert_message = ""
+
+
+        # 쿼리 수행
+        print("alert_type : " + alert_type)
+        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+
+        if alert_type == "ERR_0":
+            try:
+                cursor = connections['default'].cursor()
+                cursor.execute(update_sql)
+                connection.commit()
+            except:
+                connection.rollback()
+            finally:
+                cursor.close()
+
+        # 마지막 수정값
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         ########################################## 페이지 원래대로 테스트
 
@@ -414,12 +654,6 @@ def account_update(request):
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
 
-        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-
-        print("------------------------------------------------")
-        print(last_modify_dt)
-        print("------------------------------------------------")
-
         context = {
             'account_requestor': account_requestor,
             'account_devteam': account_devteam,
@@ -433,6 +667,8 @@ def account_update(request):
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
             'page_max': page_max,
+            'alert_type': alert_type,
+            'alert_message': alert_message,
             'last_modify_dt': last_modify_dt
         }
 
@@ -441,7 +677,6 @@ def account_update(request):
 
     else:
         return render(request, 'account.html')
-
 
 def account_delete(request):
     if request.method == 'POST':
@@ -497,6 +732,8 @@ def account_delete(request):
             cursor = connections['default'].cursor()
             cursor.execute(delete_sql)
             connection.commit()
+        except:
+            connection.rollback()
         finally:
             cursor.close()
 
@@ -567,7 +804,8 @@ def account_delete(request):
             'account_url': account_url,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
-            'page_max': page_max
+            'page_max': page_max,
+            'alert_type': "ERR_0"
         }
 
         return render(request, 'account_select.html', context)
@@ -650,7 +888,6 @@ def account_remove_select(request):
 
     else:
         return render(request, 'account_remove.html')
-
 
 
 #########################################################################
