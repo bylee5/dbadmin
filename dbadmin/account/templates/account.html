@@ -179,64 +179,6 @@
 						<input class="btn btn-outline-dark btn-sm" type="button" value="지우기" onClick="insertBox_del()">
 					</td>
 				</tr>
-
-				<!-- account insert ajax script -->
-				<script>
-				function insertBox() {
-					var retVal = confirm("입력하시겠습니까?");
-					if (retVal == true ){
-						var page = parseInt($("#page").val());
-						insert_callMoreListAjax(page);
-						$("#page").val(parseInt(page));
-					}else{
-						return false;
-					}
-				}
-
-				function insertBox_del() {
-					document.insertForm.reset();
-				}
-
-				function insert_callMoreListAjax(page) {
-					var i_account_requestor = $("#i_account_requestor").val();
-					var i_account_devteam = $("#i_account_devteam").val();
-					var i_account_info = $("#i_account_info").val();
-					var i_account_url = $("#i_account_url").val();
-					var i_account_svr = $("#i_account_svr").val();
-					var i_account_user = $("#i_account_user").val();
-					var i_account_host = $("#i_account_host").val();
-					var i_account_pass = $("#i_account_pass").val();
-					var i_account_db = $("#i_account_db").val();
-					var i_account_table = $("#i_account_table").val();
-					var i_account_grant = $("#i_account_grant").val();
-					var i_account_grant_direct = $("#i_account_grant_direct").val();
-
-					$.ajax( {
-						type : 'POST',
-						url: "{% url 'account_insert' %}",
-						data: {
-							'i_account_requestor': i_account_requestor,
-							'i_account_devteam': i_account_devteam,
-							'i_account_info': i_account_info,
-							'i_account_url': i_account_url,
-							'i_account_svr': i_account_svr,
-							'i_account_user': i_account_user,
-							'i_account_host': i_account_host,
-							'i_account_pass': i_account_pass,
-							'i_account_db': i_account_db,
-							'i_account_table': i_account_table,
-							'i_account_grant': i_account_grant,
-							'i_account_grant_direct': i_account_grant_direct,
-							'page': page,
-							'csrfmiddlewaretoken': token,
-						},
-						success: addMoreAccountAjax,
-						dataType: 'html'
-					});
-				}
-
-				</script>
-
 				</form>
 			</table>
 		</div>
@@ -762,6 +704,82 @@
 		modal.find('#s_account_url').val(s_account_url);
     })
     </script>
+
+	<!-- account insert ajax script -->
+	<script>
+	function insertBox() {
+		var retVal = confirm("입력하시겠습니까?");
+		if (retVal == true ){
+			var page = parseInt($("#page").val());
+			insert_callMoreListAjax(page);
+			$("#page").val(parseInt(page));
+		}else{
+			return false;
+		}
+	}
+
+	function insertBox_del() {
+		document.insertForm.reset();
+	}
+
+	function insert_callMoreListAjax(page) {
+		var i_account_requestor = $("#i_account_requestor").val();
+		var i_account_devteam = $("#i_account_devteam").val();
+		var i_account_info = $("#i_account_info").val();
+		var i_account_url = $("#i_account_url").val();
+		var i_account_svr = $("#i_account_svr").val();
+		var i_account_user = $("#i_account_user").val();
+		var i_account_host = $("#i_account_host").val();
+		var i_account_pass = $("#i_account_pass").val();
+		var i_account_db = $("#i_account_db").val();
+		var i_account_table = $("#i_account_table").val();
+		var i_account_grant = $("#i_account_grant").val();
+		var i_account_grant_direct = $("#i_account_grant_direct").val();
+
+		var s_account_requestor = $("#s_account_requestor").val();
+		var s_account_devteam = $("#s_account_devteam").val();
+		var s_account_svr = $("#s_account_svr").val();
+		var s_account_user = $("#s_account_user").val();
+		var s_account_host = $("#s_account_host").val();
+		var s_account_grant = $("#s_account_grant").val();
+		var s_account_db = $("#s_account_db").val();
+		var s_account_table = $("#s_account_table").val();
+		var s_account_url = $("#s_account_url").val();
+
+		$.ajax( {
+			type : 'POST',
+			url: "{% url 'account_insert' %}",
+			data: {
+				'i_account_requestor': i_account_requestor,
+				'i_account_devteam': i_account_devteam,
+				'i_account_info': i_account_info,
+				'i_account_url': i_account_url,
+				'i_account_svr': i_account_svr,
+				'i_account_user': i_account_user,
+				'i_account_host': i_account_host,
+				'i_account_pass': i_account_pass,
+				'i_account_db': i_account_db,
+				'i_account_table': i_account_table,
+				'i_account_grant': i_account_grant,
+				'i_account_grant_direct': i_account_grant_direct,
+				's_account_requestor': s_account_requestor,
+				's_account_devteam': s_account_devteam,
+				's_account_svr': s_account_svr,
+				's_account_user': s_account_user,
+				's_account_host': s_account_host,
+				's_account_grant': s_account_grant,
+				's_account_db': s_account_db,
+				's_account_table': s_account_table,
+				's_account_url': s_account_url,
+				'page': page,
+				'csrfmiddlewaretoken': token,
+			},
+			success: addMoreAccountAjax,
+			dataType: 'html'
+		});
+	}
+
+	</script>
 
 	<!-- account delete ajax script -->
 	<script>

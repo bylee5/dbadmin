@@ -26,44 +26,70 @@ from django.template import Context, Engine, TemplateDoesNotExist, loader
 
 
 # 1.패스워드 중복 여부 체크
-# 하나의 아이디에는 같은 패스워드를 사용해야 한다.
+# 하나의 아이디에는 동일한 패스워드를 사용해야 한다.
 # 운영, 개발간에는 패스워드가 달라야한다.
+# 다른계정에 동일 패스워드를 사용하는 계정은 없어야 한다.
 # 체크값 : 호스트, 계정, 패스워드
 def check_overlap_password(svr, user, password):
     # real/stage
+    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
     if svr.find('dev') < 0:
         print("리얼")
-        query = "SELECT count(*) AS cnt FROM account_account where 1=1 " \
+        query = "SELECT distinct account_user, account_pass FROM account_account where 1=1 " \
                 " AND account_svr not like '%dev%'" \
                 " AND account_user='" + user + "'" \
-                " AND account_pass!='" + password + "'" \
                 " AND account_del_yn='N'"
+
     # dev/qa
     else:
         print("DEV")
-        query = "SELECT count(*) AS cnt FROM account_account where 1=1 " \
+        query = "SELECT distinct account_pass FROM account_account where 1=1 " \
                 " AND account_svr like '%dev%'" \
                 " AND account_user='" + user + "'" \
-                " AND account_pass!='" + password + "'" \
                 " AND account_del_yn='N'"
-
 
     with connections['default'].cursor() as cursor:
         cursor.execute(query)
-        row = cursor.fetchone()
+        rows = cursor.fetchall()
 
-    print(row)
+        print("반복횟수 : " + str(len(rows)))
 
-    if row[0] == 0:
-        alert_type = "ERR_0"
-        alert_message = ""
+        if len(rows) == 0: # 내가 첫 계정인가?
+            print("내가 첫 계정인가? Yes. 그렇다면 동일 패스워드 쓰는 계정이 있는지 체크해봐야지.")
 
-    else:
-        alert_type = "ERR_1"
-        alert_message = "입력하신 패스워드가 동일 계정 내 패스워드와 다릅니다."
-                        # "SQL> SELECT COUNT(*) AS cnt FROM dbadmin.account_account\n" + \
-                        # "WHERE account_svr='SVR' AND account_user='USER' AND account_pass!='PASS'"
+            with connections['default'].cursor() as cursor1:
+                query = "SELECT DISTINCT account_user, account_pass FROM account_account WHERE account_pass='" + password + "'"
+                cursor1.execute(query)
+                row = cursor1.fetchone()
 
+                if len(row) == 0:
+                    print("내가 이 패스워드의 첫 주인이군")
+                    alert_type = "ERR_0"
+                    alert_message = ""
+                else:
+                    print("뭐야 누가 쓰고있네?")
+                    alert_type = "ERR_2"
+                    alert_message = "동일 패스워드를 사용하는 타 계정이 존재합니다. 다른 패스워드를 사용해주세요.\n(중복 패스워드 사용계정 : " + row[0] + ")"
+
+                cursor1.close()
+
+        else:
+            print("내가 첫...계정이 아니구나. 비교를하자.")
+
+            for row in rows:
+                if row[0] == password: # 패스워드가 존재하는가?"
+                    print("동일계정에 일치하는 패스워드가 존재하네 ㅋㅋ 빠져나오자.")
+                    alert_type = "ERR_0"
+                    alert_message = ""
+                    break
+                else: # 패스워드가 존재하지 않는가?
+                    print("계정이 존재하는데, 패스워드가 일치하는게 없나보네...")
+                    alert_type = "ERR_1"
+                    alert_message = "입력하신 패스워드가 동일 계정 내 패스워드와 다릅니다."
+
+        cursor.close()
+
+    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
     return alert_type, alert_message
 
 # 2. 계정 중복 여부 체크
@@ -90,7 +116,7 @@ def check_overlap_account(svr, user, host, password, grant, db, table):
         alert_message = ""
 
     else:
-        alert_type = "ERR_2"
+        alert_type = "ERR_3"
         alert_message = "입력하신 계정과 중복인 계정이 존재합니다. 호스트, 권한 등을 확인해주세요."
 
     return alert_type, alert_message
@@ -199,11 +225,11 @@ def check_overlap_test5(svr, user, password):
 def check_account_consistency(svr, user, host, password, db, table, grant):
 
     alert_type, alert_message = check_overlap_password(svr, user, password)
-    if alert_type == "ERR_1":
+    if alert_type == "ERR_1" or alert_type == "ERR_2":
         return alert_type, alert_message
 
     alert_type, alert_message = check_overlap_account(svr, user, host, password, grant, db, table)
-    if alert_type == "ERR_2":
+    if alert_type == "ERR_3":
         return alert_type, alert_message
 
     # alert_type, alert_message = check_overlap_test1(svr, user, password)
@@ -215,6 +241,9 @@ def check_account_consistency(svr, user, host, password, db, table, grant):
     #     return alert_type, alert_message
 
     # 아무 if 조건에도 걸리지 않는다면, 즉, 정합성이 모두 맞다면, ERR_0을 리턴
+    alert_type = "ERR_0"
+    alert_message = ""
+
     return alert_type, alert_message
 
 #########################################################################
@@ -246,7 +275,6 @@ def put_password(account_pass):
     cursor = connection.cursor()
     cursor.execute(query)
 
-@login_required
 #########################################################################
 # fast select
 #########################################################################
@@ -266,6 +294,7 @@ def account_select_fast(request):
 #########################################################################
 # Account page
 #########################################################################
+@login_required
 def account(request):
     account_svr_list = Account.objects.all().filter(account_del_yn='N').order_by('account_svr').values('account_svr').distinct()
 
@@ -275,6 +304,7 @@ def account(request):
 
     return render(request, 'account.html', context)
 
+@login_required
 def account_select(request):
     if request.method == 'POST':
         account_requestor = request.POST.get('s_account_requestor')
@@ -454,10 +484,42 @@ def account_insert(request):
             # grant select on admdb.* to 'test'@'10.11.22.%' identified by password '*5CE39A29BB2B3BBE6293BC10E9404F058109A152';
             ####################################################################################################
 
+        ########################################## 페이지 원래대로 테스트
+
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
 
+        # print("검색란 리턴값 테스트 선입니다.")
+        # print("============================================================")
+        # print(account_requestor)
+        # print(account_devteam)
+        # print(account_svr)
+        # print(account_user)
+        # print(account_host)
+        # print(account_grant)
+        # print(account_db)
+        # print(account_table)
+        # print(account_url)
+        # print("============================================================")
+
         account_list = Account.objects.filter(
+            account_requestor__contains=account_requestor,
+            account_devteam__contains=account_devteam,
+            account_svr__contains=account_svr,
             account_user__contains=account_user,
+            account_host__contains=account_host,
+            account_grant__contains=account_grant,
+            account_db__contains=account_db,
+            account_table__contains=account_table,
+            account_url__contains=account_url,
             account_del_yn='N'
         ).order_by('-id')
 
@@ -478,7 +540,15 @@ def account_insert(request):
             account_list = paginator.get_page(paginator.num_pages)
 
         context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
             'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url,
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
             'page_max': page_max,
