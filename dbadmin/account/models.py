@@ -48,9 +48,9 @@ class Account(models.Model):
 
 class AccountRepository(models.Model):
 	create_dt = models.DateTimeField(default=datetime.now) # 일자
-	repository_team= models.CharField(blank=True, max_length=20, default='') # 연관부서
+	repository_team = models.CharField(blank=True, max_length=20, default='') # 연관부서
 	repository_name = models.CharField(blank=True, max_length=100, default='') # 레포지터리 명
-	repository_url= models.CharField(blank=True, max_length=250, default='') # 레포지터리 URL
+	repository_url = models.CharField(blank=True, max_length=250, default='') # 레포지터리 URL
 	account_user = models.CharField(blank=True, max_length=50, default='') # 계정명
 	url = models.CharField(blank=True, max_length=100, default='') # JIRA URL
 	info = models.CharField(blank=True, max_length=100, default='') # INFO

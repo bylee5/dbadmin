@@ -887,7 +887,7 @@ def account_delete(request):
         return render(request, 'account.html')
 
 #########################################################################
-# Account Delete='Y' page
+# Account remove page. account_del_yn='Y'
 #########################################################################
 
 def account_remove(request):
@@ -965,78 +965,25 @@ def account_remove_select(request):
 #########################################################################
 # Account repository page
 #########################################################################
+
 def account_repository(request):
-    if request.method == 'POST':
-        repository_team = request.POST['repository_team']
-        repository_name = request.POST['repository_name']
-        repository_url = request.POST['repository_url']
-        account_user = request.POST['account_user']
-        url = request.POST['url']
-        info = request.POST['info']
+    return render(request, 'account_repository.html')
 
-        account_repository_list = AccountRepository.objects.filter(
-            repository_team__contains=repository_team,
-            repository_name__contains=repository_name,
-            repository_url__contains=repository_url,
-            account_user__contains=account_user,
-            url__contains=url,
-            info__contains=info,
-        ).order_by('-create_dt')
-
-        page = request.GET.get('page')
-
-        paginator = Paginator(account_repository_list, 15)
-        account_repositories = paginator.get_page(page)
-        context = {'account_repositories': account_repositories}
-        return render(request, 'account_repository.html', context)
-
-    else:
-        page = request.GET.get('page')
-
-        account_repository_list = AccountRepository.objects.all().order_by('-create_dt')
-        paginator = Paginator(account_repository_list, 15)
-        account_repositories = paginator.get_page(page)
-        context = {'account_repositories': account_repositories}
-        return render(request, 'account_repository.html', context)
+def account_repository_select(request):
+    return render(request, 'account_repository.html')
 
 def account_repository_insert(request):
-    if request.method == 'POST':
-        form = AccountRepositoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect('/account/repository')
-    else:
-        form = AccountRepositoryForm()
-
-    return render(request, 'account_repository.html', {'form': form})
-
-def account_repository_update(request):
-    if request.method == 'POST':
-        getObject = AccountRepository.objects.get(id = request.POST['id']) # pk에 해당하는 업데이트 대상을 가져옴
-        form = AccountRepositoryForm(request.POST) # 입력값 가져옴
-        #print('url : ' + form.cleaned_data['repository_url'])
-
-        if form.is_valid():
-            getObject.repository_team = form.cleaned_data['repository_team']
-            getObject.repository_name = form.cleaned_data['repository_name']
-            getObject.repository_url = form.cleaned_data['repository_url']
-            getObject.account_user = form.cleaned_data['account_user']
-            getObject.url = form.cleaned_data['url']
-            getObject.info = form.cleaned_data['info']
-            getObject.save()
-
-        return redirect('/account/repository')
-
-    else:
-        form = AccountRepositoryForm()
-
-    return render(request, 'account_repository.html', {'form': form})
+    return render(request, 'account_repository.html')
 
 def account_repository_delete(request):
-    if request.method == 'POST':
-        getObject = AccountRepository.objects.get(id = request.POST['id'])
-        getObject.delete()
-        return redirect('/account/repository')
-
     return render(request, 'account_repository.html')
+
+def account_repository_update(request):
+    return render(request, 'account_repository.html')
+
+
+
+
+
+
 

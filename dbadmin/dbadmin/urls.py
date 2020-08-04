@@ -36,22 +36,23 @@ urlpatterns = [
     # account manage
     path('account/', account.views.account, name='account'),
     path('account/select', account.views.account_select, name='account_select'),
-    path('account/select_fast', account.views.account_select_fast, name='account_select_fast'),
-
     path('account/insert/', account.views.account_insert, name='account_insert'),
     path('account/update/', account.views.account_update, name='account_update'),
     path('account/delete/', account.views.account_delete, name='account_delete'),
+
+    path('account/select_fast', account.views.account_select_fast, name='account_select_fast'),
+
 
     # account remove
     path('account/account_remove', account.views.account_remove, name='account_remove'),
     path('account/account_remove_select', account.views.account_remove_select, name='account_remove_select'),
 
     # account Repository Manage
-    path('account/repository/', account.views.account_repository, name='account_repository_select'),
-    path('account/repository_insert/', account.views.account_repository_insert, name='account_repository_insert'),
-    path('account/repository_update/', account.views.account_repository_update, name='account_repository_update'),
-    path('account/repository_delete/', account.views.account_repository_delete, name='account_repository_delete'),
-
+    path('account/repository/', account.views.account_repository, name='account_repository'),
+    path('account/repository/select', account.views.account_repository_select, name='account_repository_select'),
+    path('account/repository/insert', account.views.account_repository_insert, name='account_repository_insert'),
+    path('account/repository/update', account.views.account_repository_update, name='account_repository_update'),
+    path('account/repository/delete', account.views.account_repository_delete, name='account_repository_delete'),
 
     #########################################################################
     # monitoring app
