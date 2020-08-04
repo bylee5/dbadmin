@@ -35,7 +35,7 @@ def check_overlap_password(svr, user, password):
     print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
     if svr.find('dev') < 0:
         print("리얼")
-        query = "SELECT distinct account_user, account_pass FROM account_account where 1=1 " \
+        query = "SELECT distinct account_pass FROM account_account where 1=1 " \
                 " AND account_svr not like '%dev%'" \
                 " AND account_user='" + user + "'" \
                 " AND account_del_yn='N'"
@@ -55,23 +55,25 @@ def check_overlap_password(svr, user, password):
         print("반복횟수 : " + str(len(rows)))
 
         if len(rows) == 0: # 내가 첫 계정인가?
-            print("내가 첫 계정인가? Yes. 그렇다면 동일 패스워드 쓰는 계정이 있는지 체크해봐야지.")
+            print("내가 첫 계정인가? Yes")
+            alert_type = "ERR_0"
+            alert_message = ""
 
-            with connections['default'].cursor() as cursor1:
-                query = "SELECT DISTINCT account_user, account_pass FROM account_account WHERE account_pass='" + password + "'"
-                cursor1.execute(query)
-                row = cursor1.fetchone()
-
-                if len(row) == 0:
-                    print("내가 이 패스워드의 첫 주인이군")
-                    alert_type = "ERR_0"
-                    alert_message = ""
-                else:
-                    print("뭐야 누가 쓰고있네?")
-                    alert_type = "ERR_2"
-                    alert_message = "동일 패스워드를 사용하는 타 계정이 존재합니다. 다른 패스워드를 사용해주세요.\n(중복 패스워드 사용계정 : " + row[0] + ")"
-
-                cursor1.close()
+            # with connections['default'].cursor() as cursor1:
+            #     query = "SELECT DISTINCT account_user, account_pass FROM account_account WHERE account_pass='" + password + "'"
+            #     cursor1.execute(query)
+            #     row = cursor1.fetchone()
+            #
+            #     if len(row) == 0:
+            #         print("내가 이 패스워드의 첫 주인이군")
+            #         alert_type = "ERR_0"
+            #         alert_message = ""
+            #     else:
+            #         print("뭐야 누가 쓰고있네?")
+            #         alert_type = "ERR_2"
+            #         alert_message = "동일 패스워드를 사용하는 타 계정이 존재합니다. 다른 패스워드를 사용해주세요.\n(중복 패스워드 사용계정 : " + row[0] + ")"
+            #
+            #     cursor1.close()
 
         else:
             print("내가 첫...계정이 아니구나. 비교를하자.")
