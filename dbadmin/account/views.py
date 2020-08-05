@@ -966,21 +966,216 @@ def account_remove_select(request):
 # Account repository page
 #########################################################################
 
+@login_required
 def account_repository(request):
     return render(request, 'account_repository.html')
 
+
+@login_required
 def account_repository_select(request):
-    return render(request, 'account_repository.html')
+    if request.method == 'POST':
+        s_repository_team = request.POST.get('s_repository_team')
+        s_repository_name = request.POST.get('s_repository_name')
+        s_repository_url = request.POST.get('s_repository_url')
+        s_account_user = request.POST.get('s_account_user')
+        s_url = request.POST.get('s_url')
+        s_info = request.POST.get('s_info')
+
+        repository_list = AccountRepository.objects.filter(
+            repository_team__contains=s_repository_team,
+            repository_name__contains=s_repository_name,
+            repository_url__contains=s_repository_url,
+            account_user__contains=s_account_user,
+            url__contains=s_url,
+            info__contains=s_info
+        ).order_by('-id')
+
+        s_total_count = repository_list.count()
+
+
+        context = {
+            'repository_list': repository_list,
+            'repository_team': s_repository_team,
+            'repository_name': s_repository_name,
+            'repository_url': s_repository_url,
+            'account_user': s_account_user,
+            'url': s_url,
+            'info': s_info,
+            'total_count': s_total_count
+        }
+
+        return render(request, 'account_repository_select.html', context)
+
+    else:
+        return render(request, 'account_repository.html')
+
 
 def account_repository_insert(request):
-    return render(request, 'account_repository.html')
+    if request.method == 'POST':
+        i_repository_team = request.POST.get('i_repository_team')
+        i_repository_name = request.POST.get('i_repository_name')
+        i_repository_url = request.POST.get('i_repository_url')
+        i_account_user = request.POST.get('i_account_user')
+        i_url = request.POST.get('i_url')
+        i_info = request.POST.get('i_info')
 
-def account_repository_delete(request):
-    return render(request, 'account_repository.html')
+        insert_sql = "insert into account_repository(create_dt, repository_team,  \
+                    repository_name, repository_url, account_user, url, info) values( \
+                    now(), \
+                    '" + i_repository_team + "', \
+                    '" + i_repository_name + "', \
+                    '" + i_repository_url + "', \
+                    '" + i_account_user + "', \
+                    '" + i_url + "', \
+                    '" + i_info + "')"
+
+        print(insert_sql)
+
+        try:
+            cursor = connections['default'].cursor()
+            cursor.execute(insert_sql)
+            connection.commit()
+        except:
+            connection.rollback()
+        finally:
+            cursor.close()
+
+        # 마지막 수정값
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+        s_repository_team = request.POST.get('s_repository_team')
+        s_repository_name = request.POST.get('s_repository_name')
+        s_repository_url = request.POST.get('s_repository_url')
+        s_account_user = request.POST.get('s_account_user')
+        s_url = request.POST.get('s_url')
+        s_info = request.POST.get('s_info')
+
+        print("-----------------------------------------------")
+        print(i_repository_team)
+        print(i_repository_name)
+        print(i_repository_url)
+        print(i_account_user)
+        print(i_url)
+        print(i_info)
+
+        print(s_repository_team)
+        print(s_repository_name)
+        print(s_repository_url)
+        print(s_account_user)
+        print(s_url)
+        print(s_info)
+        print("-----------------------------------------------")
+
+        repository_list = AccountRepository.objects.filter(
+            repository_team__contains=s_repository_team,
+            repository_name__contains=s_repository_name,
+            repository_url__contains=s_repository_url,
+            account_user__contains=s_account_user,
+            url__contains=s_url,
+            info__contains=s_info
+        ).order_by('-id')
+
+        s_total_count = repository_list.count()
+
+        context = {
+            'repository_list': repository_list,
+            'repository_team': s_repository_team,
+            'repository_name': s_repository_name,
+            'repository_url': s_repository_url,
+            'account_user': s_account_user,
+            'url': s_url,
+            'info': s_info,
+            'total_count': s_total_count
+        }
+
+        return render(request, 'account_repository_select.html', context)
+
+    else:
+        return render(request, 'account_repository.html')
+
 
 def account_repository_update(request):
-    return render(request, 'account_repository.html')
+    if request.method == 'POST':
+        u_id = request.POST.get('u_id')
+        u_repository_team = request.POST.get('u_repository_team')
+        u_repository_name = request.POST.get('u_repository_name')
+        u_repository_url = request.POST.get('u_repository_url')
+        u_account_user = request.POST.get('u_account_user')
+        u_url = request.POST.get('u_url')
+        u_info = request.POST.get('u_info')
 
+        update_sql = "update account_repository set \
+                     repository_team = " + "'" + u_repository_team + "'" + \
+                     ", repository_name = " + "'" + u_repository_name + "'" + \
+                     ", repository_url = " + "'" + u_repository_url + "'" + \
+                     ", account_user = " + "'" + u_account_user + "'" + \
+                     ", url = " + "'" + u_url + "'" + \
+                     ", info = " + "'" + u_info + "'" + \
+                     " where id = " + u_id + ";"
+
+        print(update_sql)
+
+        try:
+            cursor = connections['default'].cursor()
+            cursor.execute(update_sql)
+            connection.commit()
+        except:
+            connection.rollback()
+        finally:
+            cursor.close()
+
+        # 마지막 수정값
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+        s_repository_team = request.POST.get('s_repository_team')
+        s_repository_name = request.POST.get('s_repository_name')
+        s_repository_url = request.POST.get('s_repository_url')
+        s_account_user = request.POST.get('s_account_user')
+        s_url = request.POST.get('s_url')
+        s_info = request.POST.get('s_info')
+
+        print("-----------------------------------------------")
+        print(u_repository_team)
+        print(u_repository_name)
+        print(u_repository_url)
+        print(u_account_user)
+        print(u_url)
+        print(u_info)
+
+        print(s_repository_team)
+        print(s_repository_name)
+        print(s_repository_url)
+        print(s_account_user)
+        print(s_url)
+        print(s_info)
+        print("-----------------------------------------------")
+
+        repository_list = AccountRepository.objects.filter(
+            repository_team__contains=s_repository_team,
+            repository_name__contains=s_repository_name,
+            repository_url__contains=s_repository_url,
+            account_user__contains=s_account_user,
+            url__contains=s_url,
+            info__contains=s_info
+        ).order_by('-id')
+
+        s_total_count = repository_list.count()
+
+        context = {
+            'repository_list': repository_list,
+            'repository_team': s_repository_team,
+            'repository_name': s_repository_name,
+            'repository_url': s_repository_url,
+            'account_user': s_account_user,
+            'url': s_url,
+            'info': s_info,
+            'total_count': s_total_count
+        }
+
+        return render(request, 'account_repository_select.html', context)
+
+    else:
+        return render(request, 'account_repository.html')
 
 
 

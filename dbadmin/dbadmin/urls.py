@@ -52,7 +52,6 @@ urlpatterns = [
     path('account/repository/select', account.views.account_repository_select, name='account_repository_select'),
     path('account/repository/insert', account.views.account_repository_insert, name='account_repository_insert'),
     path('account/repository/update', account.views.account_repository_update, name='account_repository_update'),
-    path('account/repository/delete', account.views.account_repository_delete, name='account_repository_delete'),
 
     #########################################################################
     # monitoring app
