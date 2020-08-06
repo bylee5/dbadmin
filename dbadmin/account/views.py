@@ -15,6 +15,7 @@ from django.db import connections
 from .models import *
 from .forms import *
 from django.template import Context, Engine, TemplateDoesNotExist, loader
+import socket, struct
 
 #########################################################################
 # 계정 정합성 체크
@@ -276,6 +277,62 @@ def put_password(account_pass):
 
     cursor = connection.cursor()
     cursor.execute(query)
+
+def create_daily_backup_table():
+    db_schema_source = 'dbadmin'
+    db_schema_target = 'backup'
+    table_list = ['account_hash','account_account']
+    current_dt = datetime.now().strftime("%Y%m%d")
+
+    for table in table_list:
+        s_query = "SELECT table_name FROM information_schema.tables WHERE table_name LIKE '" + table + "%" + current_dt + "%'"
+
+        with connections['default'].cursor() as cursor:
+            cursor.execute(s_query)
+            rows = cursor.fetchone()
+
+        if rows is None:
+            print("----  백업수행  -------------------------------------------------------------")
+            c_query = "CREATE TABLE " + db_schema_target + "." + table + "_" + current_dt + " LIKE " + db_schema_source + "." + table
+            i_query = "INSERT INTO " + db_schema_target + "." + table + "_" + current_dt + " SELECT * FROM " + db_schema_source + "." + table
+
+            print(c_query)
+            print(i_query)
+
+            with connections['default'].cursor() as cursor:
+                cursor.execute(c_query)
+                cursor.execute(i_query)
+
+
+            print("----  백업종료  -------------------------------------------------------------")
+
+
+def log_history_insert(request, related_id, menu_type, sql_type, execute_sql):
+    table = 'account_history'
+
+    who_updated = request.user.username
+    ip = request.META.get('REMOTE_ADDR')
+    who_writer = struct.unpack("!I", socket.inet_aton(ip))[0]  # IP 10진수
+    # ip_re = socket.inet_ntoa(struct.pack('!I', who_writer))  # IP 10진수 원복 IP
+
+    # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    # print(who_updated)
+    # print(who_writer)
+    # print(related_id)
+    # print(menu_type)
+    # print(sql_type)
+    # print(execute_sql)
+    # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+
+    i_query = "insert into " + table + "(related_id, who_updated, who_writer, menu_type, sql_type, execute_sql) values(" + \
+               related_id + ",'" + who_updated + "'," + str(who_writer) + ",'" + menu_type + "','" + sql_type + "'," + '"' + execute_sql + '");'
+
+    print(i_query)
+    with connections['default'].cursor() as cursor:
+        cursor.execute(i_query)
+
+    print(i_query)
+    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
 #########################################################################
 # fast select
@@ -585,8 +642,8 @@ def account_update(request):
         u_account_sql = "/*" + u_account_svr + "*/ " + "use mysql; " + "/*" + u_account_url + \
                               "*/" + " grant " + u_account_grant + " on " + \
                               u_account_db + "." + u_account_table + \
-                              " to " + "'" + u_account_user + "'@'" + u_account_host + \
-                              "' identified by '" + u_account_pass + "';"
+                              " to " + "''" + u_account_user + "''@''" + u_account_host + \
+                              "'' identified by ''" + u_account_pass + "'';"
 
         put_password(u_account_pass)
         u_account_hash = get_password(u_account_pass)
@@ -605,7 +662,7 @@ def account_update(request):
         ", account_table = " + "'" + u_account_table + "'" + \
         ", account_grant = " + "'" + u_account_grant + "'" + \
         ", account_grant_with = " + "'" + u_account_grant_with + "'" + \
-        ", account_sql = " + '"' + u_account_sql + '"' + \
+        ", account_sql = " + "'" + u_account_sql + "'" + \
         ", account_hash = " + "'" + u_account_hash + "'" + \
         " where id = " + u_id + ";"
 
@@ -663,8 +720,14 @@ def account_update(request):
                 cursor = connections['default'].cursor()
                 cursor.execute(update_sql)
                 connection.commit()
+
+                # 성공 후 데일리 백업 체크, 히스토리 로깅
+                create_daily_backup_table()
+                log_history_insert(request, u_id, 'account', 'update', update_sql)
+
             except:
                 connection.rollback()
+
             finally:
                 cursor.close()
 
@@ -1119,8 +1182,10 @@ def account_repository_update(request):
             cursor = connections['default'].cursor()
             cursor.execute(update_sql)
             connection.commit()
+
         except:
             connection.rollback()
+
         finally:
             cursor.close()
 
