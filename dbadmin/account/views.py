@@ -199,7 +199,7 @@ def put_password(account_pass):
 # 일간 백업 진행. 매일 첫 DML 이벤트가 발생 할 경우, 백업 테이블 생성
 def create_daily_backup_table(request, backup_type):
     db_schema_source = 'dbadmin'
-    db_schema_target = 'backup'
+    db_schema_target = 'dbadmin_backup'
     current_dt = datetime.now().strftime("%Y%m%d")
 
     print("backup_type : " + backup_type)
