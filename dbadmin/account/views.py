@@ -33,9 +33,9 @@ import socket, struct
 # 체크값 : 호스트, 계정, 패스워드
 def check_overlap_password(svr, user, password):
     # real/stage
-    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
     if svr.find('dev') < 0:
-        print("리얼")
+        # print("리얼")
         query = "SELECT distinct account_pass FROM account_account where 1=1 " \
                 " AND account_svr not like '%dev%'" \
                 " AND account_user='" + user + "'" \
@@ -43,7 +43,7 @@ def check_overlap_password(svr, user, password):
 
     # dev/qa
     else:
-        print("DEV")
+        # print("DEV")
         query = "SELECT distinct account_pass FROM account_account where 1=1 " \
                 " AND account_svr like '%dev%'" \
                 " AND account_user='" + user + "'" \
@@ -53,13 +53,14 @@ def check_overlap_password(svr, user, password):
         cursor.execute(query)
         rows = cursor.fetchall()
 
-        print("반복횟수 : " + str(len(rows)))
+        # print("반복횟수 : " + str(len(rows)))
 
         if len(rows) == 0: # 내가 첫 계정인가?
-            print("내가 첫 계정인가? Yes")
+            # print("내가 첫 계정인가? Yes")
             alert_type = "ERR_0"
             alert_message = ""
 
+            # 다른계정의 패스워드와 공유할 수 있는 경우가 있어 아래 부분 주석 처리함.
             # with connections['default'].cursor() as cursor1:
             #     query = "SELECT DISTINCT account_user, account_pass FROM account_account WHERE account_pass='" + password + "'"
             #     cursor1.execute(query)
@@ -81,18 +82,18 @@ def check_overlap_password(svr, user, password):
 
             for row in rows:
                 if row[0] == password: # 패스워드가 존재하는가?"
-                    print("동일계정에 일치하는 패스워드가 존재하네 ㅋㅋ 빠져나오자.")
+                    # print("동일계정에 일치하는 패스워드가 존재하네. 이상없군. 빠져나오자.")
                     alert_type = "ERR_0"
                     alert_message = ""
                     break
                 else: # 패스워드가 존재하지 않는가?
-                    print("계정이 존재하는데, 패스워드가 일치하는게 없나보네...")
+                    # print("계정이 존재하는데, 패스워드가 일치하는게 없나보네...")
                     alert_type = "ERR_1"
                     alert_message = "입력하신 패스워드가 동일 계정 내 패스워드와 다릅니다."
 
         cursor.close()
 
-    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
     return alert_type, alert_message
 
 # 2. 계정 중복 여부 체크
@@ -126,7 +127,7 @@ def check_overlap_account(svr, user, host, password, grant, db, table):
 
 # 3. 동일 패스워드를 사용 타 계정 여부 ing ~
 # 체크값 :
-def check_overlap_test1(svr, user, password):
+def check_overlap_test(svr, user, password):
     query = "SELECT count(*) AS cnt FROM account_account \
             WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
 
@@ -145,84 +146,9 @@ def check_overlap_test1(svr, user, password):
     return alert_type, alert_message
 
 # 4. 상위 호환 계정 권한 존재유무 체크 ing ~
-# 체크값 :
-def check_overlap_test2(svr, user, password):
-    query = "SELECT count(*) AS cnt FROM account_account \
-            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
-
-    with connections['default'].cursor() as cursor:
-        cursor.execute(query)
-        row = cursor.fetchone()
-
-    if row[0] == 0:
-        alert_type = "ERR_0"
-        alert_message = ""
-
-    else:
-        alert_type = "ERR_4"
-        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
-
-    return alert_type, alert_message
-
 # 5. 상위 호환 계정 호스트대역 존재유무 체크 ing ~
-# 체크값 :
-def check_overlap_test3(svr, user, password):
-    query = "SELECT count(*) AS cnt FROM account_account \
-            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
-
-    with connections['default'].cursor() as cursor:
-        cursor.execute(query)
-        row = cursor.fetchone()
-
-    if row[0] == 0:
-        alert_type = "ERR_0"
-        alert_message = ""
-
-    else:
-        alert_type = "ERR_5"
-        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
-
-    return alert_type, alert_message
-
 # 6. 상위 호환 계정 테이블 존재유무 체크 ing ~
-# 체크값 :
-def check_overlap_test4(svr, user, password):
-    query = "SELECT count(*) AS cnt FROM account_account \
-            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
-
-    with connections['default'].cursor() as cursor:
-        cursor.execute(query)
-        row = cursor.fetchone()
-
-    if row[0] == 0:
-        alert_type = "ERR_0"
-        alert_message = ""
-
-    else:
-        alert_type = "ERR_6"
-        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
-
-    return alert_type, alert_message
-
 # 7. 리얼, NDEVDB 패스워드 불일치 여부 (* 불일치 해야함)
-# 체크값 :
-def check_overlap_test5(svr, user, password):
-    query = "SELECT count(*) AS cnt FROM account_account \
-            WHERE account_del_yn='N' AND account_svr='" + svr + "' AND account_user='" + user + "' AND account_pass!='" + password + "'"
-
-    with connections['default'].cursor() as cursor:
-        cursor.execute(query)
-        row = cursor.fetchone()
-
-    if row[0] == 0:
-        alert_type = "ERR_0"
-        alert_message = ""
-
-    else:
-        alert_type = "ERR_6"
-        alert_message = "상위 호환을 가진 계정이 존재합니다. (예 : 권한 중복)"
-
-    return alert_type, alert_message
 
 # 00. 메인 계정 정합성 체크 함수
 def check_account_consistency(svr, user, host, password, db, table, grant):
@@ -234,14 +160,6 @@ def check_account_consistency(svr, user, host, password, db, table, grant):
     alert_type, alert_message = check_overlap_account(svr, user, host, password, grant, db, table)
     if alert_type == "ERR_3":
         return alert_type, alert_message
-
-    # alert_type, alert_message = check_overlap_test1(svr, user, password)
-    # if alert_type == "ERR_3":
-    #     return alert_type, alert_message
-    #
-    # alert_type, alert_message = check_overlap_test2(svr, user, password)
-    # if alert_type == "ERR_4":
-    #     return alert_type, alert_message
 
     # 아무 if 조건에도 걸리지 않는다면, 즉, 정합성이 모두 맞다면, ERR_0을 리턴
     alert_type = "ERR_0"
@@ -278,34 +196,50 @@ def put_password(account_pass):
     cursor = connection.cursor()
     cursor.execute(query)
 
-def create_daily_backup_table():
+# 일간 백업 진행. 매일 첫 DML 이벤트가 발생 할 경우, 백업 테이블 생성
+def create_daily_backup_table(request, backup_type):
     db_schema_source = 'dbadmin'
     db_schema_target = 'backup'
-    table_list = ['account_hash','account_account']
     current_dt = datetime.now().strftime("%Y%m%d")
 
-    for table in table_list:
-        s_query = "SELECT table_name FROM information_schema.tables WHERE table_name LIKE '" + table + "%" + current_dt + "%'"
+    print("backup_type : " + backup_type)
 
-        with connections['default'].cursor() as cursor:
-            cursor.execute(s_query)
-            rows = cursor.fetchone()
+    if backup_type == 'account':
+        table_list = ['account_hash','account_account']
+    elif backup_type == 'repository':
+        table_list = ['account_repository']
+    else:
+        table_list = None
 
-        if rows is None:
-            print("----  백업수행  -------------------------------------------------------------")
-            c_query = "CREATE TABLE " + db_schema_target + "." + table + "_" + current_dt + " LIKE " + db_schema_source + "." + table
-            i_query = "INSERT INTO " + db_schema_target + "." + table + "_" + current_dt + " SELECT * FROM " + db_schema_source + "." + table
-
-            print(c_query)
-            print(i_query)
+    if table_list is not None:
+        for table in table_list:
+            s_query = "SELECT table_name FROM information_schema.tables WHERE table_name LIKE '" + table + "%" + current_dt + "%'"
 
             with connections['default'].cursor() as cursor:
-                cursor.execute(c_query)
-                cursor.execute(i_query)
+                cursor.execute(s_query)
+                rows = cursor.fetchone()
 
+            # 일간 백업 대상 테이블이 없는경우에는 수행하지 아니함
+            if rows is None:
+                c_query = "CREATE TABLE " + db_schema_target + "." + table + "_" + current_dt + " LIKE " + db_schema_source + "." + table
+                i_query = "INSERT INTO " + db_schema_target + "." + table + "_" + current_dt + " SELECT * FROM " + db_schema_source + "." + table
+                # print(c_query)
+                # print(i_query)
 
-            print("----  백업종료  -------------------------------------------------------------")
+                try:
+                    with connections['default'].cursor() as cursor:
+                        cursor.execute(c_query)
+                        cursor.execute(i_query)
 
+                        log_history_insert(request, 'null', 'backup', 'create', c_query)
+                        log_history_insert(request, 'null', 'backup', 'insert', i_query)
+
+                except:
+                    connection.rollback()
+                finally:
+                    cursor.close()
+    else:
+        print("백업 테이블 테스트. 거짓말같이 아무일도 없었다고 한다...")
 
 def log_history_insert(request, related_id, menu_type, sql_type, execute_sql):
     table = 'account_history'
@@ -324,15 +258,20 @@ def log_history_insert(request, related_id, menu_type, sql_type, execute_sql):
     # print(execute_sql)
     # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
-    i_query = "insert into " + table + "(related_id, who_updated, who_writer, menu_type, sql_type, execute_sql) values(" + \
+    # print("i_query : ")
+
+    i_query = "INSERT INTO " + table + "(related_id, who_updated, who_writer, menu_type, sql_type, execute_sql) VALUES(" + \
                related_id + ",'" + who_updated + "'," + str(who_writer) + ",'" + menu_type + "','" + sql_type + "'," + '"' + execute_sql + '");'
 
-    print(i_query)
-    with connections['default'].cursor() as cursor:
-        cursor.execute(i_query)
+    # print(i_query)
 
-    print(i_query)
-    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    try:
+        with connections['default'].cursor() as cursor:
+            cursor.execute(i_query)
+    except:
+        connection.rollback()
+    finally:
+        cursor.close()
 
 #########################################################################
 # fast select
@@ -443,7 +382,7 @@ def account_insert(request):
         account_grant_direct = request.POST.get('i_account_grant_direct')
 
         if account_grant == '':  # 권한 직접 입력인경우
-            account_grant = request.POST.get('i_account_grant_direct')
+            account_grant = request.POST.get('i_account_grant_direct').upper()
 
         # 패스워드 암호화 적용
         put_password(account_pass)
@@ -473,51 +412,61 @@ def account_insert(request):
             account_host = account_host_list.replace(" ", "")
 
             account_sql = "/*" + account_url + \
-                            "*/" + " grant " + account_grant  + " on " + \
+                            "*/" + " GRANT " + account_grant  + " ON " + \
                             account_db + "." + account_table + \
-                            " to " + "'" + account_user + "'@'" + account_host + \
-                            "' identified by '" + account_pass + "';"
-            # print("host : " + account_host)
+                            " TO " + "''" + account_user + "''@''" + account_host + \
+                            "'' IDENTIFIED BY ''" + account_pass + "'';"
             # print("sql : " + account_sql)
 
-            insert_sql = "insert into account_account(account_create_dt, account_update_dt, \
-            account_requestor, account_devteam, account_svr, account_user, \
-            account_host, account_pass, account_hash, account_grant, account_grant_with, \
-            account_db, account_table, account_info, account_sql, account_url, account_del_yn, account_del_reason, account_del_note) values( \
-            now(), \
-            now(), \
-            '" + account_requestor + "', \
-            '" + account_devteam + "', \
-            '" + account_svr + "', \
-            '" + account_user + "', \
-            '" + account_host + "', \
-            '" + account_pass + "', \
-            '" + account_hash + "', \
-            '" + account_grant + "', \
-            'N', \
-            '" + account_db + "', \
-            '" + account_table + "', \
-            '" + account_info + "', " + \
-            '"' + account_sql + '"' + ", \
-            '" + account_url + "', \
-            'N','','')"
+            insert_sql = "INSERT INTO account_account(account_create_dt, account_update_dt, " + \
+                         "account_requestor, account_devteam, account_svr, account_user, " + \
+                         "account_host, account_pass, account_hash, account_grant, account_grant_with, " + \
+                         "account_db, account_table, account_info, account_sql, account_url, account_del_yn, account_del_reason, account_del_note) VALUES( " + \
+                         "now(), " + \
+                         "now(), " + \
+                         "'" + account_requestor + "'," + \
+                         "'" + account_devteam + "'," + \
+                         "'" + account_svr + "'," + \
+                         "'" + account_user + "'," + \
+                         "'" + account_host + "'," + \
+                         "'" + account_pass + "'," + \
+                         "'" + account_hash + "'," + \
+                         "'" + account_grant + "'," + \
+                         "'N'," + \
+                         "'" + account_db + "'," + \
+                         "'" + account_table + "'," + \
+                         "'" + account_info + "', " + \
+                         "'" + account_sql + "'" + ", " + \
+                         "'" + account_url + "', " + \
+                         "'N', '', '')"
+
+            # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            # print("insert_sql : ")
+            # print(insert_sql)
+            # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
 
             # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
             alert_type, alert_message = check_account_consistency(account_svr, account_user, account_host, account_pass, account_db, account_table, account_grant)
 
             # 쿼리 수행
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            print("alert_type : " + alert_type)
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            # print("alert_type : " + alert_type)
+            # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
             if alert_type == "ERR_0":
                 try:
                     cursor = connections['default'].cursor()
                     cursor.execute(insert_sql)
                     connection.commit()
+
+                    # 성공 후 데일리 백업 체크, 히스토리 로깅
+                    create_daily_backup_table(request, 'account')
+                    log_history_insert(request, 'null', 'account', 'insert', insert_sql)
+
                 except:
                     connection.rollback()
+
                 finally:
                     cursor.close()
 
@@ -626,30 +575,30 @@ def account_update(request):
 
         #### UPDATE
         u_id = request.POST.get('u_id')
-        u_account_requestor = request.POST.get('u_account_requestor');
-        u_account_svr = request.POST.get('u_account_svr');
-        u_account_user = request.POST.get('u_account_user');
-        u_account_devteam = request.POST.get('u_account_devteam');
-        u_account_host = request.POST.get('u_account_host');
-        u_account_pass = request.POST.get('u_account_pass');
-        u_account_grant = request.POST.get('u_account_grant');
-        u_account_grant_with = request.POST.get('u_account_grant_with');
-        u_account_db = request.POST.get('u_account_db');
-        u_account_table = request.POST.get('u_account_table');
-        u_account_info = request.POST.get('u_account_info');
-        u_account_url = request.POST.get('u_account_url');
+        u_account_requestor = request.POST.get('u_account_requestor')
+        u_account_svr = request.POST.get('u_account_svr')
+        u_account_user = request.POST.get('u_account_user')
+        u_account_devteam = request.POST.get('u_account_devteam')
+        u_account_host = request.POST.get('u_account_host')
+        u_account_pass = request.POST.get('u_account_pass')
+        u_account_grant = request.POST.get('u_account_grant').upper()
+        u_account_grant_with = request.POST.get('u_account_grant_with')
+        u_account_db = request.POST.get('u_account_db')
+        u_account_table = request.POST.get('u_account_table')
+        u_account_info = request.POST.get('u_account_info')
+        u_account_url = request.POST.get('u_account_url')
 
-        u_account_sql = "/*" + u_account_svr + "*/ " + "use mysql; " + "/*" + u_account_url + \
-                              "*/" + " grant " + u_account_grant + " on " + \
+        u_account_sql = "/*" + u_account_svr + "*/ " + "USE mysql; " + "/*" + u_account_url + \
+                              "*/" + " GRANT " + u_account_grant + " ON " + \
                               u_account_db + "." + u_account_table + \
-                              " to " + "''" + u_account_user + "''@''" + u_account_host + \
-                              "'' identified by ''" + u_account_pass + "'';"
+                              " TO " + "''" + u_account_user + "''@''" + u_account_host + \
+                              "'' IDENTIFIED BY ''" + u_account_pass + "'';"
 
         put_password(u_account_pass)
         u_account_hash = get_password(u_account_pass)
 
-        update_sql = "update account_account " + \
-        "set account_update_dt = now() " + \
+        update_sql = "UPDATE account_account " + \
+        "SET account_update_dt = now() " + \
         ", account_requestor = " + "'" + u_account_requestor + "'" + \
         ", account_devteam = " + "'" + u_account_devteam + "'" + \
         ", account_info = " + "'" + u_account_info + "'" + \
@@ -664,7 +613,7 @@ def account_update(request):
         ", account_grant_with = " + "'" + u_account_grant_with + "'" + \
         ", account_sql = " + "'" + u_account_sql + "'" + \
         ", account_hash = " + "'" + u_account_hash + "'" + \
-        " where id = " + u_id + ";"
+        " WHERE id = " + u_id + ";"
 
         # print("============================================================")
         # print("UPDATE 리턴값 테스트 선입니다.")
@@ -702,18 +651,18 @@ def account_update(request):
             or old_account.account_grant != u_account_grant:
 
             # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
-            print("정합성 체크 ON")
+            # print("정합성 체크 ON")
             alert_type, alert_message = check_account_consistency(u_account_svr, u_account_user, u_account_host, u_account_pass, u_account_db, u_account_table, u_account_grant)
 
         else:
-            print("정합성 체크 OFF")
+            # print("정합성 체크 OFF")
             alert_type = "ERR_0"
             alert_message = ""
 
 
         # 쿼리 수행
-        print("alert_type : " + alert_type)
-        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+        # print("alert_type : " + alert_type)
+        # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
         if alert_type == "ERR_0":
             try:
@@ -722,7 +671,7 @@ def account_update(request):
                 connection.commit()
 
                 # 성공 후 데일리 백업 체크, 히스토리 로깅
-                create_daily_backup_table()
+                create_daily_backup_table(request, 'account')
                 log_history_insert(request, u_id, 'account', 'update', update_sql)
 
             except:
@@ -818,20 +767,20 @@ def account_delete(request):
 
         #### DELETE
         d_id = request.POST.get('d_id')
-        d_account_requestor = request.POST.get('d_account_requestor');
-        d_account_svr = request.POST.get('d_account_svr');
-        d_account_user = request.POST.get('d_account_user');
-        d_account_devteam = request.POST.get('d_account_devteam');
-        d_account_host = request.POST.get('d_account_host');
-        d_account_pass = request.POST.get('d_account_pass');
-        d_account_grant = request.POST.get('d_account_grant');
-        d_account_grant_with = request.POST.get('d_account_grant_with');
-        d_account_db = request.POST.get('d_account_db');
-        d_account_table = request.POST.get('d_account_table');
-        d_account_info = request.POST.get('d_account_info');
-        d_account_url = request.POST.get('d_account_url');
-        d_account_del_reason = request.POST.get('d_account_del_reason');
-        d_account_del_note = request.POST.get('d_account_del_note');
+        d_account_requestor = request.POST.get('d_account_requestor')
+        d_account_svr = request.POST.get('d_account_svr')
+        d_account_user = request.POST.get('d_account_user')
+        d_account_devteam = request.POST.get('d_account_devteam')
+        d_account_host = request.POST.get('d_account_host')
+        d_account_pass = request.POST.get('d_account_pass')
+        d_account_grant = request.POST.get('d_account_grant')
+        d_account_grant_with = request.POST.get('d_account_grant_with')
+        d_account_db = request.POST.get('d_account_db')
+        d_account_table = request.POST.get('d_account_table')
+        d_account_info = request.POST.get('d_account_info')
+        d_account_url = request.POST.get('d_account_url')
+        d_account_del_reason = request.POST.get('d_account_del_reason')
+        d_account_del_note = request.POST.get('d_account_del_note')
 
         # print("============================================================")
         # print("DELETE 리턴값 테스트 선입니다.")
@@ -853,20 +802,25 @@ def account_delete(request):
         # print(d_account_del_note)
         # print("============================================================")
 
-        delete_sql = "update account_account " + \
-        "set account_del_dt = now() " + \
+        delete_sql = "/*ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
+        "SET account_del_dt = now() " + \
         ", account_del_yn = 'Y' " + \
         ", account_del_reason = " + "'" + d_account_del_reason+ "'" + \
         ", account_del_note = " + "'" + d_account_del_note + "'" + \
-        " where id = " + d_id + ";"
+        " WHERE id = " + d_id + ";"
 
-        # print(delete_sql)
+        print(delete_sql)
         # print("============================================================")
 
         try:
             cursor = connections['default'].cursor()
             cursor.execute(delete_sql)
             connection.commit()
+
+            # 성공 후 데일리 백업 체크, 히스토리 로깅
+            create_daily_backup_table(request, 'account')
+            log_history_insert(request, d_id, 'account', 'delete', delete_sql)
+
         except:
             connection.rollback()
         finally:
@@ -1033,7 +987,6 @@ def account_remove_select(request):
 def account_repository(request):
     return render(request, 'account_repository.html')
 
-
 @login_required
 def account_repository_select(request):
     if request.method == 'POST':
@@ -1072,7 +1025,6 @@ def account_repository_select(request):
     else:
         return render(request, 'account_repository.html')
 
-
 def account_repository_insert(request):
     if request.method == 'POST':
         i_repository_team = request.POST.get('i_repository_team')
@@ -1082,22 +1034,26 @@ def account_repository_insert(request):
         i_url = request.POST.get('i_url')
         i_info = request.POST.get('i_info')
 
-        insert_sql = "insert into account_repository(create_dt, repository_team,  \
-                    repository_name, repository_url, account_user, url, info) values( \
-                    now(), \
-                    '" + i_repository_team + "', \
-                    '" + i_repository_name + "', \
-                    '" + i_repository_url + "', \
-                    '" + i_account_user + "', \
-                    '" + i_url + "', \
-                    '" + i_info + "')"
+        insert_sql = "INSERT INTO account_repository(create_dt, repository_team, " + \
+                    "repository_name, repository_url, account_user, url, info) VALUES(" + \
+                    "now(), " + \
+                    "'" + i_repository_team + "', " + \
+                    "'" + i_repository_name + "', " + \
+                    "'" + i_repository_url + "', " + \
+                    "'" + i_account_user + "', " + \
+                    "'" + i_url + "', " + \
+                    "'" + i_info + "')"
 
-        print(insert_sql)
+        # print(insert_sql)
 
         try:
             cursor = connections['default'].cursor()
             cursor.execute(insert_sql)
             connection.commit()
+
+            # 성공 후 데일리 백업 체크, 히스토리 로깅
+            create_daily_backup_table(request, 'repository')
+            log_history_insert(request, 'null', 'repository', 'insert', insert_sql)
         except:
             connection.rollback()
         finally:
@@ -1113,21 +1069,21 @@ def account_repository_insert(request):
         s_url = request.POST.get('s_url')
         s_info = request.POST.get('s_info')
 
-        print("-----------------------------------------------")
-        print(i_repository_team)
-        print(i_repository_name)
-        print(i_repository_url)
-        print(i_account_user)
-        print(i_url)
-        print(i_info)
-
-        print(s_repository_team)
-        print(s_repository_name)
-        print(s_repository_url)
-        print(s_account_user)
-        print(s_url)
-        print(s_info)
-        print("-----------------------------------------------")
+        # print("-----------------------------------------------")
+        # print(i_repository_team)
+        # print(i_repository_name)
+        # print(i_repository_url)
+        # print(i_account_user)
+        # print(i_url)
+        # print(i_info)
+        #
+        # print(s_repository_team)
+        # print(s_repository_name)
+        # print(s_repository_url)
+        # print(s_account_user)
+        # print(s_url)
+        # print(s_info)
+        # print("-----------------------------------------------")
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
@@ -1156,7 +1112,6 @@ def account_repository_insert(request):
     else:
         return render(request, 'account_repository.html')
 
-
 def account_repository_update(request):
     if request.method == 'POST':
         u_id = request.POST.get('u_id')
@@ -1167,21 +1122,25 @@ def account_repository_update(request):
         u_url = request.POST.get('u_url')
         u_info = request.POST.get('u_info')
 
-        update_sql = "update account_repository set \
-                     repository_team = " + "'" + u_repository_team + "'" + \
+        update_sql = "UPDATE account_repository SET " + \
+                     "repository_team = " + "'" + u_repository_team + "'" + \
                      ", repository_name = " + "'" + u_repository_name + "'" + \
                      ", repository_url = " + "'" + u_repository_url + "'" + \
                      ", account_user = " + "'" + u_account_user + "'" + \
                      ", url = " + "'" + u_url + "'" + \
                      ", info = " + "'" + u_info + "'" + \
-                     " where id = " + u_id + ";"
+                     " WHERE id = " + u_id + ";"
 
-        print(update_sql)
+        # print(update_sql)
 
         try:
             cursor = connections['default'].cursor()
             cursor.execute(update_sql)
             connection.commit()
+
+            # 성공 후 데일리 백업 체크, 히스토리 로깅
+            create_daily_backup_table(request, 'repository')
+            log_history_insert(request, u_id, 'repository', 'update', update_sql)
 
         except:
             connection.rollback()
@@ -1199,21 +1158,21 @@ def account_repository_update(request):
         s_url = request.POST.get('s_url')
         s_info = request.POST.get('s_info')
 
-        print("-----------------------------------------------")
-        print(u_repository_team)
-        print(u_repository_name)
-        print(u_repository_url)
-        print(u_account_user)
-        print(u_url)
-        print(u_info)
-
-        print(s_repository_team)
-        print(s_repository_name)
-        print(s_repository_url)
-        print(s_account_user)
-        print(s_url)
-        print(s_info)
-        print("-----------------------------------------------")
+        # print("-----------------------------------------------")
+        # print(u_repository_team)
+        # print(u_repository_name)
+        # print(u_repository_url)
+        # print(u_account_user)
+        # print(u_url)
+        # print(u_info)
+        #
+        # print(s_repository_team)
+        # print(s_repository_name)
+        # print(s_repository_url)
+        # print(s_account_user)
+        # print(s_url)
+        # print(s_info)
+        # print("-----------------------------------------------")
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
