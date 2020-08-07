@@ -412,12 +412,12 @@ def account_insert(request):
         for account_host_list in account_host_lists:
             account_host = account_host_list.replace(" ", "")
 
-            account_sql = "/*" + account_url + \
+            account_sql = "/*" + account_svr + "*/ " + "USE mysql; " + "/*" + account_url + \
                             "*/" + " GRANT " + account_grant  + " ON " + \
                             account_db + "." + account_table + \
                             " TO " + "''" + account_user + "''@''" + account_host + \
                             "'' IDENTIFIED BY ''" + account_pass + "'';"
-            # print("sql : " + account_sql)
+            print("sql : " + account_sql)
 
             insert_sql = "INSERT INTO account_account(account_create_dt, account_update_dt, " + \
                          "account_requestor, account_devteam, account_svr, account_user, " + \
