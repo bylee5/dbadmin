@@ -113,7 +113,6 @@ def server_list(request):
 
 
 def server_list_update(request):
-    ########################################################## INSERT
     if request.method == 'POST':
 
         server_list = request.POST.getlist('server_list') # 서버명

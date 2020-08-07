@@ -214,7 +214,7 @@ def create_daily_backup_table(request, backup_type):
     if table_list is not None:
         for table in table_list:
             s_query = "SELECT table_name FROM information_schema.tables WHERE table_schema='" + db_schema_target + "' and table_name LIKE '" + table + "%" + current_dt + "%'"
-            print(s_query)
+            # print(s_query)
 
             with connections['default'].cursor() as cursor:
                 cursor.execute(s_query)
@@ -239,6 +239,9 @@ def create_daily_backup_table(request, backup_type):
                     connection.rollback()
                 finally:
                     cursor.close()
+
+            print("아무일도 없었다고 한다...")
+
     else:
         print("백업 테이블 테스트. 거짓말같이 아무일도 없었다고 한다...")
 
@@ -259,12 +262,12 @@ def log_history_insert(request, related_id, menu_type, sql_type, execute_sql):
     # print(execute_sql)
     # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
-    # print("i_query : ")
-
     i_query = "INSERT INTO " + table + "(related_id, who_updated, who_writer, menu_type, sql_type, execute_sql) VALUES(" + \
                related_id + ",'" + who_updated + "'," + str(who_writer) + ",'" + menu_type + "','" + sql_type + "'," + '"' + execute_sql + '");'
 
-    # print(i_query)
+    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    print("i_query : " + i_query)
+    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
     try:
         with connections['default'].cursor() as cursor:
@@ -903,6 +906,156 @@ def account_delete(request):
 
     else:
         return render(request, 'account.html')
+
+def account_multi_dml(request):
+    if request.method == 'POST':
+        checkboxValues = request.POST.getlist('checkboxValues[]')
+        dml_type = request.POST.get('dml_type')
+        checkboxValues1 = ", ".join( repr(e) for e in checkboxValues) # QUERY에 쓰일 서버명
+
+        print("==========================================================")
+        print("여기오나요?")
+        print(checkboxValues)
+        print(checkboxValues1)
+        print(dml_type)
+        print("==========================================================")
+        # d_id = request.POST.get('d_id')
+        # d_account_requestor = request.POST.get('d_account_requestor')
+        # d_account_svr = request.POST.get('d_account_svr')
+        # d_account_user = request.POST.get('d_account_user')
+        # d_account_devteam = request.POST.get('d_account_devteam')
+        # d_account_host = request.POST.get('d_account_host')
+        # d_account_pass = request.POST.get('d_account_pass')
+        # d_account_grant = request.POST.get('d_account_grant')
+        # d_account_grant_with = request.POST.get('d_account_grant_with')
+        # d_account_db = request.POST.get('d_account_db')
+        # d_account_table = request.POST.get('d_account_table')
+        # d_account_info = request.POST.get('d_account_info')
+        # d_account_url = request.POST.get('d_account_url')
+        # d_account_del_reason = request.POST.get('d_account_del_reason')
+        # d_account_del_note = request.POST.get('d_account_del_note')
+
+        # print("============================================================")
+        # print("DELETE 리턴값 테스트 선입니다.")
+        # print("============================================================")
+        # print(d_id)
+        # print(d_account_requestor)
+        # print(d_account_devteam)
+        # print(d_account_info)
+        # print(d_account_url)
+        # print(d_account_svr)
+        # print(d_account_user)
+        # print(d_account_host)
+        # print(d_account_pass)
+        # print(d_account_db)
+        # print(d_account_table)
+        # print(d_account_grant)
+        # print(d_account_grant_with)
+        # print(d_account_del_reason)
+        # print(d_account_del_note)
+        # print("============================================================")
+
+        # delete_sql = "/*ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
+        # "SET account_del_dt = now() " + \
+        # ", account_del_yn = 'Y' " + \
+        # ", account_del_reason = " + "'" + d_account_del_reason+ "'" + \
+        # ", account_del_note = " + "'" + d_account_del_note + "'" + \
+        # " WHERE id = " + d_id + ";"
+        #
+        # print(delete_sql)
+        # # print("============================================================")
+        #
+        # try:
+        #     cursor = connections['default'].cursor()
+        #     cursor.execute(delete_sql)
+        #     connection.commit()
+        #
+        #     # 성공 후 데일리 백업 체크, 히스토리 로깅
+        #     create_daily_backup_table(request, 'account')
+        #     log_history_insert(request, d_id, 'account', 'delete', delete_sql)
+        #
+        # except:
+        #     connection.rollback()
+        # finally:
+        #     cursor.close()
+
+        ########################################## 페이지 원래대로 테스트
+
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant')
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
+        callmorepostFlag = 'true'
+
+        # print("검색란 리턴값 테스트 선입니다.")
+        # print("============================================================")
+        # print(account_requestor)
+        # print(account_devteam)
+        # print(account_svr)
+        # print(account_user)
+        # print(account_host)
+        # print(account_grant)
+        # print(account_db)
+        # print(account_table)
+        # print(account_url)
+        # print("============================================================")
+
+        account_list = Account.objects.filter(
+            account_requestor__contains=account_requestor,
+            account_devteam__contains=account_devteam,
+            account_svr__contains=account_svr,
+            account_user__contains=account_user,
+            account_host__contains=account_host,
+            account_grant__contains=account_grant,
+            account_db__contains=account_db,
+            account_table__contains=account_table,
+            account_url__contains=account_url,
+            account_del_yn='N'
+        ).order_by('-id')
+
+        page = int(request.POST.get('page'))
+        total_count = account_list.count()
+        page_max = round(account_list.count() / 15)
+        paginator = Paginator(account_list, page * 15)
+
+        try:
+            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                account_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                account_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            account_list = paginator.get_page(1)
+        except EmptyPage:
+            account_list = paginator.get_page(paginator.num_pages)
+
+        context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
+            'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url,
+            'account_list': account_list,
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+            'page_max': page_max,
+            'alert_type': "ERR_0"
+        }
+
+        return render(request, 'account_select.html', context)
+
+
+    else:
+        return render(request, 'account.html')
+
 
 #########################################################################
 # Account remove page. account_del_yn='Y'

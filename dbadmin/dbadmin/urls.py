@@ -39,6 +39,7 @@ urlpatterns = [
     path('account/insert/', account.views.account_insert, name='account_insert'),
     path('account/update/', account.views.account_update, name='account_update'),
     path('account/delete/', account.views.account_delete, name='account_delete'),
+    path('account/multi_dml/', account.views.account_multi_dml, name='account_multi_dml'),
 
     path('account/select_fast', account.views.account_select_fast, name='account_select_fast'),
 
