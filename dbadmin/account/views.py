@@ -213,7 +213,8 @@ def create_daily_backup_table(request, backup_type):
 
     if table_list is not None:
         for table in table_list:
-            s_query = "SELECT table_name FROM information_schema.tables WHERE table_name LIKE '" + table + "%" + current_dt + "%'"
+            s_query = "SELECT table_name FROM information_schema.tables WHERE table_schema='" + db_schema_target + "' and table_name LIKE '" + table + "%" + current_dt + "%'"
+            print(s_query)
 
             with connections['default'].cursor() as cursor:
                 cursor.execute(s_query)
@@ -223,8 +224,8 @@ def create_daily_backup_table(request, backup_type):
             if rows is None:
                 c_query = "CREATE TABLE " + db_schema_target + "." + table + "_" + current_dt + " LIKE " + db_schema_source + "." + table
                 i_query = "INSERT INTO " + db_schema_target + "." + table + "_" + current_dt + " SELECT * FROM " + db_schema_source + "." + table
-                # print(c_query)
-                # print(i_query)
+                print(c_query)
+                print(i_query)
 
                 try:
                     with connections['default'].cursor() as cursor:
