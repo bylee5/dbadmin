@@ -16,6 +16,7 @@ from .models import *
 from .forms import *
 from django.template import Context, Engine, TemplateDoesNotExist, loader
 import socket, struct
+import math
 
 #########################################################################
 # 계정 정합성 체크
@@ -245,6 +246,7 @@ def create_daily_backup_table(request, backup_type):
     else:
         print("백업 테이블 테스트. 거짓말같이 아무일도 없었다고 한다...")
 
+# 로깅 히스토리
 def log_history_insert(request, related_id, menu_type, sql_type, execute_sql):
     table = 'account_history'
 
@@ -335,7 +337,7 @@ def account_select(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
+        page_max = math.ceil(total_count / 15)
         paginator = Paginator(account_list, page * 15)
 
         try:
@@ -537,7 +539,7 @@ def account_insert(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
+        page_max = math.ceil(total_count / 15)
         paginator = Paginator(account_list, page * 15)
 
         try:
@@ -728,7 +730,7 @@ def account_update(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
+        page_max = math.ceil(total_count / 15)
         paginator = Paginator(account_list, page * 15)
 
         try:
@@ -871,7 +873,7 @@ def account_delete(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
+        page_max = math.ceil(total_count / 15)
         paginator = Paginator(account_list, page * 15)
 
         try:
@@ -910,74 +912,84 @@ def account_delete(request):
 def account_multi_dml(request):
     if request.method == 'POST':
         checkboxValues = request.POST.getlist('checkboxValues[]')
-        dml_type = request.POST.get('dml_type')
-        checkboxValues1 = ", ".join( repr(e) for e in checkboxValues) # QUERY에 쓰일 서버명
+        account_id_list = ",".join( repr(e) for e in checkboxValues).replace("'","") # QUERY에 쓰일 서버명
 
-        print("==========================================================")
-        print("여기오나요?")
-        print(checkboxValues)
-        print(checkboxValues1)
-        print(dml_type)
-        print("==========================================================")
-        # d_id = request.POST.get('d_id')
-        # d_account_requestor = request.POST.get('d_account_requestor')
-        # d_account_svr = request.POST.get('d_account_svr')
-        # d_account_user = request.POST.get('d_account_user')
-        # d_account_devteam = request.POST.get('d_account_devteam')
-        # d_account_host = request.POST.get('d_account_host')
-        # d_account_pass = request.POST.get('d_account_pass')
-        # d_account_grant = request.POST.get('d_account_grant')
-        # d_account_grant_with = request.POST.get('d_account_grant_with')
-        # d_account_db = request.POST.get('d_account_db')
-        # d_account_table = request.POST.get('d_account_table')
-        # d_account_info = request.POST.get('d_account_info')
-        # d_account_url = request.POST.get('d_account_url')
-        # d_account_del_reason = request.POST.get('d_account_del_reason')
-        # d_account_del_note = request.POST.get('d_account_del_note')
+        if len(checkboxValues) != 0:
+            # print("입력값 있음")
+            dml_type = request.POST.get('dml_type')
 
-        # print("============================================================")
-        # print("DELETE 리턴값 테스트 선입니다.")
-        # print("============================================================")
-        # print(d_id)
-        # print(d_account_requestor)
-        # print(d_account_devteam)
-        # print(d_account_info)
-        # print(d_account_url)
-        # print(d_account_svr)
-        # print(d_account_user)
-        # print(d_account_host)
-        # print(d_account_pass)
-        # print(d_account_db)
-        # print(d_account_table)
-        # print(d_account_grant)
-        # print(d_account_grant_with)
-        # print(d_account_del_reason)
-        # print(d_account_del_note)
-        # print("============================================================")
+            if dml_type == 'update':
+                mu_type = request.POST.get('mu_type')
+                mu_value = request.POST.get('mu_value')
+                u_query = "UPDATE account_account SET account_update_dt = now(), " + \
+                          mu_type + " = '" + mu_value + "' WHERE id IN(" + account_id_list + ")"
+                # 마지막 수정값
+                last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
-        # delete_sql = "/*ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
-        # "SET account_del_dt = now() " + \
-        # ", account_del_yn = 'Y' " + \
-        # ", account_del_reason = " + "'" + d_account_del_reason+ "'" + \
-        # ", account_del_note = " + "'" + d_account_del_note + "'" + \
-        # " WHERE id = " + d_id + ";"
-        #
-        # print(delete_sql)
-        # # print("============================================================")
-        #
-        # try:
-        #     cursor = connections['default'].cursor()
-        #     cursor.execute(delete_sql)
-        #     connection.commit()
-        #
-        #     # 성공 후 데일리 백업 체크, 히스토리 로깅
-        #     create_daily_backup_table(request, 'account')
-        #     log_history_insert(request, d_id, 'account', 'delete', delete_sql)
-        #
-        # except:
-        #     connection.rollback()
-        # finally:
-        #     cursor.close()
+                # print("==========================================================")
+                # print("업데이트가 들어왔네")
+                # print(account_id_list)
+                # print(mu_type)
+                # print(mu_value)
+                # print(u_query)
+                # print("==========================================================")
+
+                try:
+                    cursor = connections['default'].cursor()
+                    cursor.execute(u_query)
+                    connection.commit()
+
+                    # 성공 후 데일리 백업 체크, 히스토리 로깅
+                    create_daily_backup_table(request, 'account')
+                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'update', u_query)
+
+                except:
+                    connection.rollback()
+                finally:
+                    cursor.close()
+
+            elif dml_type == 'delete':
+                md_account_del_reason = request.POST.get('md_account_del_reason')
+                md_account_del_note = request.POST.get('md_account_del_note')
+                d_query = "/*ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
+                             "SET account_del_dt = now()" + \
+                             ", account_del_yn = 'Y'" + \
+                             ", account_del_reason = " + "'" + md_account_del_reason + "'" + \
+                             ", account_del_note = " + "'" + md_account_del_note + "'" + \
+                             " WHERE id IN(" + account_id_list + ")"
+                # 마지막 수정값
+                last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+                # print("==========================================================")
+                # print("삭제가 들어왔네")
+                # print(account_id_list)
+                # print(md_account_del_reason)
+                # print(md_account_del_note)
+                # print(d_query)
+                # print("==========================================================")
+
+                try:
+                    cursor = connections['default'].cursor()
+                    cursor.execute(d_query)
+                    connection.commit()
+
+                    # 성공 후 데일리 백업 체크, 히스토리 로깅
+                    create_daily_backup_table(request, 'account')
+                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'delete', d_query)
+
+                except:
+                    connection.rollback()
+                finally:
+                    cursor.close()
+
+            alert_type = "ERR_0"
+            alert_message = ""
+
+        else:
+            alert_type = "ERR_3"
+            alert_message = "반영 대상이 없습니다. 작업대상 ID 체크박스를 클릭해주세요."
+            last_modify_dt = ""
+
 
         ########################################## 페이지 원래대로 테스트
 
@@ -991,19 +1003,6 @@ def account_multi_dml(request):
         account_table = request.POST.get('s_account_table')
         account_url = request.POST.get('s_account_url')
         callmorepostFlag = 'true'
-
-        # print("검색란 리턴값 테스트 선입니다.")
-        # print("============================================================")
-        # print(account_requestor)
-        # print(account_devteam)
-        # print(account_svr)
-        # print(account_user)
-        # print(account_host)
-        # print(account_grant)
-        # print(account_db)
-        # print(account_table)
-        # print(account_url)
-        # print("============================================================")
 
         account_list = Account.objects.filter(
             account_requestor__contains=account_requestor,
@@ -1020,7 +1019,7 @@ def account_multi_dml(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
+        page_max = math.ceil(total_count / 15)
         paginator = Paginator(account_list, page * 15)
 
         try:
@@ -1047,7 +1046,9 @@ def account_multi_dml(request):
             'account_list': account_list,
             'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
             'page_max': page_max,
-            'alert_type': "ERR_0"
+            'alert_type': alert_type,
+            'alert_message': alert_message,
+            'last_modify_dt': last_modify_dt
         }
 
         return render(request, 'account_select.html', context)
@@ -1098,7 +1099,7 @@ def account_remove_select(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = round(account_list.count() / 15)
+        page_max = math.ceil(total_count / 15)
         paginator = Paginator(account_list, page * 15)
 
         try:
