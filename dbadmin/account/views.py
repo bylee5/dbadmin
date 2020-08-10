@@ -971,9 +971,25 @@ def account_multi_dml(request):
                 mu_type = request.POST.get('mu_type')
                 mu_value = request.POST.get('mu_value')
                 u_query = "UPDATE account_account SET account_update_dt = now(), " + \
-                          mu_type + " = '" + mu_value + "' WHERE id IN(" + account_id_list + ")"
+                            mu_type + " = '" + mu_value + "' WHERE id IN(" + account_id_list + ")"
                 # 마지막 수정값
                 last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+                # 패스워드 암호화 처리
+                if mu_type == 'account_pass':
+                    print("다중 패스워드 변경")
+                    account_pass = mu_value
+                    if is_password_encrypt_yn(account_pass) == True:  # 암호화가 되있다면
+                        account_pass = get_password_decrypt(account_pass)
+
+                    put_password(account_pass)
+                    account_hash = get_password_hash(account_pass)
+                    account_pass = get_password_encrypt(account_pass)
+
+                    u_query = "UPDATE account_account SET account_update_dt = now(), " + \
+                                mu_type + " = '" + account_pass + "', account_hash ='" + account_hash +"' WHERE id IN(" + account_id_list + ")"
+
+                    print(u_query)
 
                 # print("==========================================================")
                 # print("업데이트가 들어왔네")
