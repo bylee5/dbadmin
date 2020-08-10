@@ -182,20 +182,58 @@ def get_key():
     return key
 
 # 패스워드 해시값 가져오기
-def get_password(account_pass):
+def get_password_hash(account_pass):
     query = "SELECT id, password_hash FROM account_hash WHERE password_hash=PASSWORD('" + account_pass + "') limit 0,1"
 
     for result in Account_hash.objects.raw(query):
        return result.password_hash
 
-# 패스워드 해시값 세팅
+# 패스워드 암호화값 사용 여부 체크
+def is_password_encrypt_yn(account_pass):
+    query = "SELECT AES_DECRYPT(UNHEX('" + account_pass + "'), '" + get_key() + "')"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if row[0] is None: # 패스워드 암호화가 안되있는경우. False 리턴
+        print("암호화가 안되어있네요..")
+        return False
+    else: # 패스워드 암호화가 되어있는경우. True 리턴
+        print("암호화가 되있군요!!")
+        return True
+
+# 패스워드 암호화값 가져오기
+def get_password_encrypt(account_pass):
+    query = "SELECT id, password_encrypt FROM account_hash WHERE password_hash=PASSWORD('" + account_pass + "') limit 0,1"
+
+    for result in Account_hash.objects.raw(query):
+       return result.password_encrypt
+
+# 패스워드 복호화값 가져오기
+def get_password_decrypt(account_pass):
+    query = "SELECT AES_DECRYPT(UNHEX('" + account_pass + "'), '" + get_key() + "') as pass"
+
+    print(query)
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    row = row[0].decode("utf-8")
+    return row
+
+# 패스워드 암호화, 해시값 세팅
 def put_password(account_pass):
+    print("패스워드 암호화 함수 시작")
+    print(account_pass)
     query = "insert ignore into account_hash(password_encrypt,password_hash)" \
             "values (HEX(AES_ENCRYPT('" + account_pass + "', '" + get_key() + "')), \
              password('" + account_pass + "'))"
 
+    print("패스워드 암호화 함수 중간")
     cursor = connection.cursor()
     cursor.execute(query)
+    print("패스워드 암호화 함수 끝")
 
 # 일간 백업 진행. 매일 첫 DML 이벤트가 발생 할 경우, 백업 테이블 생성
 def create_daily_backup_table(request, backup_type):
@@ -390,9 +428,13 @@ def account_insert(request):
         if account_grant == '':  # 권한 직접 입력인경우
             account_grant = request.POST.get('i_account_grant_direct').upper()
 
-        # 패스워드 암호화 적용
+        # 패스워드 암호화 처리
+        if is_password_encrypt_yn(account_pass) == True: # 암호화가 되있다면
+            account_pass = get_password_decrypt(account_pass)
+
         put_password(account_pass)
-        account_hash = get_password(account_pass)
+        account_hash = get_password_hash(account_pass)
+        account_pass = get_password_encrypt(account_pass)
 
         # print("============================================================")
         # print("입력란 테스트 선입니다.")
@@ -421,7 +463,7 @@ def account_insert(request):
                             "*/" + " GRANT " + account_grant  + " ON " + \
                             account_db + "." + account_table + \
                             " TO " + "''" + account_user + "''@''" + account_host + \
-                            "'' IDENTIFIED BY ''" + account_pass + "'';"
+                            "'' IDENTIFIED BY PASSWORD ''" + account_hash + "'';"
             print("sql : " + account_sql)
 
             insert_sql = "INSERT INTO account_account(account_create_dt, account_update_dt, " + \
@@ -594,14 +636,21 @@ def account_update(request):
         u_account_info = request.POST.get('u_account_info')
         u_account_url = request.POST.get('u_account_url')
 
+        # 패스워드 암호화 처리
+        if is_password_encrypt_yn(u_account_pass) == True: # 암호화가 되있다면
+            u_account_pass = get_password_decrypt(u_account_pass)
+
+        put_password(u_account_pass)
+        u_account_hash = get_password_hash(u_account_pass)
+        u_account_pass = get_password_encrypt(u_account_pass)
+
+        print("================================================")
+
         u_account_sql = "/*" + u_account_svr + "*/ " + "USE mysql; " + "/*" + u_account_url + \
                               "*/" + " GRANT " + u_account_grant + " ON " + \
                               u_account_db + "." + u_account_table + \
                               " TO " + "''" + u_account_user + "''@''" + u_account_host + \
-                              "'' IDENTIFIED BY ''" + u_account_pass + "'';"
-
-        put_password(u_account_pass)
-        u_account_hash = get_password(u_account_pass)
+                              "'' IDENTIFIED BY PASSWORD ''" + u_account_hash + "'';"
 
         update_sql = "UPDATE account_account " + \
         "SET account_update_dt = now() " + \
