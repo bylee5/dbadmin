@@ -235,6 +235,35 @@ def put_password(account_pass):
     cursor.execute(query)
     print("패스워드 암호화 함수 끝")
 
+def recreate_account_sql(request, account_id_list):
+    print("오늘 하는곳")
+    print(account_id_list)
+    # for account_id in account_id_list.split(','):
+
+    u_query = "/*RE-CREATE ACCOUNT_SQL*/UPDATE account_account set account_sql = " + \
+    "CONCAT('/*',account_svr,'*/ USE mysql; /*',account_url,'*/ " + \
+    "GRANT ',account_grant,' ON ', account_db,'.',account_table,' TO '''" + \
+    ",account_user,'''@''',account_host,''' IDENTIFIED BY PASSWORD ''',account_hash,''';') " + \
+    "WHERE id in(" + account_id_list + ");"
+
+    print("리크리에이트 SQL u_query : ")
+    print(u_query)
+
+    try:
+        cursor = connections['default'].cursor()
+        cursor.execute(u_query)
+        connection.commit()
+
+        # 성공 후 데일리 백업 체크, 히스토리 로깅
+        create_daily_backup_table(request, 'account')
+        log_history_insert(request, "'" + account_id_list + "'", 'account', 'update', u_query)
+
+    except:
+        connection.rollback()
+    finally:
+        cursor.close()
+
+
 # 일간 백업 진행. 매일 첫 DML 이벤트가 발생 할 경우, 백업 테이블 생성
 def create_daily_backup_table(request, backup_type):
     db_schema_source = 'dbadmin'
@@ -306,7 +335,7 @@ def log_history_insert(request, related_id, menu_type, sql_type, execute_sql):
                related_id + ",'" + who_updated + "'," + str(who_writer) + ",'" + menu_type + "','" + sql_type + "'," + '"' + execute_sql + '");'
 
     print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-    print("i_query : " + i_query)
+    print("로그히스토리용 i_query : " + i_query)
     print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
     try:
@@ -970,7 +999,7 @@ def account_multi_dml(request):
             if dml_type == 'update':
                 mu_type = request.POST.get('mu_type')
                 mu_value = request.POST.get('mu_value')
-                u_query = "UPDATE account_account SET account_update_dt = now(), " + \
+                u_query = "/*MULTI-UPDATE*/UPDATE account_account SET account_update_dt = now(), " + \
                             mu_type + " = '" + mu_value + "' WHERE id IN(" + account_id_list + ")"
                 # 마지막 수정값
                 last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -986,7 +1015,7 @@ def account_multi_dml(request):
                     account_hash = get_password_hash(account_pass)
                     account_pass = get_password_encrypt(account_pass)
 
-                    u_query = "UPDATE account_account SET account_update_dt = now(), " + \
+                    u_query = "/*MULTI-UPDATE*/UPDATE account_account SET account_update_dt = now(), " + \
                                 mu_type + " = '" + account_pass + "', account_hash ='" + account_hash +"' WHERE id IN(" + account_id_list + ")"
 
                     print(u_query)
@@ -1004,9 +1033,12 @@ def account_multi_dml(request):
                     cursor.execute(u_query)
                     connection.commit()
 
-                    # 성공 후 데일리 백업 체크, 히스토리 로깅
+                    # 성공 후 데일리 백업 체크, 히스토리 로깅.
                     create_daily_backup_table(request, 'account')
-                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'update', u_query)
+                    log_history_insert(request,  "'" + account_id_list + "'", 'account', 'update', u_query)
+
+                    # 다중 업데이트의 경우, account_sql 재 보정 필요
+                    recreate_account_sql(request, account_id_list)
 
                 except:
                     connection.rollback()
@@ -1016,7 +1048,7 @@ def account_multi_dml(request):
             elif dml_type == 'delete':
                 md_account_del_reason = request.POST.get('md_account_del_reason')
                 md_account_del_note = request.POST.get('md_account_del_note')
-                d_query = "/*ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
+                d_query = "/*MULTI-DELETE ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
                              "SET account_del_dt = now()" + \
                              ", account_del_yn = 'Y'" + \
                              ", account_del_reason = " + "'" + md_account_del_reason + "'" + \
@@ -1040,7 +1072,7 @@ def account_multi_dml(request):
 
                     # 성공 후 데일리 백업 체크, 히스토리 로깅
                     create_daily_backup_table(request, 'account')
-                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'delete', d_query)
+                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'multi_delete', d_query)
 
                 except:
                     connection.rollback()
