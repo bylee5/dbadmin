@@ -224,19 +224,18 @@ def get_password_decrypt(account_pass):
 
 # 패스워드 암호화, 해시값 세팅
 def put_password(account_pass):
-    print("패스워드 암호화 함수 시작")
-    print(account_pass)
+    # print("패스워드 암호화 함수 시작")
+    # print(account_pass)
     query = "insert ignore into account_hash(password_encrypt,password_hash)" \
             "values (HEX(AES_ENCRYPT('" + account_pass + "', '" + get_key() + "')), \
              password('" + account_pass + "'))"
 
-    print("패스워드 암호화 함수 중간")
+    # print("패스워드 암호화 함수 중간")
     cursor = connection.cursor()
     cursor.execute(query)
-    print("패스워드 암호화 함수 끝")
+    # print("패스워드 암호화 함수 끝")
 
 def recreate_account_sql(request, account_id_list):
-    print("오늘 하는곳")
     print(account_id_list)
     # for account_id in account_id_list.split(','):
 
@@ -453,6 +452,7 @@ def account_insert(request):
         account_table = request.POST.get('i_account_table')
         account_grant = request.POST.get('i_account_grant')
         account_grant_direct = request.POST.get('i_account_grant_direct')
+        forceinsert_flag = request.POST.get('forceinsert_flag')
 
         if account_grant == '':  # 권한 직접 입력인경우
             account_grant = request.POST.get('i_account_grant_direct').upper()
@@ -465,9 +465,9 @@ def account_insert(request):
         account_hash = get_password_hash(account_pass)
         account_pass = get_password_encrypt(account_pass)
 
-        # print("============================================================")
-        # print("입력란 테스트 선입니다.")
-        # print("============================================================")
+        print("============================================================")
+        print("입력란 테스트 선입니다.")
+        print("============================================================")
         # print(account_requestor)
         # print(account_devteam)
         # print(account_info)
@@ -480,7 +480,8 @@ def account_insert(request):
         # print(account_table)
         # print(account_grant)
         # print(account_hash)
-        # print("============================================================")
+        print("강제 입력 여부 : " + str(forceinsert_flag))
+        print("============================================================")
 
         # HOST 여러대역 처리
         account_host_lists = account_host.split(',')
@@ -523,8 +524,16 @@ def account_insert(request):
             # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
 
-            # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
-            alert_type, alert_message = check_account_consistency(account_svr, account_user, account_host, account_pass, account_db, account_table, account_grant)
+            # 강제 입력 여부. True면 정합성 체크 안함
+            if forceinsert_flag == True:
+                print("강제 입력 동작합니다")
+                alert_type = "ERR_0"
+                alert_message = ""
+
+            else:
+                print("강제 입력 동작 XXXXX !!!!")
+                # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
+                alert_type, alert_message = check_account_consistency(account_svr, account_user, account_host, account_pass, account_db, account_table, account_grant)
 
             # 쿼리 수행
             # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")

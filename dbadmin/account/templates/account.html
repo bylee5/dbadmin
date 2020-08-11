@@ -12,6 +12,9 @@
 	<span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">검색</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-info" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">다중 수정/삭제</span>
+	<!--
+	<span style="font-size: 12px;" type="button" class="badge badge-dark">다중 SQL 확인</span>
+	-->
 
 	<!-- 로딩바 -->
 	<div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners">
@@ -98,7 +101,7 @@
 				(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
 				</td>
 				<td class="text-right">
-					<a>강제입력(미구현) <input type="checkbox" id="abc" name="abc" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
+					<a>강제입력(미구현) <input type="checkbox" id="forceinsert_flag" name="forceinsert_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
 					<style>
 						.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
 						.toggle.ios .toggle-handle { border-radius: 20rem; }
@@ -814,6 +817,12 @@
 		var s_account_table = $("#s_account_table").val();
 		var s_account_url = $("#s_account_url").val();
 
+		// 강제 입력여부
+		var forceinsert_flag = 'False';
+		$("input[name='forceinsert_flag']:checked").each(function(i) {
+			forceinsert_flag = 'True';
+		});
+
 		$.ajax( {
 			type : 'POST',
 			url: "{% url 'account_insert' %}",
@@ -830,6 +839,7 @@
 				'i_account_table': i_account_table,
 				'i_account_grant': i_account_grant,
 				'i_account_grant_direct': i_account_grant_direct,
+				'forceinsert_flag': forceinsert_flag,
 				's_account_requestor': s_account_requestor,
 				's_account_devteam': s_account_devteam,
 				's_account_svr': s_account_svr,
