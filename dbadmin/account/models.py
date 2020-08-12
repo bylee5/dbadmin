@@ -33,7 +33,7 @@ class Account(models.Model):
 	account_db = models.CharField(blank=True, max_length=100, default='')             			# db          	-- test
 	account_table = models.CharField(blank=True, max_length=100, default='')          			# table       	-- test
 	account_info = models.CharField(blank=True, max_length=100, default='')            			# 용도         	-- 테스트용
-	account_sql = models.CharField(blank=True, max_length=300, default='')            			# sql         	-- 주석 sql~~~~
+	account_sql = models.CharField(blank=True, max_length=350, default='')            			# sql         	-- 주석 sql~~~~
 	account_url = models.CharField(blank=True, max_length=100, default='')            			# url         	-- 지라 혹은 위키
 	account_del_yn = models.CharField(blank=True, max_length=100, default='N')       # 삭제여부		-- N/Y
 	account_del_dt = models.DateTimeField(null=True)                   				# 삭제조치일
