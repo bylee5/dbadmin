@@ -53,10 +53,20 @@
 	<div class="collapse small" id="collapseInsert" style="1font-size: 12px;">
 		<div class="card card-body mt-2 bg-light callout callout-danger">
 			<h6>입력란</h6>
-			<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
-				(예시 : select, insert, update, execute)</a>
-			<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
-				(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
+			<table class="mb-2">
+				<tr>
+					<td>
+						<a>- 권한 직접입력을 할 경우에는, <b>반드시 ,</b>를 잘 사용해주세요. (ex. select, insert, update, execute)</a>
+					</td>
+					<td class="text-right align-bottom">
+						<a>강제입력 <input type="checkbox" id="forceinsert_flag" name="forceinsert_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
+						<style>
+						.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
+						.toggle.ios .toggle-handle { border-radius: 20rem; }
+					</style>
+					</td>
+				</tr>
+			</table>
 
 			<table class="table table-sm text-center" style="1table-layout: fixed">
 				<form class="form-inline" onsubmit="return false;" name="insertForm">

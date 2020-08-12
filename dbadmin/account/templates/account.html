@@ -92,15 +92,15 @@
 	<div class="collapse small" id="collapseInsert" style="1font-size: 12px;">
 		<div class="card card-body mt-2 bg-light callout callout-danger">
 			<h6>입력란</h6>
-            <table>
+            <table class="mb-2">
 			<tr>
 				<td>
-			<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
-				(예시 : select, insert, update, execute)</a><br>
-			<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
-				(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
+					<a>- 권한 직접입력을 할 경우에는, <b>반드시 ,</b>를 잘 사용해주세요. (ex. select, insert, update, execute)</a>
+					<br><a>- 허용 호스트 입력 시, <b>','</b>를 기재하면 여러대역대 계정을 생성 할 수 있습니다. (ex. 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
+					<br><a>- 패스워드 입력 시, <b>올바른 평문 패스워드</b> 또는 <b>암호화 패스워드</b>를 입력해주세요.</a>
+					<br><a>- 불가피한 사유로 계정 입력을 해야 할지, 우측 <font color="red"><b>강제입력</b></font> 스위치를 ON 시켜주세요.</a>
 				</td>
-				<td class="text-right">
+				<td class="text-right align-bottom">
 					<a>강제입력 <input type="checkbox" id="forceinsert_flag" name="forceinsert_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
 					<style>
 						.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
@@ -197,10 +197,10 @@
 			<td>
 				<div class="card card-body mt-2 bg-light callout callout-info">
 					<h6>다중 수정란</h6>
-					<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
-						(예시 : select, insert, update, execute)</a>
-					<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
-						(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
+					<a>- 좌측 하단 체크박스 클릭을 통해 다중 변경 대상을 선택해주세요.</a>
+					<a>- 권한 직접입력을 할 경우에는, <b>반드시 ,</b>를 잘 사용해주세요. (ex. SELECT, INSERT, DELETE, UPDATE)
+					<a>- 패스워드 입력 시, <b>올바른 평문 패스워드</b> 또는 <b>암호화 패스워드</b>를 입력해주세요.</a>
+					<a class="mb-3">- 체크 대상으로 <font color="red"><b>일괄 변경</b></font> 되오니, 신중하게 사용해주세요.</a>
 
 					<table class="table table-sm text-center" style="table-layout: fixed">
 						<form class="form-inline" onsubmit="return false;" name="MultiUpdateForm">
@@ -238,11 +238,11 @@
 			</td>
 			<td>
 				<div class="card card-body mt-2 bg-light callout callout-dark">
-					<h6>다중 삭제란</h6>
-					<a>권한 직접입력을 할 경우에는, 반드시 ,를 잘 사용해주세요.
-						(예시 : select, insert, update, execute)</a>
-					<a class="mb-2">허용 호스트 입력 시, ','를 기재하면 여러대역대 계정을 생성 할 수 있습니다.
-						(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
+					<h6> 다중 삭제란</h6>
+					<a>- 좌측 하단 체크박스 클릭을 통해 다중 변경 대상을 선택해주세요.</a>
+					<a>- 삭제 사유 및 삭제 URL (JIRA)를 기재해주세요.<a>
+					<a>&nbsp;&nbsp;(ex. ARCH-번호)</a>
+					<a class="mb-3">- 체크 대상으로 <font color="red"><b>일괄 삭제</b></font> 되오니, 신중하게 사용해주세요.</a>
 
 					<table class="table table-sm text-center" style="table-layout: fixed">
 						<form class="form-inline" onsubmit="return false;" name="MultiDeleteForm">
@@ -340,6 +340,16 @@
 								<input class="form-control form-control-sm" id="s_account_db" name="s_account_db" type="hidden">
 								<input class="form-control form-control-sm" id="s_account_table" name="s_account_table" type="hidden">
 								<input class="form-control form-control-sm" id="s_account_url" name="s_account_url" type="hidden">
+
+									<div class="card card-body mt-0 bg-light callout callout-dark mb-2">
+										<table class="w-100">
+											<tr>
+												<td>
+													<a>- 삭제 사유 및 삭제 URL (JIRA)를 기재해주세요. (ex. ARCH-번호)<a>
+												</td>
+											</tr>
+										</table>
+									</div>
 
 								<table class="table table-sm table-hover text-center">
 								<tr class="">
@@ -464,9 +474,20 @@
 								<input class="form-control form-control-sm" id="s_account_table" name="s_account_table" type="hidden">
 								<input class="form-control form-control-sm" id="s_account_url" name="s_account_url" type="hidden">
 
-								<table class="w-100 mb-3"><tr>
-									<td class="text-right"><a>강제수정 <input type="checkbox" id="forceupdate_flag" name="forceupdate_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a></td>
-								</tr></table>
+								<div class="card card-body mt-0 bg-light callout callout-dark mb-2">
+								<table class="w-100">
+									<tr>
+										<td>
+											<a>- 권한 직접입력을 할 경우에는, <b>반드시 ,</b>를 잘 사용해주세요. (ex. SELECT, INSERT, DELETE, EXECUTE)</a>
+											<br><a>- 패스워드 입력 시 <b>올바른 평문 패스워드</b> 또는 <b>암호화 패스워드를 입력</b>해주세요.</a>
+											<br><a>- 불가피한 사유로 강제로 수정을 해야 한다면, 우측 <font color="red"><b>강제수정</b></font> 스위치를 ON 시켜주세요.</a>
+										</td>
+										<td class="text-right align-bottom">
+											<a>강제수정 <input type="checkbox" id="forceupdate_flag" name="forceupdate_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
+										</td>
+									</tr>
+								</table>
+								</div>
 
 								<table class="table table-sm table-hover text-center">
 								<tr class="">
