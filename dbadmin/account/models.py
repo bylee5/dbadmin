@@ -48,6 +48,7 @@ class Account(models.Model):
 
 class AccountRepository(models.Model):
 	create_dt = models.DateTimeField(default=datetime.now) # 일자
+	repository_type = models.CharField(blank=True, max_length=10, default='') # 구분. PHP, JAVA 기타 등등
 	repository_team = models.CharField(blank=True, max_length=20, default='') # 연관부서
 	repository_name = models.CharField(blank=True, max_length=100, default='') # 레포지터리 명
 	repository_url = models.CharField(blank=True, max_length=400, default='') # 레포지터리 URL

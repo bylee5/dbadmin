@@ -386,7 +386,7 @@ def account_select(request):
         account_svr = request.POST.get('s_account_svr')
         account_user = request.POST.get('s_account_user')
         account_host = request.POST.get('s_account_host')
-        account_grant = request.POST.get('s_account_grant')
+        account_grant = request.POST.get('s_account_grant').upper()
         account_db = request.POST.get('s_account_db')
         account_table = request.POST.get('s_account_table')
         account_url = request.POST.get('s_account_url')
@@ -403,7 +403,7 @@ def account_select(request):
             account_table__contains=account_table,
             account_url__contains=account_url,
             account_del_yn = 'N'
-		).order_by('-id')
+        ).order_by('-id')
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
@@ -1271,6 +1271,7 @@ def account_repository(request):
 def account_repository_select(request):
     if request.method == 'POST':
         s_repository_team = request.POST.get('s_repository_team')
+        s_repository_type = request.POST.get('s_repository_type')
         s_repository_name = request.POST.get('s_repository_name')
         s_repository_url = request.POST.get('s_repository_url')
         s_account_user = request.POST.get('s_account_user')
@@ -1279,6 +1280,7 @@ def account_repository_select(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
+            repository_type__contains=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1292,6 +1294,7 @@ def account_repository_select(request):
         context = {
             'repository_list': repository_list,
             'repository_team': s_repository_team,
+            'repository_type': s_repository_type,
             'repository_name': s_repository_name,
             'repository_url': s_repository_url,
             'account_user': s_account_user,
@@ -1308,16 +1311,18 @@ def account_repository_select(request):
 def account_repository_insert(request):
     if request.method == 'POST':
         i_repository_team = request.POST.get('i_repository_team')
+        i_repository_type = request.POST.get('i_repository_type')
         i_repository_name = request.POST.get('i_repository_name')
         i_repository_url = request.POST.get('i_repository_url')
         i_account_user = request.POST.get('i_account_user')
         i_url = request.POST.get('i_url')
         i_info = request.POST.get('i_info')
 
-        insert_sql = "INSERT INTO account_repository(create_dt, repository_team, " + \
+        insert_sql = "INSERT INTO account_repository(create_dt, repository_team, repository_type, " + \
                     "repository_name, repository_url, account_user, url, info) VALUES(" + \
                     "now(), " + \
                     "'" + i_repository_team + "', " + \
+                    "'" + i_repository_type + "', " + \
                     "'" + i_repository_name + "', " + \
                     "'" + i_repository_url + "', " + \
                     "'" + i_account_user + "', " + \
@@ -1343,6 +1348,7 @@ def account_repository_insert(request):
         last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         s_repository_team = request.POST.get('s_repository_team')
+        s_repository_type = request.POST.get('s_repository_type')
         s_repository_name = request.POST.get('s_repository_name')
         s_repository_url = request.POST.get('s_repository_url')
         s_account_user = request.POST.get('s_account_user')
@@ -1351,6 +1357,7 @@ def account_repository_insert(request):
 
         # print("-----------------------------------------------")
         # print(i_repository_team)
+        # print(i_repository_type)
         # print(i_repository_name)
         # print(i_repository_url)
         # print(i_account_user)
@@ -1367,6 +1374,7 @@ def account_repository_insert(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
+            repository_type__contains=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1379,6 +1387,7 @@ def account_repository_insert(request):
         context = {
             'repository_list': repository_list,
             'repository_team': s_repository_team,
+            'repository_type': s_repository_type,
             'repository_name': s_repository_name,
             'repository_url': s_repository_url,
             'account_user': s_account_user,
@@ -1396,6 +1405,7 @@ def account_repository_update(request):
     if request.method == 'POST':
         u_id = request.POST.get('u_id')
         u_repository_team = request.POST.get('u_repository_team')
+        u_repository_type = request.POST.get('u_repository_type')
         u_repository_name = request.POST.get('u_repository_name')
         u_repository_url = request.POST.get('u_repository_url')
         u_account_user = request.POST.get('u_account_user')
@@ -1404,6 +1414,7 @@ def account_repository_update(request):
 
         update_sql = "UPDATE account_repository SET " + \
                      "repository_team = " + "'" + u_repository_team + "'" + \
+                     ", repository_type = " + "'" + u_repository_type + "'" + \
                      ", repository_name = " + "'" + u_repository_name + "'" + \
                      ", repository_url = " + "'" + u_repository_url + "'" + \
                      ", account_user = " + "'" + u_account_user + "'" + \
@@ -1432,6 +1443,7 @@ def account_repository_update(request):
         last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         s_repository_team = request.POST.get('s_repository_team')
+        s_repository_type = request.POST.get('s_repository_type')
         s_repository_name = request.POST.get('s_repository_name')
         s_repository_url = request.POST.get('s_repository_url')
         s_account_user = request.POST.get('s_account_user')
@@ -1456,6 +1468,7 @@ def account_repository_update(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
+            repository_type__contains=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1468,6 +1481,7 @@ def account_repository_update(request):
         context = {
             'repository_list': repository_list,
             'repository_team': s_repository_team,
+            'repository_type': s_repository_type,
             'repository_name': s_repository_name,
             'repository_url': s_repository_url,
             'account_user': s_account_user,
