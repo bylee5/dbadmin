@@ -101,7 +101,7 @@
 				(예시 : 10.11.11.%, 10.11.12.%, 10.11.13.%)</a>
 				</td>
 				<td class="text-right">
-					<a>강제입력(미구현) <input type="checkbox" id="forceinsert_flag" name="forceinsert_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
+					<a>강제입력 <input type="checkbox" id="forceinsert_flag" name="forceinsert_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
 					<style>
 						.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
 						.toggle.ios .toggle-handle { border-radius: 20rem; }
@@ -465,7 +465,7 @@
 								<input class="form-control form-control-sm" id="s_account_url" name="s_account_url" type="hidden">
 
 								<table class="w-100 mb-3"><tr>
-									<td class="text-right"><a>강제수정(미구현) <input type="checkbox" id="abc" name="abc" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a></td>
+									<td class="text-right"><a>강제수정 <input type="checkbox" id="forceupdate_flag" name="forceupdate_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a></td>
 								</tr></table>
 
 								<table class="table table-sm table-hover text-center">
@@ -966,6 +966,12 @@
 			var s_account_table = $("#s_account_table").val();
 			var s_account_url = $("#s_account_url").val();
 
+			// 강제 수정여부
+			var forceupdate_flag = 'False';
+			$("input[name='forceupdate_flag']:checked").each(function(i) {
+				forceupdate_flag = 'True';
+			});
+
 			$.ajax( {
 				type : 'POST',
 				url: "{% url 'account_update' %}",
@@ -992,6 +998,7 @@
 					's_account_db': s_account_db,
 					's_account_table': s_account_table,
 					's_account_url': s_account_url,
+					'forceupdate_flag': forceupdate_flag,
 					'page': page,
 					'csrfmiddlewaretoken': token,
 				},

@@ -34,9 +34,10 @@ import math
 # 체크값 : 호스트, 계정, 패스워드
 def check_overlap_password(svr, user, password):
     # real/stage
-    # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+    print(password)
     if svr.find('dev') < 0:
-        # print("리얼")
+        print("리얼")
         query = "SELECT distinct account_pass FROM account_account where 1=1 " \
                 " AND account_svr not like '%dev%'" \
                 " AND account_user='" + user + "'" \
@@ -44,7 +45,7 @@ def check_overlap_password(svr, user, password):
 
     # dev/qa
     else:
-        # print("DEV")
+        print("DEV")
         query = "SELECT distinct account_pass FROM account_account where 1=1 " \
                 " AND account_svr like '%dev%'" \
                 " AND account_user='" + user + "'" \
@@ -54,10 +55,12 @@ def check_overlap_password(svr, user, password):
         cursor.execute(query)
         rows = cursor.fetchall()
 
-        # print("반복횟수 : " + str(len(rows)))
+        print(rows)
+        print("반복횟수 : " + str(len(rows)))
+        print(len(rows))
 
-        if len(rows) == 0: # 내가 첫 계정인가?
-            # print("내가 첫 계정인가? Yes")
+        if len(rows) < 2: # 내가 첫 계정인가? 계정이 없는경우 0, 하나만 있는 경우 1
+            print("내가 첫 계정인가? Yes!!")
             alert_type = "ERR_0"
             alert_message = ""
 
@@ -279,6 +282,7 @@ def create_daily_backup_table(request, backup_type):
         table_list = None
 
     if table_list is not None:
+        print("일간 백업 동작")
         for table in table_list:
             s_query = "SELECT table_name FROM information_schema.tables WHERE table_schema='" + db_schema_target + "' and table_name LIKE '" + table + "%" + current_dt + "%'"
             # print(s_query)
@@ -454,6 +458,9 @@ def account_insert(request):
         account_grant_direct = request.POST.get('i_account_grant_direct')
         forceinsert_flag = request.POST.get('forceinsert_flag')
 
+        # 수정 일시년월일 (또는 입력일시)
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
         if account_grant == '':  # 권한 직접 입력인경우
             account_grant = request.POST.get('i_account_grant_direct').upper()
 
@@ -500,8 +507,8 @@ def account_insert(request):
                          "account_requestor, account_devteam, account_svr, account_user, " + \
                          "account_host, account_pass, account_hash, account_grant, account_grant_with, " + \
                          "account_db, account_table, account_info, account_sql, account_url, account_del_yn, account_del_reason, account_del_note) VALUES( " + \
-                         "now(), " + \
-                         "now(), " + \
+                         "'" + last_modify_dt + "'," + \
+                         "'" + last_modify_dt + "'," + \
                          "'" + account_requestor + "'," + \
                          "'" + account_devteam + "'," + \
                          "'" + account_svr + "'," + \
@@ -525,7 +532,7 @@ def account_insert(request):
 
 
             # 강제 입력 여부. True면 정합성 체크 안함
-            if forceinsert_flag == True:
+            if forceinsert_flag == 'True':
                 print("강제 입력 동작합니다")
                 alert_type = "ERR_0"
                 alert_message = ""
@@ -555,9 +562,6 @@ def account_insert(request):
 
                 finally:
                     cursor.close()
-
-            # 마지막 수정값
-            last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         # print("============================================================")
 
@@ -673,6 +677,10 @@ def account_update(request):
         u_account_table = request.POST.get('u_account_table')
         u_account_info = request.POST.get('u_account_info')
         u_account_url = request.POST.get('u_account_url')
+        forceupdate_flag = request.POST.get('forceupdate_flag')
+
+        # 수정 일시년월일 (또는 입력일시)
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         # 패스워드 암호화 처리
         if is_password_encrypt_yn(u_account_pass) == True: # 암호화가 되있다면
@@ -691,7 +699,7 @@ def account_update(request):
                               "'' IDENTIFIED BY PASSWORD ''" + u_account_hash + "'';"
 
         update_sql = "UPDATE account_account " + \
-        "SET account_update_dt = now() " + \
+        "SET account_update_dt = '" + last_modify_dt + "'" + \
         ", account_requestor = " + "'" + u_account_requestor + "'" + \
         ", account_devteam = " + "'" + u_account_devteam + "'" + \
         ", account_info = " + "'" + u_account_info + "'" + \
@@ -708,9 +716,9 @@ def account_update(request):
         ", account_hash = " + "'" + u_account_hash + "'" + \
         " WHERE id = " + u_id + ";"
 
-        # print("============================================================")
-        # print("UPDATE 리턴값 테스트 선입니다.")
-        # print("============================================================")
+        print("============================================================")
+        print("UPDATE 리턴값 테스트 선입니다.")
+        print("============================================================")
         # print(u_id)
         # print(u_account_requestor)
         # print(u_account_devteam)
@@ -728,6 +736,7 @@ def account_update(request):
         # print("수정본 u_account_sql : " + u_account_sql)
         # print("수정본 account_hash: " + u_account_hash)
         # print(update_sql)
+        print("forceupdate_flag : " + str(forceupdate_flag))
         # print("============================================================")
 
 
@@ -745,7 +754,16 @@ def account_update(request):
 
             # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
             # print("정합성 체크 ON")
-            alert_type, alert_message = check_account_consistency(u_account_svr, u_account_user, u_account_host, u_account_pass, u_account_db, u_account_table, u_account_grant)
+            # 강제 입력 여부. True면 정합성 체크 안함
+            if forceupdate_flag == 'True':
+                print("강제 수정 동작합니다")
+                alert_type = "ERR_0"
+                alert_message = ""
+
+            else:
+                print("강제 수정 동작 XXXXX !!!!")
+                # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
+                alert_type, alert_message = check_account_consistency(u_account_svr, u_account_user, u_account_host, u_account_pass, u_account_db, u_account_table, u_account_grant)
 
         else:
             # print("정합성 체크 OFF")
@@ -772,9 +790,6 @@ def account_update(request):
 
             finally:
                 cursor.close()
-
-        # 마지막 수정값
-        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
         ########################################## 페이지 원래대로 테스트
 
@@ -1001,6 +1016,9 @@ def account_multi_dml(request):
         checkboxValues = request.POST.getlist('checkboxValues[]')
         account_id_list = ",".join( repr(e) for e in checkboxValues).replace("'","") # QUERY에 쓰일 서버명
 
+        # 수정 일시년월일 (또는 입력일시)
+        last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
         if len(checkboxValues) != 0:
             # print("입력값 있음")
             dml_type = request.POST.get('dml_type')
@@ -1008,10 +1026,13 @@ def account_multi_dml(request):
             if dml_type == 'update':
                 mu_type = request.POST.get('mu_type')
                 mu_value = request.POST.get('mu_value')
-                u_query = "/*MULTI-UPDATE*/UPDATE account_account SET account_update_dt = now(), " + \
+
+                # 권한 입력의 경우, 대문자로 처리
+                if mu_type == 'account_grant':
+                    mu_value = mu_value.upper()
+
+                u_query = "/*MULTI-UPDATE*/UPDATE account_account SET account_update_dt = '" + last_modify_dt + "', " + \
                             mu_type + " = '" + mu_value + "' WHERE id IN(" + account_id_list + ")"
-                # 마지막 수정값
-                last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
                 # 패스워드 암호화 처리
                 if mu_type == 'account_pass':
@@ -1024,7 +1045,7 @@ def account_multi_dml(request):
                     account_hash = get_password_hash(account_pass)
                     account_pass = get_password_encrypt(account_pass)
 
-                    u_query = "/*MULTI-UPDATE*/UPDATE account_account SET account_update_dt = now(), " + \
+                    u_query = "/*MULTI-UPDATE*/UPDATE account_account SET account_update_dt = '" + last_modify_dt + "', " + \
                                 mu_type + " = '" + account_pass + "', account_hash ='" + account_hash +"' WHERE id IN(" + account_id_list + ")"
 
                     print(u_query)
@@ -1058,13 +1079,11 @@ def account_multi_dml(request):
                 md_account_del_reason = request.POST.get('md_account_del_reason')
                 md_account_del_note = request.POST.get('md_account_del_note')
                 d_query = "/*MULTI-DELETE ACCOUNT DEL_YN=Y*/ UPDATE account_account " + \
-                             "SET account_del_dt = now()" + \
+                             "SET account_del_dt = '" + last_modify_dt + "'" \
                              ", account_del_yn = 'Y'" + \
                              ", account_del_reason = " + "'" + md_account_del_reason + "'" + \
                              ", account_del_note = " + "'" + md_account_del_note + "'" + \
                              " WHERE id IN(" + account_id_list + ")"
-                # 마지막 수정값
-                last_modify_dt = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
                 # print("==========================================================")
                 # print("삭제가 들어왔네")
@@ -1081,7 +1100,7 @@ def account_multi_dml(request):
 
                     # 성공 후 데일리 백업 체크, 히스토리 로깅
                     create_daily_backup_table(request, 'account')
-                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'multi_delete', d_query)
+                    log_history_insert(request, "'" + account_id_list + "'", 'account', 'delete', d_query)
 
                 except:
                     connection.rollback()
