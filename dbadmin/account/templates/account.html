@@ -280,12 +280,6 @@
 			<input id="page" name="page" type="hidden" value="{{ page }}">
 		{% endif %}
 
-		{% if page_max is none %}
-			<input id="page_max" name="page_max" type="hidden" value="1">
-		{% else %}
-			<input id="page_max" name="page_max" type="hidden" value="{{ page_max }}">
-		{% endif %}
-
 		{% if scrollHeight is none %}
 			<input id="scrollHeight" name="scrollHeight" type="hidden" value="0">
 		{% else %}

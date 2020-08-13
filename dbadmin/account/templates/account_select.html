@@ -359,6 +359,14 @@
     </table>
     {% endif %}
 
+    <div>
+        {% if page_max is none %}
+        <input id="page_max" name="page_max" type="hidden" value="1">
+        {% else %}
+        <input id="page_max" name="page_max" type="hidden" value="{{ page_max }}">
+        {% endif %}
+    </div>
+
 {% if callmorepostFlag == 'true' %}
     <button id="morelist" type="button" class="btn btn-primary btn-sm btn-block">더 보기</button>
 {% endif %}
