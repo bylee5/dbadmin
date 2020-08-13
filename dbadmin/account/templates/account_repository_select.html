@@ -7,6 +7,13 @@
 <body>
 
 <!-- ajax 추가 부분 -->
+<div>
+   		{% if page_max is none %}
+			<input id="page_max" name="page_max" type="hidden" value="1">
+		{% else %}
+			<input id="page_max" name="page_max" type="hidden" value="{{ page_max }}">
+		{% endif %}
+</div>
 <hr>
 << 총 ⁝ <span class="badge badge-primary">{{ total_count }}</span> 건의 데이터 >>
     <table class="table table-bordered table-sm table-hover">

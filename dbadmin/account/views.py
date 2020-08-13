@@ -1278,6 +1278,9 @@ def account_repository_select(request):
         s_url = request.POST.get('s_url')
         s_info = request.POST.get('s_info')
 
+        print("============= page : ")
+        print(request.POST.get('page'))
+
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
             repository_type__startswith=s_repository_type,
@@ -1288,8 +1291,23 @@ def account_repository_select(request):
             info__contains=s_info
         ).order_by('-id')
 
+        page = int(request.POST.get('page'))
         s_total_count = repository_list.count()
+        page_max = math.ceil(s_total_count / 40)
+        paginator = Paginator(repository_list, page * 40)
 
+        try:
+            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                repository_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                repository_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            repository_list = paginator.get_page(1)
+        except EmptyPage:
+            repository_list = paginator.get_page(paginator.num_pages)
+
+        print("page_max : " + str(page_max))
 
         context = {
             'repository_list': repository_list,
@@ -1300,7 +1318,8 @@ def account_repository_select(request):
             'account_user': s_account_user,
             'url': s_url,
             'info': s_info,
-            'total_count': s_total_count
+            'total_count': s_total_count,
+            'page_max': page_max
         }
 
         return render(request, 'account_repository_select.html', context)
@@ -1374,7 +1393,7 @@ def account_repository_insert(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
-            repository_type__startswit=s_repository_type,
+            repository_type__startswith=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1382,7 +1401,21 @@ def account_repository_insert(request):
             info__contains=s_info
         ).order_by('-id')
 
+        page = int(request.POST.get('page'))
         s_total_count = repository_list.count()
+        page_max = math.ceil(s_total_count / 40)
+        paginator = Paginator(repository_list, page * 40)
+
+        try:
+            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                repository_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                repository_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            repository_list = paginator.get_page(1)
+        except EmptyPage:
+            repository_list = paginator.get_page(paginator.num_pages)
 
         context = {
             'repository_list': repository_list,
@@ -1468,7 +1501,7 @@ def account_repository_update(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
-            repository_type__startswit=s_repository_type,
+            repository_type__startswith=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1476,7 +1509,21 @@ def account_repository_update(request):
             info__contains=s_info
         ).order_by('-id')
 
+        page = int(request.POST.get('page'))
         s_total_count = repository_list.count()
+        page_max = math.ceil(s_total_count / 40)
+        paginator = Paginator(repository_list, page * 40)
+
+        try:
+            if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
+                repository_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                repository_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            repository_list = paginator.get_page(1)
+        except EmptyPage:
+            repository_list = paginator.get_page(paginator.num_pages)
 
         context = {
             'repository_list': repository_list,

@@ -122,6 +122,21 @@
 		</div>
 	</div>
 
+	<!-- 결과란 -->
+	<div>
+		{% if page is none %}
+			<input id="page" name="page" type="hidden" value="1">
+		{% else %}
+			<input id="page" name="page" type="hidden" value="{{ page }}">
+		{% endif %}
+
+		{% if scrollHeight is none %}
+			<input id="scrollHeight" name="scrollHeight" type="hidden" value="0">
+		{% else %}
+			<input id="scrollHeight" name="scrollHeight" type="hidden" value="{{ scrollHeight }}">
+		{% endif %}
+	</div>
+
 	<div class="board small" id="account_repository_list_ajax" style="font-size: 12px;"></div>
 
 
@@ -166,6 +181,7 @@
 
 									<!-- hidden id (pk) -->
 									<input class="form-control form-control-sm" id="id" name="id" type="hidden">
+									<input class="form-control form-control-sm" id="page" name="page" value="{{ page }}" type="hidden">
 
 									<table class="table table-sm table-hover text-center">
 										<tr class="">
@@ -255,6 +271,9 @@
 		var s_url = $("#s_url").val();
 		var s_info = $("#s_info").val();
 
+		var page = $("#page").val();
+		var scrollHeight = $(window).scrollTop();
+
         var modal = $('#updateTab')
 
 		modal.find('#id').val(id);
@@ -274,6 +293,8 @@
 		modal.find('#s_account_user').val(s_account_user);
 		modal.find('#s_url').val(s_url);
 		modal.find('#s_info').val(s_info);
+		modal.find('#page').val(page);
+		modal.find('#scrollHeight').val(scrollHeight);
     })
     </script>
 
@@ -282,7 +303,9 @@
 	function insertBox() {
 		var retVal = confirm("입력하시겠습니까?");
 		if (retVal == true ){
-			insert_callMoreListAjax();
+			var page = parseInt($("#page").val());
+			insert_callMoreListAjax(page);
+			$("#page").val(parseInt(page));
 		}else{
 			return false;
 		}
@@ -292,7 +315,7 @@
 		document.insertForm.reset();
 	}
 
-	function insert_callMoreListAjax() {
+	function insert_callMoreListAjax(page) {
 		var i_repository_team = $("#i_repository_team").val();
 		var i_repository_type = $("#i_repository_type").val();
 		var i_repository_name = $("#i_repository_name").val();
@@ -328,6 +351,7 @@
 				's_url': s_url,
 				's_info': s_info,
 				'csrfmiddlewaretoken': token,
+				'page': page,
 			},
 			success: addMoreAccountRepositoryAjax,
 			dataType: 'html'
@@ -339,11 +363,13 @@
 	<!-- account update ajax script -->
 	<script>
 		function updateBox() {
-			update_callMoreListAjax();
 			$('#myModal').modal("hide");
+			var page = parseInt($("#page").val());
+			update_callMoreListAjax(page);
+			$("#page").val(parseInt(page));
 		}
 
-		function update_callMoreListAjax() {
+		function update_callMoreListAjax(page) {
 			var u_id = $("#id").val();
 			var u_repository_team = $("#u_repository_team").val();
 			var u_repository_type = $("#u_repository_type").val();
@@ -381,6 +407,7 @@
 					's_url': s_url,
 					's_info': s_info,
 					'csrfmiddlewaretoken': token,
+					'page': page,
 				},
 				success: addMoreAccountRepositoryAjax,
 				dataType: 'html'
@@ -393,14 +420,36 @@
 		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
 		$('#search').click(function(){
-			callMoreListAjax();
+			var page = 1
+			callMoreListAjax(page);
+			$("#page").val(parseInt(page));
 		});
 
         $('#account_repository_list_ajax').load('dummy',function(){
-            callMoreListAjax();
+			var page = $("#page").val();
+            var scrollHeight = $("#scrollHeight").val();
+
+            callMoreListAjax(page);
+            $("#page").val(parseInt(page));
+            $('html').animate({scrollTop: scrollHeight}, 400);
+
         });
 
-		function callMoreListAjax() {
+		$(window).scroll(function(){
+			var scrollHeight = $(window).scrollTop() + $(window).height();
+			var documentHeight = $(document).height();
+
+			if (scrollHeight + 500 >= documentHeight){
+				var page = $("#page").val();
+				var page_max = $("#page_max").val();
+				if (page <= page_max){
+					callMoreListAjax(page);
+					$("#page").val(parseInt(page)+1);
+				}
+			}
+		});
+
+		function callMoreListAjax(page) {
 			var s_repository_team = $("#s_repository_team").val();
 			var s_repository_type = $("#s_repository_type").val();
 			var s_repository_name = $("#s_repository_name").val();
@@ -421,6 +470,7 @@
 					's_url': s_url,
 					's_info': s_info,
 					'csrfmiddlewaretoken': token,
+					'page': page,
 				},
 				success: addMoreAccountRepositoryAjax,
 				dataType: 'html'
