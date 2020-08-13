@@ -18,8 +18,8 @@
             <th style="width: 15%;">레파지토리명</th>
             <th style="width: 30%;">레파지토리 URL</th>
             <th style="width: 7%;">계정명</th>
-            <th style="width: 23%;">비고 </th>
-            <th style="width: 6%;" class="rounded-right">Jira URL</th>
+            <th style="width: 22%;">비고 </th>
+            <th style="width: 8%;" class="rounded-right">Jira URL</th>
         </tr>
 
     {% if repository_list %}
@@ -116,10 +116,10 @@
                 data-url="{{ repository.url }}"
                 data-info="{{ repository.info }}">
 
-                {% if repository.info|length <= 35 %}
+                {% if repository.info|length <= 28 %}
                     {{ repository.info }}
                 {% else %}
-                    {{ repository.info | slice:":35"| add:"..." }}
+                    {{ repository.info | slice:":28"| add:"..." }}
                 {% endif %}
             </td>
             <td style = "cursor:pointer;" id="url" name="url" data-toggle="url" data-placement="right" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ repository.url }}')">

@@ -21,7 +21,14 @@
     <div class="collapse show" id="collapseSelect" style="font-size: 12px;">
 		<div class="card card-body mt-2 bg-light callout callout-warning">
 			<h6>검색란</h6>
-			<p>기본적으로 like 검색을 제공하고 있습니다.</p>
+            <div class="mb-2">
+				<a><a href="https://wiki.tmon.co.kr/pages/viewpage.action?pageId=243007776" target="_blank">- DB User명 생성 기준 정책</a>에 의거하며,</a>
+				<br>&nbsp;&nbsp;정책의 내용으로 구분할 수 없는 예외사례등은 담당자간 충분한 논의를 거쳐야 합니다.</a>
+				<br><a>(※ 과거 Repository별 유저 분리 목록 URL : <a href="https://wiki.tmon.co.kr/pages/viewpage.action?pageId=142856156" target="_blank">https://wiki.tmon.co.kr/pages/viewpage.action?pageId=142856156</a>)</a>
+				<div class="mt-1">
+					<a>- 기본적으로 like 검색을 제공하고 있습니다.</a>
+				</div>
+			</div>
 
 			<table class="1table table-sm text-center" style="table-layout: fixed">
 				<tr class="bg-dark text-white">
@@ -38,7 +45,16 @@
 					<form class="form-inline" onsubmit="return false" name="selectForm">
 						{% csrf_token %}
 						<td><input class="form-control form-control-sm" id="s_repository_team" name="s_repository_team" type="text" placeholder=""></td>
-						<td><input class="form-control form-control-sm" id="s_repository_type" name="s_repository_type" type="text" placeholder=""></td>
+						<td>
+							<div class="input-group input-group-sm">
+							<select class="custom-select" id="s_repository_type" name="s_repository_type">
+								<option value="" selected>All</option>
+								<option value="JAVA">JAVA</option>
+								<option value="PHP">PHP</option>
+								<option value="ETC">ETC</option>
+							</select>
+							</div>
+						</td>
 						<td><input class="form-control form-control-sm" id="s_repository_name" name="s_repository_name" type="text" placeholder=""></td>
 						<td><input class="form-control form-control-sm" id="s_repository_url" name="s_repository_url" type="text" placeholder=""></td>
 						<td><input class="form-control form-control-sm" id="s_account_user" name="s_account_user" type="text" placeholder=""></td>
@@ -58,14 +74,11 @@
 			<table class="mb-2">
 				<tr>
 					<td>
-						<a>- 권한 직접입력을 할 경우에는, <b>반드시 ,</b>를 잘 사용해주세요. (ex. select, insert, update, execute)</a>
-					</td>
-					<td class="text-right align-bottom">
-						<a>강제입력 <input type="checkbox" id="forceinsert_flag" name="forceinsert_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
-						<style>
-						.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
-						.toggle.ios .toggle-handle { border-radius: 20rem; }
-					</style>
+						<a><a href="https://wiki.tmon.co.kr/pages/viewpage.action?pageId=243007776" target="_blank">- DB User명 생성 기준 정책</a>에 의거하며,</a>
+						<br>&nbsp;&nbsp;정책의 내용으로 구분할 수 없는 예외사례등은 담당자간 충분한 논의를 거쳐야 합니다.</a>
+						<br><a>- 레파지토리 구분은 JAVA / PHP / ETC(기타)로 나뉩니다.</a>
+						<br><a>- 레파지토리 URL의 경우, <font color="red"><b>전체 URL 경로</b></font> 또는 <font color="red"><b>/대표 프로젝트명/경로...</b></font> 로 입력해주세요.</a>
+						<br><a>- 중복되는 계정명 사용은 피해주세요.</a>
 					</td>
 				</tr>
 			</table>
@@ -85,7 +98,15 @@
 				</tr>
 				<tr class="">
 					<td style="width: 10%"><input class="form-control form-control-sm" id="i_repository_team" name="i_repository_team" value="{{ i_repository_team }}" type="text"></td>
-					<td style="width: 10%"><input class="form-control form-control-sm" id="i_repository_type" name="i_repository_type" value="{{ i_repository_type }}" type="text"></td>
+					<td style="width: 10%">
+						<div class="input-group input-group-sm">
+						<select class="custom-select" id="i_repository_type" name="i_repository_type">
+							<option value="JAVA">JAVA</option>
+							<option value="PHP">PHP</option>
+							<option value="ETC">ETC</option>
+						</select>
+						</div>
+					</td>
 					<td style="width: 10%"><input class="form-control form-control-sm" id="i_repository_name" name="i_repository_name" value="{{ i_repository_name }}" type="text"></td>
 					<td style="width: 30%"><input class="form-control form-control-sm" id="i_repository_url" name="i_repository_url" value="{{ i_repository_url }}" type="text"></td>
 					<td style="width: 10%"><input class="form-control form-control-sm" id="i_account_user" name="i_account_user" value="{{ i_account_user }}" type="text"></td>
