@@ -1280,7 +1280,7 @@ def account_repository_select(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
-            repository_type__contains=s_repository_type,
+            repository_type__startswith=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1374,7 +1374,7 @@ def account_repository_insert(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
-            repository_type__contains=s_repository_type,
+            repository_type__startswit=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
@@ -1468,7 +1468,7 @@ def account_repository_update(request):
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
-            repository_type__contains=s_repository_type,
+            repository_type__startswit=s_repository_type,
             repository_name__contains=s_repository_name,
             repository_url__contains=s_repository_url,
             account_user__contains=s_account_user,
