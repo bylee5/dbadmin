@@ -23,10 +23,10 @@
             <th style="width: 8%;">연관부서</th>
             <th style="width: 3%;">타입</th>
             <th style="width: 15%;">레파지토리명</th>
-            <th style="width: 30%;">레파지토리 URL</th>
+            <th style="width: 33%;">레파지토리 URL</th>
             <th style="width: 7%;">계정명</th>
-            <th style="width: 22%;">비고 </th>
-            <th style="width: 8%;" class="rounded-right">Jira URL</th>
+            <th style="width: 21%;">비고 </th>
+            <th style="width: 6%;" class="rounded-right">Jira URL</th>
         </tr>
 
     {% if repository_list %}
@@ -97,7 +97,7 @@
                 data-info="{{ repository.info }}">
                 {{ repository.repository_name }}
             </td>
-            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal">
+            <td style = "cursor:pointer;" id="repository_url" name="repository_url" data-toggle="repository_url" data-placement="bottom" title="URL 이동" onClick="window.open('https://bitbucket.tmon.co.kr/bitbucket/projects{{ repository.repository_url }}')">
                 {{ repository.repository_url | slice:":200" }}
             </td>
             <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
@@ -112,7 +112,7 @@
                 data-info="{{ repository.info }}">
                 {{ repository.account_user}}
             </td>
-            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal" data-placement="right" title="{{ repository.info }}"
+            <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal" data-placement="bottom" title="{{ repository.info }}"
                 data-id="{{ repository.id }}"
                 data-create_dt="{{ repository.create_dt|date:'Y/m/d' }}"
                 data-repository_team="{{ repository.repository_team }}"
@@ -123,21 +123,28 @@
                 data-url="{{ repository.url }}"
                 data-info="{{ repository.info }}">
 
-                {% if repository.info|length <= 28 %}
+                {% if repository.info|length <= 33 %}
                     {{ repository.info }}
                 {% else %}
-                    {{ repository.info | slice:":28"| add:"..." }}
+                    {{ repository.info | slice:":33"| add:"..." }}
                 {% endif %}
             </td>
-            <td style = "cursor:pointer;" id="url" name="url" data-toggle="url" data-placement="right" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ repository.url }}')">
+            <td style = "cursor:pointer;" id="url" name="url" data-toggle="url" data-placement="bottom" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ repository.url }}')">
                 {{ repository.url }}
             </td>
             <script>
                 $(function () {
-                    $('[data-toggle="url"]').tooltip()
-                    $('[data-toggle="modal"]').tooltip()
+                    $('[data-toggle="url"]').tooltip();
+                    $('[data-toggle="repository_url"]').tooltip({"html":true});
+                    $('[data-toggle="modal"]').tooltip();
                 })
             </script>
+            <style>
+                repository_url.tooltip-inner {
+                    max-width: 500px;
+                    width: 100px;
+                }
+            </style>
 
         </tr>
         {% endfor %}

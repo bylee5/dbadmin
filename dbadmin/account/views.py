@@ -1426,7 +1426,8 @@ def account_repository_insert(request):
             'account_user': s_account_user,
             'url': s_url,
             'info': s_info,
-            'total_count': s_total_count
+            'total_count': s_total_count,
+            'page_max': page_max
         }
 
         return render(request, 'account_repository_select.html', context)
@@ -1534,7 +1535,8 @@ def account_repository_update(request):
             'account_user': s_account_user,
             'url': s_url,
             'info': s_info,
-            'total_count': s_total_count
+            'total_count': s_total_count,
+            'page_max': page_max
         }
 
         return render(request, 'account_repository_select.html', context)
