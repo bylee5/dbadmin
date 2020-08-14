@@ -1033,7 +1033,6 @@
 		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
 		$('#search').click(function(){
-			//var page = parseInt($("#page").val());
 			// 검색 버튼을 누를 경우엔, page 1로 초기화
 			var page = 1
 			callMoreListAjax(page);
@@ -1046,7 +1045,7 @@
 
             callMoreListAjax(page);
             $("#page").val(parseInt(page));
-            $('html').animate({scrollTop: scrollHeight}, 800);
+            $('html').animate({scrollTop: scrollHeight}, 500);
         });
 
 		$(window).scroll(function(){
@@ -1055,7 +1054,8 @@
 
 			if (scrollHeight + 500 >= documentHeight){
 				var page = $("#page").val();
-				if (page <= 20){
+				var page_max = $("#page_max").val();
+				if (parseInt(page) <= parseInt(page_max)){
 					callMoreListAjax(page);
 					$("#page").val(parseInt(page)+1);
 				}
@@ -1076,6 +1076,7 @@
 			$.ajax( {
 				type : 'POST',
 				url: "{% url 'account_select' %}",
+				async: false,
 				data: {
 					's_account_requestor': s_account_requestor,
 					's_account_devteam': s_account_devteam,

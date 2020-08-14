@@ -442,7 +442,7 @@
 			if (scrollHeight + 500 >= documentHeight){
 				var page = $("#page").val();
 				var page_max = $("#page_max").val();
-				if (page <= page_max){
+				if (parseInt(page) <= parseInt(page_max)){
 					callMoreListAjax(page);
 					$("#page").val(parseInt(page)+1);
 				}
@@ -461,6 +461,7 @@
 			$.ajax( {
 				type : 'POST',
 				url: "{% url 'account_repository_select' %}",
+				async: false,
 				data: {
 					's_repository_team': s_repository_team,
 					's_repository_type': s_repository_type,

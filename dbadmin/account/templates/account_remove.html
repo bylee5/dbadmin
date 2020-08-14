@@ -89,12 +89,6 @@
 			<input id="page" name="page" type="hidden" value="{{ page }}">
 		{% endif %}
 
-		{% if page_max is none %}
-			<input id="page_max" name="page_max" type="hidden" value="1">
-		{% else %}
-			<input id="page_max" name="page_max" type="hidden" value="{{ page_max }}">
-		{% endif %}
-
 		{% if scrollHeight is none %}
 			<input id="scrollHeight" name="scrollHeight" type="hidden" value="0">
 		{% else %}
@@ -358,7 +352,7 @@
 
             callMoreListAjax(page);
             $("#page").val(parseInt(page));
-            $('html').animate({scrollTop: scrollHeight}, 800);
+            $('html').animate({scrollTop: scrollHeight}, 400);
         });
 
 		$(window).scroll(function(){
@@ -367,7 +361,8 @@
 
 			if (scrollHeight + 400 >= documentHeight){
 				var page = $("#page").val();
-				if (page <= 5){
+				var page_max = $("#page_max").val();
+				if (parseInt(page) <= parseInt(page_max)){
 					callMoreListAjax(page);
 					$("#page").val(parseInt(page)+1);
 				}
@@ -388,6 +383,7 @@
 			$.ajax( {
 				type : 'POST',
 				url: "{% url 'account_remove_select' %}",
+				async: false,
 				data: {
 					's_account_requestor': s_account_requestor,
 					's_account_devteam': s_account_devteam,

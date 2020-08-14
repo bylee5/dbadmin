@@ -380,6 +380,7 @@ def account(request):
 
 @login_required
 def account_select(request):
+    print("test")
     if request.method == 'POST':
         account_requestor = request.POST.get('s_account_requestor')
         account_devteam = request.POST.get('s_account_devteam')
@@ -407,8 +408,8 @@ def account_select(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = math.ceil(total_count / 15)
-        paginator = Paginator(account_list, page * 15)
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
 
         try:
             if int(page) >= page_max : # 마지막 페이지 멈춤 구현
@@ -420,6 +421,11 @@ def account_select(request):
             account_list = paginator.get_page(1)
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
+
+        # print("=================================")
+        # print("page : " + str(page))
+        # print("pagemax : " + str(page_max))
+        # print("=================================")
 
         context = {
             'account_requestor': account_requestor,
@@ -472,9 +478,9 @@ def account_insert(request):
         account_hash = get_password_hash(account_pass)
         account_pass = get_password_encrypt(account_pass)
 
-        print("============================================================")
-        print("입력란 테스트 선입니다.")
-        print("============================================================")
+        # print("============================================================")
+        # print("입력란 테스트 선입니다.")
+        # print("============================================================")
         # print(account_requestor)
         # print(account_devteam)
         # print(account_info)
@@ -487,8 +493,8 @@ def account_insert(request):
         # print(account_table)
         # print(account_grant)
         # print(account_hash)
-        print("강제 입력 여부 : " + str(forceinsert_flag))
-        print("============================================================")
+        # print("강제 입력 여부 : " + str(forceinsert_flag))
+        # print("============================================================")
 
         # HOST 여러대역 처리
         account_host_lists = account_host.split(',')
@@ -570,16 +576,16 @@ def account_insert(request):
             #print(modify_form.account_sql)
 
             # 계정 생성 예제
-            # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.20.%' IDENTIFIED BY PASSWORD '*6A654172F7C08BAA30B145980AA553792E9DFFC3';
-            # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.22.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA30B145980AA553792E9DFFC3';
-            # CREATE USER 'test'@'10.11.19.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA30B145980AA553792E9DFFC3
+            # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.20.%' IDENTIFIED BY PASSWORD '*6A654172F7C08BAA35B145980AA553792E9DFFC3';
+            # GRANT SELECT ON `testdb`.* TO 'test'@'10.11.22.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA35B145980AA553792E9DFFC3';
+            # CREATE USER 'test'@'10.11.19.%' IDENTIFIED WITH 'mysql_native_password' AS '*6A654172F7C08BAA35B145980AA553792E9DFFC3
 
             # SELECT password_hash FROM account_hash WHERE password_hash=PASSWORD('hoho!!kKee1');
 
             # 암복호화
             # select HEX(AES_ENCRYPT('Manger!1', '암복호키'));
             # select AES_DECRYPT(UNHEX('23D5F3AF5041ABADF64E89F1FCE0A994'), '암복호키');
-            # grant select on admdb.* to 'test'@'10.11.22.%' identified by password '*5CE39A29BB2B3BBE6293BC10E9404F058109A152';
+            # grant select on admdb.* to 'test'@'10.11.22.%' identified by password '*5CE39A29BB2B3BBE6293BC10E9404F058109A352';
             ####################################################################################################
 
         ########################################## 페이지 원래대로 테스트
@@ -623,8 +629,8 @@ def account_insert(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = math.ceil(total_count / 15)
-        paginator = Paginator(account_list, page * 15)
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
 
         try:
             if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
@@ -736,7 +742,7 @@ def account_update(request):
         # print("수정본 u_account_sql : " + u_account_sql)
         # print("수정본 account_hash: " + u_account_hash)
         # print(update_sql)
-        print("forceupdate_flag : " + str(forceupdate_flag))
+        # print("forceupdate_flag : " + str(forceupdate_flag))
         # print("============================================================")
 
 
@@ -753,7 +759,7 @@ def account_update(request):
             or old_account.account_grant != u_account_grant:
 
             # 계정 정합성 체크. ERR_0 리턴 외 다른값이면 정합성간 문제 발생하여 쿼리 수행 안함
-            # print("정합성 체크 ON")
+            print("정합성 체크 ON")
             # 강제 입력 여부. True면 정합성 체크 안함
             if forceupdate_flag == 'True':
                 print("강제 수정 동작합니다")
@@ -766,7 +772,7 @@ def account_update(request):
                 alert_type, alert_message = check_account_consistency(u_account_svr, u_account_user, u_account_host, u_account_pass, u_account_db, u_account_table, u_account_grant)
 
         else:
-            # print("정합성 체크 OFF")
+            print("정합성 체크 OFF")
             alert_type = "ERR_0"
             alert_message = ""
 
@@ -832,8 +838,8 @@ def account_update(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = math.ceil(total_count / 15)
-        paginator = Paginator(account_list, page * 15)
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
 
         try:
             if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
@@ -975,8 +981,8 @@ def account_delete(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = math.ceil(total_count / 15)
-        paginator = Paginator(account_list, page * 15)
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
 
         try:
             if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
@@ -1144,8 +1150,8 @@ def account_multi_dml(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = math.ceil(total_count / 15)
-        paginator = Paginator(account_list, page * 15)
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
 
         try:
             if int(page) >= page_max:  # 마지막 페이지 멈춤 구현
@@ -1224,8 +1230,8 @@ def account_remove_select(request):
 
         page = int(request.POST.get('page'))
         total_count = account_list.count()
-        page_max = math.ceil(total_count / 15)
-        paginator = Paginator(account_list, page * 15)
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
 
         try:
             if int(page) >= page_max : # 마지막 페이지 멈춤 구현
@@ -1237,6 +1243,11 @@ def account_remove_select(request):
             account_list = paginator.get_page(1)
         except EmptyPage:
             account_list = paginator.get_page(paginator.num_pages)
+
+        # print("=================================")
+        # print(page)
+        # print(page_max)
+        # print("=================================")
 
         context = {
             'account_requestor': account_requestor,
@@ -1278,8 +1289,8 @@ def account_repository_select(request):
         s_url = request.POST.get('s_url')
         s_info = request.POST.get('s_info')
 
-        print("============= page : ")
-        print(request.POST.get('page'))
+        # print("============= page : ")
+        # print(request.POST.get('page'))
 
         repository_list = AccountRepository.objects.filter(
             repository_team__contains=s_repository_team,
