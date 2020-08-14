@@ -87,8 +87,12 @@ urlpatterns = [
     path('testing/post/select/', testing.views.post_ajax, name='post_ajax'),
 
     #serverlist test
-    path('test1/', testing.views.test1, name='test1'),
-    path('test2/', testing.views.test2, name='test2'),
+    path('testing/test1/', testing.views.test1, name='test1'),
+    path('testing/test1/left_ajax', testing.views.test1_left_ajax, name='test1_left_ajax'),
+    path('testing/test1/right_ajax', testing.views.test1_right_ajax, name='test1_right_ajax'),
+
+    path('testing/test2/', testing.views.test2, name='test2'),
+
     #########################################################################
 
 ]

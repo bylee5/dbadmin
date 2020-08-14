@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from django.contrib.auth.decorators import login_required
+from django.db import connections
 
 from .models import *
 from .forms import FaqForm
@@ -205,9 +206,6 @@ def post_ajax(request): #Ajax 로 호출하는 함수
         return render(request, 'test_post.html')
 
 
-
-
-
 #########################################################################
 # server_list test
 #########################################################################
@@ -215,5 +213,41 @@ def post_ajax(request): #Ajax 로 호출하는 함수
 def test1(request):
     return render(request, 'test1.html')
 
+def test1_left_ajax(request):
+    print("left 테스트")
+
+    if request.method == 'POST':
+        #s_job_name = request.POST.get('s_job_name')
+        s_job_name = 'test'
+
+    else:
+        s_job_name = 'test'
+
+
+    # 잡 리스트 및 JOB 스케줄 가져오기
+    s_query = "SELECT job_info_name FROM tmon_dba.job_info ORDER BY job_info_seqno"
+
+    with connections['tmon_dba'].cursor() as cursor:
+        results = []
+        cursor.execute(s_query)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            results.append(row)
+
+    context = {
+        'job_info_lists': results,
+    }
+
+    return render(request, 'test1_left_ajax.html', context)
+
+def test1_right_ajax(request):
+    print("right 테스트")
+    return render(request, 'test1_right_ajax.html')
+
+
+####################
+
 def test2(request):
     return render(request, 'test2.html')
+
