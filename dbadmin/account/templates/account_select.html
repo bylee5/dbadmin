@@ -7,7 +7,6 @@
 <body>
 
 <!-- ajax 추가 부분 -->
-
     <hr>
     <!-- alert_type에 따른 에러뿌리기 -->
     {% if alert_type != "ERR_0" %}
@@ -24,15 +23,6 @@
 			</td>
         </tr>
     </table>
-
-    <!--
-    <script>
-	    $(document).ready(function(){
-            $('#alertbox').fadeOut(10000);
-        });
-    </script>
-    -->
-
     {% endif %}
 
 << 총 ⁝ <span class="badge badge-warning">{{ total_count }}</span> 건의 데이터 >>
@@ -58,9 +48,6 @@
         {% for account in account_list %}
 
         {% if account.account_update_dt|date:'Y/m/d H:i:s' == last_modify_dt %}
-        <!--
-        <tr style="font-weight:bold">
-        -->
         <tr style="background-color: #FFDEAD">
         {% else %}
         <tr>
@@ -79,7 +66,6 @@
             </td>
             <td style = "cursor:pointer;" id="{{ account.id }}" name="{{ account.id }}" data-toggle="account_id" data-placement="right" title="입력란 복사">
                 {{ account.id }}
-
                 <!-- 입력란 복사 script-->
                 <script>
                     $(function () {
@@ -115,7 +101,6 @@
 		            });
                 </script>
             </td>
-
             <td style = "cursor:pointer;" data-toggle="modal" data-target="#myModal"
                 data-id="{{ account.id }}"
                 data-account_create_dt="{{ account.account_create_dt|date:'Y/m/d H:i:s' }}"
@@ -350,7 +335,7 @@
                 data-account_del_note="{{ account.account_del_note }}">
                 {{ account.account_table }}
             </td>
-            <td style = "cursor:pointer;" id="{{ account.account_url}}" name="{{ account.account_url}}" data-toggle="account_url" data-placement="right" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ account.account_url}}')">
+            <td style = "cursor:pointer;" id="{{ account.account_url }}" name="{{ account.account_url }}" data-toggle="account_url" data-placement="right" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ account.account_url}}')">
                 {{ account.account_url }}
             </td>
 
@@ -368,6 +353,75 @@
     </div>
 
     <input class="form-control form-control-sm" id="alert_type" name="alert_type" value="{{ alert_type }}" type="hidden">
+
+    <!-- account_sql 리스트 확인하기 -->
+    <input class="form-control form-control-sm" id="account_sql_flag" name="account_sql_flag" value="{{ account_sql_flag }}" type="hidden">
+    <input class="form-control form-control-sm" id="account_sql_list" name="account_sql_list" value="{{ account_sql_list.account_sql }}" type="hidden">
+
+	<!-- Modal Multi Select SQL(모달) -->
+    {% if account_sql_flag == 'true' %}
+	<div class="modal fade" id="myModal_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<!-- Nav tabs -->
+					<ul class="nav nav-pills" role="tablist">
+						<li>
+							<a class="nav-link active btn-outline-dark" href="#selectTab" aria-controls="selectTab" role="tab" aria-selected="true" data-toggle="tab">
+                                ACCOUNT_SQL
+                            </a>
+						</li>
+					</ul>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				</div>
+
+				<!-- Modal Body -->
+				<div class="modal-body">
+					<div role="tabpanel">
+						<div class="tab-content">
+                            <div class="card card-body mt-0 bg-light callout callout-dark mb-2">
+								<table class="w-100">
+									<tr>
+										<td>
+                                            <a>- 계정 생성 SQL 확인창입니다.</a>
+                                            <br><a>- 향후 5.7, 8.0 계정 생성 정책에 맞는 추가 작업 예정입니다.</a>
+										</td>
+									</tr>
+								</table>
+                            </div>
+                            <table class="table table-sm" style="table-layout: fixed">
+                                <tr>
+                                    <td class="" style="font-size: 11.5px">
+                                        {% for account_sql_list in account_sql_lists %}
+                                        /*{{ account_sql_list.id }}*/ {{ account_sql_list.account_sql}}
+                                        <hr class="mt-1 mb-1">
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="modal-footer">
+                                <button type="" class="btn btn-sm btn-outline-primary">전체복사</button>
+                                <button type="" class="btn btn-sm btn-outline-danger" data-dismiss="modal">닫기</button>
+                            </div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+    {% endif %}
+
+    <script>
+        $('#account_sql_flag').load('dummy',function(){
+			$('#myModal_sql').modal("hide");
+            var account_sql_flag = $("#account_sql_flag").val();
+			if ( account_sql_flag == 'true' ){ // if true
+			    $('#myModal_sql').modal("show");
+			}
+        });
+    </script>
 
 </body>
 </html>

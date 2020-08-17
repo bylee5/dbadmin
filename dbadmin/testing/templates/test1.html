@@ -11,6 +11,8 @@
     {% block content %}
     <span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">검색</span>
     <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
+    <!-- 로딩바 -->
+    <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
 
     <!-- 상단 페이지. 검색, 입력-->
     <div class="card card-body mt-2 bg-light callout callout-danger small">
@@ -23,9 +25,10 @@
                     <br><a>- It is better to fail in originality than to succeed in imitation.</a>
                     <br><a>- All progress takes place outside the comfort zone.</a>
                     </div>
-                    <form class="form-inline" id="selectForm" name="selectForm" action="{% url 'test1_left_ajax' %}" method="post">
+
+                    <form class="form-inline" onsubmit="return false" id="" name="">
                         {% csrf_token %}
-                        <input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name" placeholder="잡명">
+                        <input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name">
                         &nbsp;<button id="search" class="btn btn-outline-dark btn-sm">검색</button>
                     </form>
                 </td>
@@ -36,17 +39,10 @@
 
     <!-- 메인 본문. AJAX -->
     <div>
-        <table class="w-100" border="1">
-            <tr>
-                <td style="width: 15%">
-                    <div class="small" id="left_ajax" style="font-size: 12px;"></div>
-                </td>
-                <td style="width: 85%">
-                    <div class="small" id="right_ajax" style="font-size: 12px;"></div>
-                </td>
-            </tr>
-        </table>
-
+        <table class="w-100" border="0"><tr>
+            <td style="width: 15%" class="align-top"><div class="" id="left_ajax" style="1font-size: 12px;"></div></td>
+            <td style="width: 85%" class="align-top"><div class="" id="right_ajax" style="1font-size: 12px;"></div></td>
+        </tr></table>
     </div>
 
 
@@ -79,12 +75,14 @@
         });
 
 		function call_left_ajax() {
+			var s_job_name = $("#s_job_name").val();
+
 			$.ajax( {
 				type : 'POST',
 				url: "{% url 'test1_left_ajax' %}",
-				async: false,
 				data: {
 					'csrfmiddlewaretoken': token,
+					's_job_name': s_job_name,
 				},
 				success: call_more_left_ajax,
 				dataType: 'html'
@@ -93,37 +91,6 @@
 
 		function call_more_left_ajax(data, textStatus, jqXHR) {
 			$('#left_ajax').html(data);
-		}
-	</script>
-
-
-	<!-- right ajax script -->
-	<script>
-		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
-
-		$('#search').click(function(){
-            call_right_ajax();
-		});
-
-        $('#right_ajax').load('dummy',function(){
-            call_right_ajax();
-        });
-
-		function call_right_ajax() {
-			$.ajax( {
-				type : 'POST',
-				url: "{% url 'test1_right_ajax' %}",
-				async: false,
-				data: {
-					'csrfmiddlewaretoken': token,
-				},
-				success: call_more_right_ajax,
-				dataType: 'html'
-			});
-		}
-
-		function call_more_right_ajax(data, textStatus, jqXHR) {
-			$('#right_ajax').html(data);
 		}
 	</script>
 

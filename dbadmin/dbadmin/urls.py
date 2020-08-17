@@ -30,6 +30,7 @@ urlpatterns = [
     #########################################################################
     path('home/', home.views.home, name='home'),
 
+
     #########################################################################
     # account app
     #########################################################################
@@ -40,9 +41,9 @@ urlpatterns = [
     path('account/update/', account.views.account_update, name='account_update'),
     path('account/delete/', account.views.account_delete, name='account_delete'),
     path('account/multi_dml/', account.views.account_multi_dml, name='account_multi_dml'),
+    path('account/account_search_sql_list/', account.views.account_search_sql_list, name='account_search_sql_list'),
 
     path('account/select_fast', account.views.account_select_fast, name='account_select_fast'),
-
 
     # account remove
     path('account/account_remove', account.views.account_remove, name='account_remove'),
@@ -53,6 +54,7 @@ urlpatterns = [
     path('account/repository/select', account.views.account_repository_select, name='account_repository_select'),
     path('account/repository/insert', account.views.account_repository_insert, name='account_repository_insert'),
     path('account/repository/update', account.views.account_repository_update, name='account_repository_update'),
+
 
     #########################################################################
     # monitoring app
@@ -67,6 +69,7 @@ urlpatterns = [
     path('monitoring/server_job_list/', monitoring.views.server_job_list, name='server_job_list'),
     path('monitoring/server_job_list_update/', monitoring.views.server_job_list_update, name='server_job_list_update'),
 
+
     #########################################################################
     # testing app
     #########################################################################
@@ -78,6 +81,10 @@ urlpatterns = [
     path('testing/page/insert/', testing.views.page_insert, name='page_insert'),
     path('testing/page/delete/', testing.views.page_delete, name='page_delete'),
     path('testing/page/update/', testing.views.page_update, name='page_update'),
+
+
+    #main test
+    path('testing/slack_test', testing.views.slack_test, name='slack_test'),
 
     #graph test
     path('testing/graph/', testing.views.graph, name='graph'),

@@ -21,16 +21,16 @@
 	<!-- Modal windows button open -->
     <div class="buttons">
         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">Modal 테스트</button>
-        <button type="button" class="btn btn-primary btn-sm btnAdd" id="btnAdd" name="btnAdd">버튼 추가 테스트</button>
+        <!--
+        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#myModal_div">Modal 분할 테스트</button>
+        -->
+        <button type="button" class="btn btn-dark btn-sm btnAdd" id="btnAdd" name="btnAdd">버튼 추가 테스트</button>
 
-        <a class="btn btn-primary btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-            Collapse 테스트
-        </a>
-        <div class="collapse" id="collapseExample">
-            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-        </div>
+        <form class="form-inline" id="" name="" action="{% url 'slack_test' %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-danger btn-sm" id="slack" name="slack" type="submit">슬랙 테스트</button>
+        </form>
     </div>
-
 
     <script>
         $(document).ready (function () {
@@ -44,7 +44,7 @@
                     $(this).remove(); // remove the button
                 });
             }); // end click
-        }); // end ready
+        });
     </script>
 
 <!-- Modal -->
@@ -109,6 +109,13 @@
         </div>
     </div>
 </div>
+    <!--
+    <script>
+        $('#slack').click(function(){
+            alert("슬랙 테스트");
+		});
+	</script>
+	-->
 
 	<!-- Modal window option script -->
 	<script>

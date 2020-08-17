@@ -255,119 +255,15 @@
 						</script>
 					</td>
 				</tr>
-
 				<tr>
 					<td colspan="2" class="text-left">
-
-
 					</td>
 				</tr>
-
-
-
 				</form>
 			</table>
-
 		</div>
 	</div>
 
-
-
-
-
-
-
-
-
-
-    <br><br><br><br><br>
-    <!-- 검색란
-    <div class="query_menu p-1 border rounded small">
-        << 검색란 >>
-        <table class="table table-sm text-center" style="table-layout: fixed">
-        <tr class="bg-dark text-white">
-            <th class="">코드</th>
-            <th class="">타입</th>
-            <th class="">질문</th>
-            <th class="">답변</th>
-            <th class=""></th>
-        </tr>
-        <tr>
-            <form class="form-inline" action="{% url 'page' %}" method="post">
-            {% csrf_token %}
-
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_id" name="faq_id" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_type" name="faq_type" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_question" name="faq_question" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_answer" name="faq_answer" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <button class="btn btn-outline-primary btn-sm" type="submit">검색</button>
-            </td>
-
-            </form>
-        </tr>
-        </table>
-    </div>
-	-->
-    <!-- 입력란
-    <div class="query_menu my-1 p-1 border rounded small">
-        << 입력란 >>
-        <table class="table table-sm text-center" style="table-layout: fixed">
-        <tr class="bg-dark text-white">
-            <th class="">코드</th>
-            <th class="">타입</th>
-            <th class="">질문</th>
-            <th class="">답변</th>
-            <th class=""></th>
-        </tr>
-        <tr>
-            <form class="form-inline" action="" method='' name="insertForm">
-            {% csrf_token %}
-
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_id" name="faq_id" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_type" name="faq_type" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_question" name="faq_question" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <input class="form-control form-control-sm" id="faq_answer" name="faq_answer" type="text" placeholder="" />
-            </td>
-            <td class="">
-                <button class="btn btn-outline-danger btn-sm" onclick="insertBox();" type="submit">입력</button>
-
-                    <script type="text/javascript">
-                        function insertBox() {
-                            var retVal = confirm("입력하시겠습니까?");
-                            if (retVal == true ){
-                                var insertForm = document.insertForm;
-                                insertForm.action="{% url 'page_insert' %}";
-                                insertForm.method="post";
-                                insertForm.submit();
-                            }else{
-                                return;
-                            }
-                        }
-                    </script>
-
-            </td>
-
-            </form>
-        </tr>
-        </table>
-    </div>
-	-->
     <!-- 결과란 --> <br>
     <div class="board small" style="font-size: 12px;">
         << 결과란 >>

@@ -1,15 +1,25 @@
 from __future__ import unicode_literals
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from datetime import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.urls import reverse_lazy
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
+from django.db import connection
+from django.templatetags.static import static
+from django.utils import timezone
+from django.conf import settings, os
 from django.contrib.auth.decorators import login_required
 from django.db import connections
 
 from .models import *
 from .forms import FaqForm
+from django.template import Context, Engine, TemplateDoesNotExist, loader
+import socket, struct
+import math
+
+from collections import namedtuple
+from slacker import Slacker
 
 @login_required
 
@@ -19,7 +29,6 @@ from .forms import FaqForm
 # Create your views here.
 def main(request):
     return render(request, 'test_main.html')
-
 
 #########################################################################
 # custom function
@@ -151,7 +160,6 @@ def post(request):
     #           'title': title, 'content': content}
     #return render(request, 'test_post_ajax.html', context)
 
-
 def post_ajax(request): #Ajax 로 호출하는 함수
 
     if request.method == 'POST':
@@ -205,49 +213,111 @@ def post_ajax(request): #Ajax 로 호출하는 함수
     else:
         return render(request, 'test_post.html')
 
-
 #########################################################################
 # server_list test
 #########################################################################
+def namedtuplefetchall(cursor):
+    #"Return all rows from a cursor as a namedtuple"
+    desc = cursor.description
+    nt_result = namedtuple('Result', [col[0] for col in desc])
+    return [nt_result(*row) for row in cursor.fetchall()]
+
 
 def test1(request):
     return render(request, 'test1.html')
 
 def test1_left_ajax(request):
-    print("left 테스트")
-
     if request.method == 'POST':
-        #s_job_name = request.POST.get('s_job_name')
-        s_job_name = 'test'
+        s_job_name = request.POST.get('s_job_name')
+
+        print("-------------------------------------------------------------")
+        print(s_job_name)
+
+        # 잡 리스트 및 JOB 스케줄 가져오기
+        s_query = "SELECT ji.job_info_name, COUNT(svr) AS svr_total, SUM(use_yn) AS svr_use_total" + \
+                    " FROM server_list sl" + \
+                    " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
+                    " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
+                    " where ji.job_info_name like '%" + s_job_name + "%'" + \
+                    " GROUP BY ji.job_info_name" + \
+                    " ORDER BY ji.job_info_name"
+        print(s_query)
+
+        print("-------------------------------------------------------------")
+        with connections['tmon_dba'].cursor() as cursor:
+            job_info_lists = []
+            cursor.execute(s_query)
+            job_info_lists = namedtuplefetchall(cursor)
+
+        context = {
+            'job_info_lists': job_info_lists,
+        }
+
+        return render(request, 'test1_left_ajax.html', context)
 
     else:
-        s_job_name = 'test'
+        return render(request, 'test1.html')
 
-
-    # 잡 리스트 및 JOB 스케줄 가져오기
-    s_query = "SELECT job_info_name FROM tmon_dba.job_info ORDER BY job_info_seqno"
-
-    with connections['tmon_dba'].cursor() as cursor:
-        results = []
-        cursor.execute(s_query)
-        rows = cursor.fetchall()
-
-        for row in rows:
-            results.append(row)
-
-    context = {
-        'job_info_lists': results,
-    }
-
-    return render(request, 'test1_left_ajax.html', context)
 
 def test1_right_ajax(request):
-    print("right 테스트")
-    return render(request, 'test1_right_ajax.html')
+    if request.method == 'POST':
+        job_info_name = request.POST.get('job_info_name')
+        print("-------------------------------------------------------------")
+        print("right POST 테스트")
+        print(job_info_name)
+
+        # 잡 리스트 및 JOB 스케줄 가져오기
+        s_query =   "SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
+                    " FROM server_list sl" + \
+                    " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
+                    " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
+                    " WHERE 1=1" + \
+                    " AND ji.job_info_name='" + str(job_info_name) + "'" + \
+                    " ORDER BY svr"
+
+        print(s_query)
+        print("-------------------------------------------------------------")
+
+        with connections['tmon_dba'].cursor() as cursor:
+            job_svr_lists = []
+            cursor.execute(s_query)
+            job_svr_lists = namedtuplefetchall(cursor)
+
+        context = {
+            'job_svr_lists': job_svr_lists,
+            'job_info_name': job_info_name,
+        }
+
+        return render(request, 'test1_right_ajax.html', context)
+    else:
+        return render(request, 'test1.html')
+
 
 
 ####################
 
 def test2(request):
     return render(request, 'test2.html')
+
+#########################################################################
+# testing slack 슬객 테스트
+#########################################################################
+
+def slack_notify(slack_message, channel, username, attachments=None):
+    token = 'BLP01FSDV/H2Zl9HYH5Pd2K62ehGOUjDMY'
+    slack = Slacker(token)
+    slack.chat.post_message(text=slack_message, channel=channel, username=username, attachments=attachments)
+
+def slack_test(request):
+    print("슬랙 테스트 함수. 지나갑니다.")
+    # slack_message = "테스트 발송"
+    # slack_notify(slack_message, '#gytjdlee', '알림봇 테스트')
+
+    return redirect('/testing')
+
+
+
+
+
+
 

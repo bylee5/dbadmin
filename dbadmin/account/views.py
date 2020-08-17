@@ -17,6 +17,16 @@ from .forms import *
 from django.template import Context, Engine, TemplateDoesNotExist, loader
 import socket, struct
 import math
+from collections import namedtuple
+
+#########################################################################
+# 컬럼명으로 리턴 해주는 함수
+#########################################################################
+def namedtuplefetchall(cursor):
+    #"Return all rows from a cursor as a namedtuple"
+    desc = cursor.description
+    nt_result = namedtuple('Result', [col[0] for col in desc])
+    return [nt_result(*row) for row in cursor.fetchall()]
 
 #########################################################################
 # 계정 정합성 체크
@@ -25,7 +35,6 @@ import math
 #------------------------------------------------------------------------
 # ※ 이슈 : 계정 한개만 존재 할 경우, 수정 입력등에 이슈 있을 수 있음
 #------------------------------------------------------------------------
-
 
 # 1.패스워드 중복 여부 체크
 # 하나의 아이디에는 동일한 패스워드를 사용해야 한다.
@@ -380,7 +389,6 @@ def account(request):
 
 @login_required
 def account_select(request):
-    print("test")
     if request.method == 'POST':
         account_requestor = request.POST.get('s_account_requestor')
         account_devteam = request.POST.get('s_account_devteam')
@@ -1179,7 +1187,8 @@ def account_multi_dml(request):
             'page_max': page_max,
             'alert_type': alert_type,
             'alert_message': alert_message,
-            'last_modify_dt': last_modify_dt
+            'last_modify_dt': last_modify_dt,
+            'account_sql_flag': 'Y',
         }
 
         return render(request, 'account_select.html', context)
@@ -1188,6 +1197,98 @@ def account_multi_dml(request):
     else:
         return render(request, 'account.html')
 
+
+def account_search_sql_list(request):
+    if request.method == 'POST':
+        checkboxValues = request.POST.getlist('checkboxValues[]')
+        account_id_list = ",".join( repr(e) for e in checkboxValues).replace("'","")
+
+        # print("================================================================")
+        # print(checkboxValues)
+        # print(account_id_list)
+
+        if len(checkboxValues) != 0:
+            # print("있다닛")
+            s_query = "SELECT id, account_sql FROM account_account WHERE id IN(" + account_id_list + ") order by id desc"
+            # print(s_query)
+
+            # print("-------------------------------------------------------------")
+            with connections['default'].cursor() as cursor:
+                account_sql_lists = []
+                cursor.execute(s_query)
+                account_sql_flag = 'true'
+                account_sql_lists = namedtuplefetchall(cursor)
+
+        else:
+            # print("없다닛")
+            account_sql_flag = 'false'
+            account_sql_lists = ""
+
+        # print(account_sql_lists)
+        # print("================================================================")
+
+        account_requestor = request.POST.get('s_account_requestor')
+        account_devteam = request.POST.get('s_account_devteam')
+        account_svr = request.POST.get('s_account_svr')
+        account_user = request.POST.get('s_account_user')
+        account_host = request.POST.get('s_account_host')
+        account_grant = request.POST.get('s_account_grant').upper()
+        account_db = request.POST.get('s_account_db')
+        account_table = request.POST.get('s_account_table')
+        account_url = request.POST.get('s_account_url')
+        callmorepostFlag = 'true'
+
+        account_list = Account.objects.filter(
+            account_requestor__contains=account_requestor,
+            account_devteam__contains=account_devteam,
+            account_svr__contains=account_svr,
+            account_user__contains=account_user,
+            account_host__contains=account_host,
+            account_grant__contains=account_grant,
+            account_db__contains=account_db,
+            account_table__contains=account_table,
+            account_url__contains=account_url,
+            account_del_yn = 'N'
+        ).order_by('-id')
+
+        page = int(request.POST.get('page'))
+        total_count = account_list.count()
+        page_max = math.ceil(total_count / 35)
+        paginator = Paginator(account_list, page * 35)
+
+        try:
+            if int(page) >= page_max : # 마지막 페이지 멈춤 구현
+                account_list = paginator.get_page(1)
+                callmorepostFlag = 'false'
+            else:
+                account_list = paginator.get_page(1)
+        except PageNotAnInteger:
+            account_list = paginator.get_page(1)
+        except EmptyPage:
+            account_list = paginator.get_page(paginator.num_pages)
+
+        context = {
+            'account_requestor': account_requestor,
+            'account_devteam': account_devteam,
+            'account_svr': account_svr,
+            'account_user': account_user,
+            'account_host': account_host,
+            'account_grant': account_grant,
+            'account_db': account_db,
+            'account_table': account_table,
+            'account_url': account_url,
+            'account_list': account_list,
+            'total_count': total_count, 'callmorepostFlag': callmorepostFlag,
+            'page_max': page_max,
+            'alert_type': "ERR_0",
+            'account_sql_flag': account_sql_flag,
+            'account_sql_lists': account_sql_lists,
+        }
+
+        return render(request, 'account_select.html', context)
+
+    else:
+        return render(request, 'account.html')
 
 #########################################################################
 # Account remove page. account_del_yn='Y'

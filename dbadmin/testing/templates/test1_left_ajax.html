@@ -6,10 +6,55 @@
 </head>
 <body>
 <div>
-    <span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">abc</span>
-    <br><span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">def</span>
-    <br><span style="font-size: 12px;" type="button" class="badge badge-dark" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">ghi</span>
-    테스트
+    <div class="btn-group-vertical w-100">
+        {% for job_info_list in job_info_lists %}
+        <button type="button" id="{{ job_info_list.job_info_name }}" name="{{ job_info_list.job_info_name }}"
+                class="btn btn-sm btn-secondary" value="{{ job_info_list.job_info_name }}"
+                onclick="call_job_info_name('{{ job_info_list.job_info_name }}')">&nbsp;
+
+            {% if job_info_list.job_info_name|length <= 28 %}
+                {{ job_info_list.job_info_name }}
+            {% else %}
+                {{ job_info_list.job_info_name| slice:":28"| add:".." }}
+            {% endif %}
+
+            <span class="badge badge-light">{{ job_info_list.svr_total}}</span>
+            <span class="badge badge-dark">{{ job_info_list.svr_use_total}}</span>
+        </button>
+        {% endfor %}
+    </div>
+
+    <!-- right ajax script -->
+    <script>
+        var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+
+        function call_job_info_name(job_info_name) {
+            call_job_info_name_ajax(job_info_name);
+        }
+
+        $('#right_ajax').load('dummy',function(){
+            call_job_info_name_ajax(null);
+        });
+
+        function call_job_info_name_ajax(job_info_name) {
+            $.ajax( {
+                type : 'POST',
+                url: "{% url 'test1_right_ajax' %}",
+                async: false,
+                data: {
+                    'csrfmiddlewaretoken': token,
+                    'job_info_name': job_info_name,
+                },
+                success: call_more_right_ajax,
+                dataType: 'html'
+            });
+        }
+
+        function call_more_right_ajax(data, textStatus, jqXHR) {
+            $('#right_ajax').html(data);
+        }
+    </script>
+
 </div>
 </body>
 </html>

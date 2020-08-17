@@ -12,9 +12,12 @@
 	<span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">검색</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-info" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">다중 수정/삭제</span>
+	<span style="font-size: 12px;" type="button" class="badge badge-warning" onclick="search_sql_list();">다중 SQL 확인</span>
 	<!--
 	<span style="font-size: 12px;" type="button" class="badge badge-dark">다중 SQL 확인</span>
 	-->
+
+
 
 	<!-- 로딩바 -->
 	<div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners">
@@ -271,7 +274,6 @@
 		</table>
 	</div>
 
-
     <!-- 결과란 -->
 	<div>
 		{% if page is none %}
@@ -286,20 +288,14 @@
 			<input id="scrollHeight" name="scrollHeight" type="hidden" value="{{ scrollHeight }}">
 		{% endif %}
 	</div>
-
 	<div class="board small" id="account_list_ajax" style="font-size: 12px;"></div>
 
-
-
-    <!-- Modal -->
+    <!-- Modal(모달) -->
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-xl" role="document">
 			<div class="modal-content">
-
 				<!-- Modal Header -->
 				<div class="modal-header small">
-					<!-- <h4 class="modal-title" id="myModalLabel">Modal title</h4> -->
-
 					<!-- Nav tabs -->
 					<ul class="nav nav-pills" role="tablist">
 						<li>
@@ -315,15 +311,10 @@
 				<!-- Modal Body -->
 				<div class="modal-body small">
 					<div role="tabpanel">
-
 						<!-- Modal Tab panes -->
 						<div class="tab-content">
-
                             <!-- Modal Delete -->
 							<div role="tabpanel" class="tab-pane fade" id="deleteTab">
-                                <!--
-                                <form class="" action="{% url 'account_delete' %}" method="post" name="deleteForm">
-                                -->
 								<form class="" onsubmit="return false;" name="deleteForm">
                                 {% csrf_token %}
 
@@ -675,6 +666,54 @@
 				dataType: 'html'
 			});
 		}
+	</script>
+
+	<!-- search_sql_List ajax script. 다중 SQL 확인 -->
+	<script>
+		function search_sql_list() {
+			var page = parseInt($("#page").val());
+			$('#myModal_sql').modal("hide");
+			search_sql_list_callMoreListAjax(page);
+		}
+
+		function search_sql_list_callMoreListAjax(page, dml_type) {
+			var s_account_requestor = $("#s_account_requestor").val();
+			var s_account_devteam = $("#s_account_devteam").val();
+			var s_account_svr = $("#s_account_svr").val();
+			var s_account_user = $("#s_account_user").val();
+			var s_account_host = $("#s_account_host").val();
+			var s_account_grant = $("#s_account_grant").val();
+			var s_account_db = $("#s_account_db").val();
+			var s_account_table = $("#s_account_table").val();
+			var s_account_url = $("#s_account_url").val();
+
+			var checkboxValues = [];
+			$("input[name='checkbox']:checked").each(function(i) {
+        		checkboxValues.push($(this).val());
+    		});
+
+			$.ajax( {
+				type : 'POST',
+			    url: "{% url 'account_search_sql_list' %}",
+				data: {
+					'checkboxValues[]': checkboxValues,
+					's_account_requestor': s_account_requestor,
+					's_account_devteam': s_account_devteam,
+					's_account_svr': s_account_svr,
+					's_account_user': s_account_user,
+					's_account_host': s_account_host,
+					's_account_grant': s_account_grant,
+					's_account_db': s_account_db,
+					's_account_table': s_account_table,
+					's_account_url': s_account_url,
+					'page': page,
+					'csrfmiddlewaretoken': token,
+				},
+				success: addMoreAccountAjax,
+				dataType: 'html'
+			});
+		}
+
 	</script>
 
 	<!-- Modal window option script -->
@@ -1040,6 +1079,7 @@
         $('#account_list_ajax').load('dummy',function(){
             var page = $("#page").val();
             var scrollHeight = $("#scrollHeight").val();
+			$('#myModal_sql').modal("hide");
 
             callMoreListAjax(page);
             $("#page").val(parseInt(page));
