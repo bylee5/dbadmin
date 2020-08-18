@@ -360,7 +360,7 @@
 
 	<!-- Modal Multi Select SQL(모달) -->
     {% if account_sql_flag == 'true' %}
-	<div class="modal fade" id="myModal_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade"  id="myModal_sql" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
 			<div class="modal-content">
 				<!-- Modal Header -->
@@ -392,17 +392,21 @@
                             </div>
                             <table class="table table-sm" style="table-layout: fixed">
                                 <tr>
-                                    <td class="" style="font-size: 11.5px">
-                                        {% for account_sql_list in account_sql_lists %}
-                                        /*{{ account_sql_list.id }}*/ {{ account_sql_list.account_sql}}
+                                    <td class="" id="sql_account_sql" name="sql_account_sql" style="font-size: 11.5px">
+                                        <a>
+                                            {% for account_sql_list in account_sql_lists %}
+                                            /*{{ account_sql_list.id }}*/ {{ account_sql_list.account_sql}}
+                                        </a>
                                         <hr class="mt-1 mb-1">
                                         {% endfor %}
                                     </td>
                                 </tr>
                             </table>
                             <div class="modal-footer">
-                                <button type="" class="btn btn-sm btn-outline-primary">전체복사</button>
-                                <button type="" class="btn btn-sm btn-outline-danger" data-dismiss="modal">닫기</button>
+                                <!--
+                                <button class="btn btn-sm btn-outline-primary">전체복사</button>
+                                -->
+                                <button class="btn btn-sm btn-outline-danger" data-dismiss="modal">닫기</button>
                             </div>
 						</div>
 					</div>
