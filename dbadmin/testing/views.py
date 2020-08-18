@@ -234,7 +234,7 @@ def test1_left_ajax(request):
         print(s_job_name)
 
         # 잡 리스트 및 JOB 스케줄 가져오기
-        s_query = "SELECT ji.job_info_name, COUNT(svr) AS svr_total, SUM(use_yn) AS svr_use_total" + \
+        s_query = "SELECT ji.job_info_name, COUNT(svr) AS svr_total, IFNULL(SUM(use_yn),0) AS svr_use_total" + \
                     " FROM server_list sl" + \
                     " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
                     " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
@@ -272,6 +272,7 @@ def test1_right_ajax(request):
                     " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
                     " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
                     " WHERE 1=1" + \
+                    " AND sl.svr IS NOT NULL AND jsm.use_yn IS NOT NULL" + \
                     " AND ji.job_info_name='" + str(job_info_name) + "'" + \
                     " ORDER BY svr"
 
