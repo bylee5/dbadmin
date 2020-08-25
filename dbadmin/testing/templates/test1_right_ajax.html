@@ -6,56 +6,118 @@
 </head>
 <body>
 
-{% if job_info_name != '' %}
+
+{% if job_svr_lists != '' %}
+<form class="form-inline" onsubmit="return false" id="" name="">
+    {% csrf_token %}
+    &nbsp;<input type="text" class="form-control form-control-sm" id="" name="">
+    &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">SVR 검색</button>
+</form><hr>
+{% endif %}
+
+{% for job_svr_list in job_svr_lists %}
+{% with job_name=job_svr_list.0 svr_lists=job_svr_list.1 %}
+{% if job_name != '' and job_name != "''" %}
+
 <div class="card card-body mt-0 bg-light callout callout-dark">
-    <h6>{{ job_info_name }}</h6>
+    <h6>{{ job_name }}</h6>
     <table class="mb-2"><hr class="mt-2 mb-2">
         <tr>
             <td>
-                <!--
-                <div><table><tr>
-                    <td>
-                        {% for job_svr_list in job_svr_lists %}
-                        <table style="width: 150px" border="1"><tr>
-                            {% if job_svr_list.use_yn == 1 %}
-                            <td class="bg-primary text-light" style="width: 15%"></td>
-                            {% else %}
-                            <td class="bg-danger text-light" style="width: 15%"></td>
-                            {% endif %}
-                            <td class="bg-dark text-light text-center" style="width: 85%">{{ job_svr_list.svr }}</td>
-
-                        </tr></table>
-                        {% endfor %}
-                        -->
-
-                        {% for job_svr_list in job_svr_lists %}
-                    <span class="badge 1badge-light badge-pill mt-0 mb-1" style="background-color: #DCDCDC">
-                        <div class="pl-4 pr-4 pt-0 pb-0 custom-control custom-switch">
-                            &nbsp;&nbsp;
-                            <input type="checkbox" class="custom-control-input" {% if job_svr_list.use_yn == 1 %} checked {% endif %} id="{{ job_svr_list.svr }}">
-                            <label class="custom-control-label pt-1" for="{{ job_svr_list.svr }}">{{ job_svr_list.svr }}.tmonc.net</label>
-                        </div>
-                    <!--
-                    <div class="pl-5 pr-5 pt-1 pb-1">{{ job_svr_list.svr }}.tmonc.net
-                    <input type="checkbox" id="job_svr_list" name="job_svr_list" {% if job_svr_list.use_yn == 1 %} checked {% endif %}
-                            data-toggle="toggle" data-size="xs" data-onstyle="success" data-offstyle="danger"
-                            data-height="20" data-width="40" data-on="On" data-off="Off" value="{{ job_svr_list.svr }}">
+                {% for svr_list in svr_lists %}
+                <span class="badge 1badge-light badge-pill mt-0 mb-1" style="background-color: #DCDCDC">
+                    <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
+                        &nbsp;&nbsp;
+                        <input type="checkbox" class="custom-control-input" {% if svr_list.use_yn == 1 %} checked {% endif %}
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}')">
+                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
                     </div>
-                    -->
-                    </span>
-                        {% endfor %}
-                <!--
-                    </td>
-                </tr></table>
-                </div>
-                -->
-
+                </span>
+                {% endfor %}
             </td>
         </tr>
     </table>
 </div>
-{% endif %}
 
+{% endif %}
+{% endwith %}
+{% endfor %}
+
+<div id="dummy_ajax"></div>
+
+<!-- search test-->
+<script>
+    $('#svr_search').click(function(){
+        alert("test");
+
+        //var checkboxValues = [];
+        //$("input[name='checkbox']:checked").each(function(i) {
+        //    checkboxValues.push($(this).val());
+        //});
+        //alert(checkboxValues);
+
+    });
+</script>
+
+<!-- click use_yn ajax-->
+<script>
+    var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+
+    function update_job_use_yn(checkbox_id, job_name, svr) {
+        var flag = $("#" + checkbox_id).prop('checked');
+        update_job_use_yn_ajax(job_name, svr, flag);
+
+        var checkboxValues = [];
+        $("input[name='checkbox']:checked").each(function(i) {
+            checkboxValues.push($(this).val());
+        });
+
+        test1_reload_left_ajax(checkboxValues);
+    }
+
+    function update_job_use_yn_ajax(job_name, svr, flag) {
+        $.ajax( {
+            type : 'POST',
+            url: "{% url 'update_job_use_yn_ajax' %}",
+            data: {
+                'csrfmiddlewaretoken': token,
+                'job_name': job_name,
+                'svr': svr,
+                'flag': flag,
+            },
+            success: call_update_job_use_yn_ajax,
+            dataType: 'html'
+        });
+    }
+
+    function call_update_job_use_yn_ajax(data, textStatus, jqXHR) {
+        $('#dummy_ajax').html(data);
+    }
+</script>
+
+<!-- left ajax-->
+<script>
+    function test1_reload_left_ajax(job_info_name) {
+        var s_job_name = $("#s_job_name").val();
+
+        $.ajax( {
+            type : 'POST',
+            url: "{% url 'test1_reload_left_ajax' %}",
+            data: {
+                'csrfmiddlewaretoken': token,
+                'job_info_name': job_info_name,
+                's_job_name': s_job_name,
+            },
+            success: call_more_reload_left_ajax,
+            dataType: 'html'
+        });
+    }
+
+    function call_more_reload_left_ajax(data, textStatus, jqXHR) {
+        $('#left_ajax').html(data);
+    }
+</script>
 
 </body>
 </html>

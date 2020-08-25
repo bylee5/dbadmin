@@ -48,6 +48,7 @@ urlpatterns = [
     # account remove
     path('account/account_remove', account.views.account_remove, name='account_remove'),
     path('account/account_remove_select', account.views.account_remove_select, name='account_remove_select'),
+    path('account/account_remove_recover_account_list', account.views.account_remove_recover_account_list, name='account_remove_recover_account_list'),
 
     # account Repository Manage
     path('account/repository/', account.views.account_repository, name='account_repository'),
@@ -97,6 +98,8 @@ urlpatterns = [
     path('testing/test1/', testing.views.test1, name='test1'),
     path('testing/test1/left_ajax', testing.views.test1_left_ajax, name='test1_left_ajax'),
     path('testing/test1/right_ajax', testing.views.test1_right_ajax, name='test1_right_ajax'),
+    path('testing/test1/update_job_use_yn_ajax', testing.views.update_job_use_yn_ajax, name='update_job_use_yn_ajax'),
+    path('testing/test1/test1_reload_left_ajax', testing.views.test1_reload_left_ajax, name='test1_reload_left_ajax'),
 
     path('testing/test2/', testing.views.test2, name='test2'),
 

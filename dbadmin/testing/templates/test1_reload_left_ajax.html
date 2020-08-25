@@ -6,23 +6,10 @@
 </head>
 <body>
 <div>
-    <div class="text-center">
-        <h6>
-            <span class="badge badge-warning" type="button" aria-controls="">모두 선택/해제</span>
-            <span class="badge badge-light">TOTAL CNT</span>
-            <span class="badge badge-dark">ON CNT</span>
-        </h6>
-    </div>
     <div class="btn-group-toggle" data-toggle="buttons">
-    {% for job_info_list in job_info_lists %}
-            {% if job_info_list.job_info_name in job_info_name_checked_list %}
-        <label class="btn btn-secondary btn-sm w-100 active">
-            <input type="checkbox" id="checkbox" name="checkbox" checked class="check" value="{{ job_info_list.job_info_name }}">
-            {% else %}
+        {% for job_info_list in job_info_lists %}
         <label class="btn btn-secondary btn-sm w-100">
             <input type="checkbox" id="checkbox" name="checkbox" class="check" value="{{ job_info_list.job_info_name }}">
-            {% endif %}
-
             {% if job_info_list.job_info_name|length <= 28 %}
                 {{ job_info_list.job_info_name }}
             {% else %}
@@ -32,10 +19,8 @@
                 <span class="badge badge-dark">{{ job_info_list.svr_use_total}}</span>
             </input>
         </label>
-    {% endfor %}
+        {% endfor %}
     </div>
-    <!-- s_job_name. 검색 조건을 유지하기 위함 -->
-    <input id="s_job_name" name="s_job_name" type="hidden" value="{{ s_job_name }}">
 
     <!-- checked all -->
     <script>
@@ -56,12 +41,7 @@
         var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
         $('#right_ajax').load('dummy',function(){
-            //call_job_info_name_ajax(null);
-            var checkboxValues = [];
-            $("input[name='checkbox']:checked").each(function(i) {
-                checkboxValues.push($(this).val());
-            });
-            call_job_info_name_ajax(checkboxValues);
+            call_job_info_name_ajax(null);
         });
 
         function call_job_info_name_ajax(job_info_name) {

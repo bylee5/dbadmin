@@ -12,6 +12,7 @@
 	<span style="font-size: 12px;" type="button" class="badge badge-success" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">
 		삭제 계정 검색
 	</span>
+	<span style="font-size: 12px;" type="button" class="badge badge-info" onclick="recover_account_list();">다중계정 복구</span>
 
     <!-- 검색란 -->
     <div class="collapse show" id="collapseSelect" style="font-size: 12px;">
@@ -254,6 +255,67 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- dummy ajax. 백단 작업 필요 시 활용.-->
+	<div id="dummy_ajax"></div>
+
+	<!-- recover_account_list -->
+
+	<script>
+	var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+	function recover_account_list() {
+		var retVal = confirm("복구 하시겠습니까?");
+
+		if (retVal == true ){
+			var checkboxValues = [];
+			$("input[name='checkbox']:checked").each(function(i) {
+				checkboxValues.push($(this).val());
+			});
+
+			// 체크가 하나라도 있으면 ajax 동작
+			if (checkboxValues != '' ){
+				var page = parseInt($("#page").val());
+				var s_account_requestor = $("#s_account_requestor").val();
+				var s_account_devteam = $("#s_account_devteam").val();
+				var s_account_svr = $("#s_account_svr").val();
+				var s_account_user = $("#s_account_user").val();
+				var s_account_host = $("#s_account_host").val();
+				var s_account_grant = $("#s_account_grant").val();
+				var s_account_db = $("#s_account_db").val();
+				var s_account_table = $("#s_account_table").val();
+				var s_account_url = $("#s_account_url").val();
+
+				$.ajax( {
+					type : 'POST',
+					url: "{% url 'account_remove_recover_account_list' %}",
+					data: {
+						's_account_requestor': s_account_requestor,
+						's_account_devteam': s_account_devteam,
+						's_account_svr': s_account_svr,
+						's_account_user': s_account_user,
+						's_account_host': s_account_host,
+						's_account_grant': s_account_grant,
+						's_account_db': s_account_db,
+						's_account_table': s_account_table,
+						's_account_url': s_account_url,
+						'page': page,
+						'checkboxValues[]': checkboxValues,
+						'csrfmiddlewaretoken': token,
+					},
+					success: addMoreAccountAjax,
+					dataType: 'html'
+				});
+			} // success: addMoreAccountAjax
+
+		}else{
+			return false;
+		}
+	}
+
+	function dummy_ajax(data, textStatus, jqXHR) {
+		$('#dummy_ajax').html(data);
+	}
+	</script>
 
 	<!-- Modal window option script -->
     <script>

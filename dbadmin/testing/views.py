@@ -230,11 +230,148 @@ def test1_left_ajax(request):
     if request.method == 'POST':
         s_job_name = request.POST.get('s_job_name')
 
-        print("-------------------------------------------------------------")
-        print(s_job_name)
+        # print("-------------------------------------------------------------")
+        # print(s_job_name)
+
+        if s_job_name is None:
+            s_job_name=''
 
         # 잡 리스트 및 JOB 스케줄 가져오기
-        s_query = "SELECT ji.job_info_name, COUNT(svr) AS svr_total, IFNULL(SUM(use_yn),0) AS svr_use_total" + \
+        s_query = "/*left*/SELECT ji.job_info_name, COUNT(svr) AS svr_total, IFNULL(SUM(use_yn),0) AS svr_use_total" + \
+                    " FROM server_list sl" + \
+                    " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
+                    " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
+                    " where ji.job_info_name like '%" + s_job_name + "%'" + \
+                    " GROUP BY ji.job_info_name" + \
+                    " ORDER BY ji.job_info_name"
+        # print(s_query)
+        # print("-------------------------------------------------------------")
+
+        with connections['tmon_dba'].cursor() as cursor:
+            job_info_lists = []
+            cursor.execute(s_query)
+            job_info_lists = namedtuplefetchall(cursor)
+
+        context = {
+            'job_info_lists': job_info_lists,
+            's_job_name': s_job_name,
+        }
+
+        return render(request, 'test1_left_ajax.html', context)
+
+    else:
+        return render(request, 'test1_left_ajax.html')
+
+
+def test1_right_ajax(request):
+    if request.method == 'POST':
+
+        job_info_names = request.POST.getlist('job_info_name[]') # 원래 입력값
+        job_info_name = ", ".join( repr(e) for e in job_info_names) # QUERY에 쓰일 JOB_NAME 값
+
+        # print("-------------------------------------------------------------")
+        # print("right POST 테스트")
+        # print(job_info_names)
+        # print("---------------------------")
+        if len(job_info_names) == 0:
+            # print("비어있는 값 입력")
+            job_svr_lists = ''
+            job_info_name = "''"
+
+        else:
+            job_svr_lists = []
+            for job_name in job_info_names:
+
+                # 잡 리스트 및 JOB 스케줄 가져오기
+                s_query =   "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
+                            " FROM server_list sl" + \
+                            " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
+                            " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
+                            " WHERE 1=1" + \
+                            " AND sl.svr IS NOT NULL AND jsm.use_yn IS NOT NULL" + \
+                            " AND ji.job_info_name='" + job_name + "'" + \
+                            " ORDER BY ji.job_info_name, svr"
+
+                # print(s_query)
+                # print("-------------------------------------------------------------")
+
+                try:
+                    with connections['tmon_dba'].cursor() as cursor:
+                        cursor.execute(s_query)
+                        svr_lists = namedtuplefetchall(cursor)
+                        job_svr_lists.append([job_name, svr_lists])
+                finally:
+                    cursor.close()
+
+        # print(job_svr_lists)
+        context = {
+            'job_svr_lists': job_svr_lists,
+            'job_info_name': job_info_name,
+        }
+
+        return render(request, 'test1_right_ajax.html', context)
+    else:
+        return render(request, 'test1_right_ajax.html')
+
+
+
+####################
+
+def update_job_use_yn_ajax(request):
+    if request.method == 'POST':
+        job_name = request.POST.get('job_name')
+        svr = request.POST.get('svr')
+        flag = request.POST.get('flag') # true or false
+        flag = 1 if flag == 'true' else 0 # true = 1, false = 0
+
+        # print("------------------------------------------------------------------------------------------------------")
+        # print("/* use yn 입력값 테스트 */")
+        # print(job_name)
+        # print(svr)
+        # print(flag)
+
+
+        # 잡 리스트 및 JOB 스케줄 가져오기
+        u_query =   "/*update_job_use_yn_ajax*/UPDATE job_server_map jsm SET use_yn=" + str(flag) + \
+                    " WHERE 1=1" + \
+                    " AND jsm.job_info_seqno = (SELECT job_info_seqno FROM job_info ji WHERE ji.job_info_name = '" + job_name+ "')" + \
+                    " AND jsm.server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE REPLACE(sl.svr,'.tmonc.net','')='" + svr + "')"
+
+        # print(u_query)
+        # print("------------------------------------------------------------------------------------------------------")
+
+        try:
+            cursor = connections['tmon_dba'].cursor()
+            cursor.execute(u_query)
+            connection.commit()
+        except:
+            connection.rollback()
+        finally:
+            cursor.close()
+
+    context = {
+        'job_name': job_name,
+        'svr': svr,
+        'flag': flag,
+    }
+
+    return render(request, 'test1_dummy_ajax.html', context)
+
+
+def test1_reload_left_ajax(request):
+    if request.method == 'POST':
+        s_job_name = request.POST.get('s_job_name')
+        job_info_name = request.POST.getlist('job_info_name[]')
+
+        print("-------------------------------------------------------------")
+        print(s_job_name)
+        print(job_info_name)
+
+        if s_job_name is None:
+            s_job_name=''
+
+        # 잡 리스트 및 JOB 스케줄 가져오기
+        s_query = "/*left*/SELECT ji.job_info_name, COUNT(svr) AS svr_total, IFNULL(SUM(use_yn),0) AS svr_use_total" + \
                     " FROM server_list sl" + \
                     " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
                     " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
@@ -251,54 +388,16 @@ def test1_left_ajax(request):
 
         context = {
             'job_info_lists': job_info_lists,
+            'job_info_name_checked_list': job_info_name,
         }
 
         return render(request, 'test1_left_ajax.html', context)
 
     else:
-        return render(request, 'test1.html')
-
-
-def test1_right_ajax(request):
-    if request.method == 'POST':
-        job_info_name = request.POST.get('job_info_name')
-        print("-------------------------------------------------------------")
-        print("right POST 테스트")
-        print(job_info_name)
-
-        # 잡 리스트 및 JOB 스케줄 가져오기
-        s_query =   "SELECT REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
-                    " FROM server_list sl" + \
-                    " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
-                    " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
-                    " WHERE 1=1" + \
-                    " AND sl.svr IS NOT NULL AND jsm.use_yn IS NOT NULL" + \
-                    " AND ji.job_info_name='" + str(job_info_name) + "'" + \
-                    " ORDER BY svr"
-
-        print(s_query)
-        print("-------------------------------------------------------------")
-
-        with connections['tmon_dba'].cursor() as cursor:
-            job_svr_lists = []
-            cursor.execute(s_query)
-            job_svr_lists = namedtuplefetchall(cursor)
-
-        context = {
-            'job_svr_lists': job_svr_lists,
-            'job_info_name': job_info_name,
-        }
-
-        return render(request, 'test1_right_ajax.html', context)
-    else:
-        return render(request, 'test1.html')
-
-
-
-####################
+        return render(request, 'test1_left_ajax.html')
 
 def test2(request):
-    return render(request, 'test2.html')
+    return render(request, 'test1_dummy_ajax.html')
 
 #########################################################################
 # testing slack 슬객 테스트
