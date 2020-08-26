@@ -1736,7 +1736,5 @@ def account_repository_update(request):
         return render(request, 'account_repository.html')
 
 
-
-
-
-
+def account_dummy(request):
+    return render(request, 'dummy_ajax.html')

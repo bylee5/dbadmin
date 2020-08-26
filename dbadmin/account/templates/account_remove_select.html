@@ -212,7 +212,7 @@
                 data-account_del_yn="{{ account.account_del_yn }}"
                 data-account_del_dt="{{ account.account_del_dt|date:'Y/m/d H:i:s' }}"
                 data-account_del_reason="{{ account.account_del_reason }}"
-                data-account_del_note="{{ account.account_del_note }}" style = "width: 8%; cursor:pointer;">
+                data-account_del_note="{{ account.account_del_note }}" style = "width: 7%; cursor:pointer;">
                 {{ account.account_svr }}</td>
                 <td data-toggle="modal" data-target="#myModal"
                 data-id="{{ account.id }}"
@@ -359,7 +359,7 @@
                 data-account_del_reason="{{ account.account_del_reason }}"
                 data-account_del_note="{{ account.account_del_note }}" style = "width: 7%; cursor:pointer;">
                 {{ account.account_table }}</td>
-                <td style="cursor:pointer; width: 9%;" id="{{ account.account_url }}" name="{{ account.account_url }}" data-toggle="account_url" data-placement="right" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ account.account_url}}')">
+                <td style="cursor:pointer; width: 10%;" id="{{ account.account_url }}" name="{{ account.account_url }}" data-toggle="account_url" data-placement="right" title="URL 이동" onClick="window.open('https://jira.tmon.co.kr/browse/{{ account.account_url}}')">
                     {{ account.account_url }}
                 </td>
                 <script>

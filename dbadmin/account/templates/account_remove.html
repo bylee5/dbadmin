@@ -14,6 +14,11 @@
 	</span>
 	<span style="font-size: 12px;" type="button" class="badge badge-info" onclick="recover_account_list();">다중계정 복구</span>
 
+	<!-- 로딩바 -->
+	<div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners">
+		<span class="sr-only">Loading...</span>
+	</div>
+
     <!-- 검색란 -->
     <div class="collapse show" id="collapseSelect" style="font-size: 12px;">
 		<div class="card card-body mt-2 bg-light callout callout-success">
@@ -259,8 +264,22 @@
 	<!-- dummy ajax. 백단 작업 필요 시 활용.-->
 	<div id="dummy_ajax"></div>
 
-	<!-- recover_account_list -->
+    	<!-- loading control -->
+	<script>
+	$(document).ready(function(){
+    	$('#spinners').hide();
+	})
 
+	.ajaxStart(function(){
+        $('#spinners').fadeIn(10);
+	})
+
+	.ajaxStop(function(){
+		$('#spinners').fadeOut(10);
+	});
+	</script>
+
+	<!-- recover_account_list -->
 	<script>
 	var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 	function recover_account_list() {

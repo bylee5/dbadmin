@@ -36,6 +36,7 @@ urlpatterns = [
     #########################################################################
     # account manage
     path('account/', account.views.account, name='account'),
+    path('account/dummy', account.views.account_dummy, name='account_ummy'),
     path('account/select', account.views.account_select, name='account_select'),
     path('account/insert/', account.views.account_insert, name='account_insert'),
     path('account/update/', account.views.account_update, name='account_update'),
