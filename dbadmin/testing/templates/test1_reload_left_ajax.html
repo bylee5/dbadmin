@@ -48,6 +48,7 @@
             $.ajax( {
                 type : 'POST',
                 url: "{% url 'test1_right_ajax' %}",
+				async: false,
                 data: {
                     'csrfmiddlewaretoken': token,
                     'job_info_name': job_info_name,

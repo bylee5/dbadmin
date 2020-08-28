@@ -80,6 +80,7 @@
         $.ajax( {
             type : 'POST',
             url: "{% url 'update_job_use_yn_ajax' %}",
+            //async: false,
             data: {
                 'csrfmiddlewaretoken': token,
                 'job_name': job_name,
@@ -104,6 +105,7 @@
         $.ajax( {
             type : 'POST',
             url: "{% url 'test1_reload_left_ajax' %}",
+            //async: false,
             data: {
                 'csrfmiddlewaretoken': token,
                 'job_info_name': job_info_name,

@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.conf import settings, os
 from django.contrib.auth.decorators import login_required
 from django.db import connections
+import time
 
 from .models import *
 from .forms import FaqForm
@@ -335,7 +336,7 @@ def update_job_use_yn_ajax(request):
         u_query =   "/*update_job_use_yn_ajax*/UPDATE job_server_map jsm SET use_yn=" + str(flag) + \
                     " WHERE 1=1" + \
                     " AND jsm.job_info_seqno = (SELECT job_info_seqno FROM job_info ji WHERE ji.job_info_name = '" + job_name+ "')" + \
-                    " AND jsm.server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE REPLACE(sl.svr,'.tmonc.net','')='" + svr + "')"
+                    " AND jsm.server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE sl.svr=CONCAT('" + svr + "','.tmonc.net'))"
 
         # print(u_query)
         # print("------------------------------------------------------------------------------------------------------")
@@ -348,6 +349,7 @@ def update_job_use_yn_ajax(request):
             connection.rollback()
         finally:
             cursor.close()
+            time.sleep(1)
 
     context = {
         'job_name': job_name,
