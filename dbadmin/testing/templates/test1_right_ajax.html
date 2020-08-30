@@ -25,6 +25,7 @@
         <tr>
             <td>
                 {% for svr_list in svr_lists %}
+                <!-- old version
                 <span class="badge 1badge-light badge-pill mt-0 mb-1" style="background-color: #DCDCDC">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;&nbsp;
@@ -32,8 +33,47 @@
                                id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
                                onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}')">
                         <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
+                        &nbsp;&nbsp;
+                        -->
+                {% if svr_list.use_yn is None %}
+                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" style="background-color: #F0F0F0">
+                    <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
+                        &nbsp;
+                        <input type="checkbox" class="custom-control-input"
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
+                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
                     </div>
                 </span>
+
+                {% elif svr_list.use_yn == 1 %}
+                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" style="background-color: #D8D8D8">
+                    <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
+                        &nbsp;&nbsp;
+                        <input type="checkbox" class="custom-control-input" checked
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
+                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
+                    </div>
+                </span>
+
+                {% else %}
+                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" style="background-color: #D8D8D8">
+                    <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
+                        &nbsp;&nbsp;
+                        <input type="checkbox" class="custom-control-input"
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
+                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
+                    </div>
+                </span>
+
+                {% endif %}
+                &nbsp;
+                <!-- old version
+                    </div>
+                </span>
+                -->
                 {% endfor %}
             </td>
         </tr>
@@ -64,9 +104,14 @@
 <script>
     var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
 
-    function update_job_use_yn(checkbox_id, job_name, svr) {
+    function update_job_use_yn(checkbox_id, job_name, svr, use_yn) {
         var flag = $("#" + checkbox_id).prop('checked');
-        update_job_use_yn_ajax(job_name, svr, flag);
+        update_job_use_yn_ajax(job_name, svr, flag, use_yn);
+
+        if (use_yn == 'None'){
+            $("#span_" + checkbox_id).css("background-color", "#D8D8D8");
+            //$("#span_" + checkbox_id).css("background-color", "red");
+        }
 
         var checkboxValues = [];
         $("input[name='checkbox']:checked").each(function(i) {
@@ -76,7 +121,7 @@
         test1_reload_left_ajax(checkboxValues);
     }
 
-    function update_job_use_yn_ajax(job_name, svr, flag) {
+    function update_job_use_yn_ajax(job_name, svr, flag, use_yn) {
         $.ajax( {
             type : 'POST',
             url: "{% url 'update_job_use_yn_ajax' %}",
@@ -86,6 +131,7 @@
                 'job_name': job_name,
                 'svr': svr,
                 'flag': flag,
+                'use_yn': use_yn,
             },
             success: call_update_job_use_yn_ajax,
             dataType: 'html'

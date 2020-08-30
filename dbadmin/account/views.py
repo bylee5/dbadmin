@@ -226,12 +226,15 @@ def get_password_encrypt(account_pass):
 def get_password_decrypt(account_pass):
     query = "SELECT AES_DECRYPT(UNHEX('" + account_pass + "'), '" + get_key() + "') as pass"
 
-    print(query)
+    # print(query)
     with connections['default'].cursor() as cursor:
         cursor.execute(query)
         row = cursor.fetchone()
 
-    row = row[0].decode("utf-8")
+    if row[0] is not None:
+        row = row[0].decode("utf-8")
+    else:
+        row = row[0]
     return row
 
 # 패스워드 암호화, 해시값 세팅
@@ -1735,6 +1738,26 @@ def account_repository_update(request):
     else:
         return render(request, 'account_repository.html')
 
+
+def account_dummy_pass(request):
+    if request.method == 'POST':
+        account_pass = request.POST.get('account_pass')
+        print("=============== 왔나? =======================")
+        print(account_pass)
+        print("======================================")
+
+        if account_pass == 'NULL':
+            print("NULL")
+            account_pass = None
+        else:
+            print("NOT NULL")
+            account_pass = get_password_decrypt(account_pass)
+
+        context = {
+            'account_pass':account_pass,
+        }
+
+    return render(request, 'account_dummy_pass.html', context)
 
 def account_dummy(request):
     return render(request, 'dummy_ajax.html')

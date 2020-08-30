@@ -179,15 +179,6 @@
 					<td colspan="2" class="text-left">
 						<button class="btn btn-outline-danger btn-sm" onclick="insertBox()" type="submit">입력</button>
 						<input class="btn btn-outline-dark btn-sm" type="button" value="지우기" onClick="insertBox_del()">
-
-                        <!--
-						<a>강제입력(미구현) <input type="checkbox" id="abc" name="abc" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
-
-						<style>
-							.toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
-							.toggle.ios .toggle-handle { border-radius: 20rem; }
-						</style>
-						-->
 					</td>
 				</tr>
 				</form>
@@ -469,6 +460,8 @@
 											<br><a>- 불가피한 사유로 강제로 수정을 해야 한다면, 우측 <font color="red"><b>강제수정</b></font> 스위치를 ON 시켜주세요.</a>
 										</td>
 										<td class="text-right align-bottom">
+											<div class="text-light" id="account_dummy_pass" style="1font-size: 12px;"></div>
+											<span style="font-size: 12px;" type="button" class="badge badge-light" onclick="account_dummy_pass();">&nbsp;&nbsp;</span>
 											<a>강제수정 <input type="checkbox" id="forceupdate_flag" name="forceupdate_flag" data-toggle="toggle" data-size="xs" data-style="ios" data-onstyle="danger"  data-offstyle="light" data-height="20" data-width="50" data-on="ON" data-off="Off"></a>
 										</td>
 									</tr>
@@ -571,6 +564,33 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- account dummy-->
+	<script>
+		var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+		function account_dummy_pass() {
+			var account_pass = $("#u_account_pass").val();
+            account_dummy_pass_ajax(account_pass);
+		}
+
+		function account_dummy_pass_ajax(account_pass) {
+			$.ajax( {
+				type : 'POST',
+				url: "{% url 'account_dummy_pass' %}",
+				data: {
+					'csrfmiddlewaretoken': token,
+					'account_pass': account_pass,
+				},
+				success: more_account_dummy_pass_ajax,
+				dataType: 'html'
+			});
+		}
+
+		function more_account_dummy_pass_ajax(data, textStatus, jqXHR) {
+			$('#account_dummy_pass').html(data);
+		}
+
+	</script>
 
 	<!-- loading control -->
 	<script>
@@ -825,6 +845,9 @@
 		modal.find('#s_account_db').val(s_account_db);
 		modal.find('#s_account_table').val(s_account_table);
 		modal.find('#s_account_url').val(s_account_url);
+
+		// account_dummy_pass Null로 호출하기 위함
+		account_dummy_pass_ajax('NULL');
     })
     </script>
 

@@ -253,6 +253,10 @@ def test1_left_ajax(request):
             cursor.execute(s_query)
             job_info_lists = namedtuplefetchall(cursor)
 
+
+        print("============= count ================")
+        print(len(job_info_lists))
+
         context = {
             'job_info_lists': job_info_lists,
             's_job_name': s_job_name,
@@ -293,12 +297,18 @@ def test1_right_ajax(request):
                             " AND ji.job_info_name='" + job_name + "'" + \
                             " ORDER BY ji.job_info_name, svr"
 
+                s_query1 =  "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
+                            " FROM server_list sl JOIN job_info AS ji" + \
+                            " LEFT JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno AND ji.job_info_seqno = jsm.job_info_seqno" + \
+                            " WHERE ji.job_info_name='" + job_name + "'" + \
+                            " ORDER BY ji.job_info_name, svr"
+
                 # print(s_query)
                 # print("-------------------------------------------------------------")
 
                 try:
                     with connections['tmon_dba'].cursor() as cursor:
-                        cursor.execute(s_query)
+                        cursor.execute(s_query1)
                         svr_lists = namedtuplefetchall(cursor)
                         job_svr_lists.append([job_name, svr_lists])
                 finally:
@@ -323,33 +333,46 @@ def update_job_use_yn_ajax(request):
         job_name = request.POST.get('job_name')
         svr = request.POST.get('svr')
         flag = request.POST.get('flag') # true or false
+        use_yn = request.POST.get('use_yn') # None 일경우, 미등록 처리 하기 위함
+
         flag = 1 if flag == 'true' else 0 # true = 1, false = 0
+        print("------------------------------------------------------------------------------------------------------")
+        print("/* use yn 입력값 테스트 */")
+        print(job_name)
+        print(svr)
+        print("변경값 : " + str(flag))
+        print("사용여부 : " + str(use_yn))
+        print("------------------------------------------------------------------------------------------------------")
 
-        # print("------------------------------------------------------------------------------------------------------")
-        # print("/* use yn 입력값 테스트 */")
-        # print(job_name)
-        # print(svr)
-        # print(flag)
+        # 미등록 서버,잡 입력받는경우. INSERT
+        if use_yn == 'None':
+            print("미등록입니다. 신규 등록합니다.")
+            query =   "INSERT INTO job_server_map (job_info_seqno, server_list_seqno, use_yn)" + \
+                        " SELECT ji.job_info_seqno, sl.server_list_seqno, 1" + \
+                        " FROM server_list sl JOIN job_info AS ji" + \
+                        " WHERE 1=1" + \
+                        " AND ji.job_info_name='" + job_name + "'" + \
+                        " AND sl.svr='" + svr + ".tmonc.net'"
 
-
-        # 잡 리스트 및 JOB 스케줄 가져오기
-        u_query =   "/*update_job_use_yn_ajax*/UPDATE job_server_map jsm SET use_yn=" + str(flag) + \
+        # 기 등록 서버, 잡 입력받은경우
+        else:
+            print("등록입니다. 업데이트합니다.")
+            query = "/*update_job_use_yn_ajax*/UPDATE job_server_map jsm SET use_yn=" + str(flag) + \
                     " WHERE 1=1" + \
                     " AND jsm.job_info_seqno = (SELECT job_info_seqno FROM job_info ji WHERE ji.job_info_name = '" + job_name+ "')" + \
                     " AND jsm.server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE sl.svr=CONCAT('" + svr + "','.tmonc.net'))"
-
-        # print(u_query)
-        # print("------------------------------------------------------------------------------------------------------")
+        print("------------------------------------------------------------------------------------------------------")
+        print(query)
+        print("------------------------------------------------------------------------------------------------------")
 
         try:
             cursor = connections['tmon_dba'].cursor()
-            cursor.execute(u_query)
+            cursor.execute(query)
             connection.commit()
         except:
             connection.rollback()
         finally:
             cursor.close()
-            time.sleep(1)
 
     context = {
         'job_name': job_name,
@@ -362,6 +385,7 @@ def update_job_use_yn_ajax(request):
 
 def test1_reload_left_ajax(request):
     if request.method == 'POST':
+        time.sleep(0.5)
         s_job_name = request.POST.get('s_job_name')
         job_info_name = request.POST.getlist('job_info_name[]')
 
@@ -373,7 +397,7 @@ def test1_reload_left_ajax(request):
             s_job_name=''
 
         # 잡 리스트 및 JOB 스케줄 가져오기
-        s_query = "/*left*/SELECT ji.job_info_name, COUNT(svr) AS svr_total, IFNULL(SUM(use_yn),0) AS svr_use_total" + \
+        s_query = "/*left-reload*/SELECT ji.job_info_name, COUNT(svr) AS svr_total, IFNULL(SUM(use_yn),0) AS svr_use_total" + \
                     " FROM server_list sl" + \
                     " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
                     " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \

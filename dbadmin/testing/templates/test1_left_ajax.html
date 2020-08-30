@@ -8,7 +8,7 @@
 <div>
     <div class="text-center">
         <h6>
-            <span class="badge badge-warning" type="button" aria-controls="">모두 선택/해제</span>
+            <span class="badge badge-warning" type="button" onclick="all_click({{ job_info_lists|length }})">모두 선택/해제</span>
             <span class="badge badge-light">TOTAL CNT</span>
             <span class="badge badge-dark">ON CNT</span>
         </h6>
@@ -36,6 +36,52 @@
     </div>
     <!-- s_job_name. 검색 조건을 유지하기 위함 -->
     <input id="s_job_name" name="s_job_name" type="hidden" value="{{ s_job_name }}">
+
+    <script>
+        function all_click(job_info_lists_cnt) {
+            // 체크횟수 파악
+            var checkboxValues = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                checkboxValues.push($(this).val());
+            });
+
+            // 모두 체크한게 아니라면 모두 체크로. 그게 아니라면 해크해제로 null 값 입력
+            var checked_job_info_lists = [];
+            if (checkboxValues.length != job_info_lists_cnt ){
+                $("input[name='checkbox']").each(function(i) {
+                    checked_job_info_lists.push($(this).val());
+                });
+			}
+
+            // left_ajax 리로드
+            test1_reload_left_ajax(checked_job_info_lists);
+		}
+    </script>
+
+    <!-- left ajax-->
+	<script>
+		function test1_reload_left_ajax(job_info_name) {
+			var s_job_name = $("#s_job_name").val();
+
+			$.ajax( {
+				type : 'POST',
+				url: "{% url 'test1_reload_left_ajax' %}",
+				//async: false,
+				data: {
+					'csrfmiddlewaretoken': token,
+					'job_info_name': job_info_name,
+					's_job_name': s_job_name,
+				},
+				success: call_more_reload_left_ajax,
+				dataType: 'html'
+			});
+		}
+
+		function call_more_reload_left_ajax(data, textStatus, jqXHR) {
+			$('#left_ajax').html(data);
+		}
+	</script>
+
 
     <!-- checked all -->
     <script>
@@ -68,6 +114,7 @@
             $.ajax( {
                 type : 'POST',
                 url: "{% url 'test1_right_ajax' %}",
+				//async: false,
                 data: {
                     'csrfmiddlewaretoken': token,
                     'job_info_name': job_info_name,

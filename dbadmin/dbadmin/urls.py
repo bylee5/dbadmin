@@ -42,7 +42,9 @@ urlpatterns = [
     path('account/update/', account.views.account_update, name='account_update'),
     path('account/delete/', account.views.account_delete, name='account_delete'),
     path('account/multi_dml/', account.views.account_multi_dml, name='account_multi_dml'),
+
     path('account/account_search_sql_list/', account.views.account_search_sql_list, name='account_search_sql_list'),
+    path('account/account_dummy_pass/', account.views.account_dummy_pass, name='account_dummy_pass'),
 
     path('account/select_fast', account.views.account_select_fast, name='account_select_fast'),
 
