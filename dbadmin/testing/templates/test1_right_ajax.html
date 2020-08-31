@@ -8,11 +8,36 @@
 
 
 {% if job_svr_lists != '' %}
-<form class="form-inline" onsubmit="return false" id="" name="">
-    {% csrf_token %}
-    &nbsp;<input type="text" class="form-control form-control-sm" id="" name="">
-    &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">SVR 검색</button>
-</form><hr>
+
+<div class="card card-body mt-0 bg-light callout callout-dark">
+    <!--
+    <h6>Server List</h6>
+    -->
+    <table class="mb-0 small"><!--<hr class="mt-2 mb-2">-->
+        <tr>
+            <td style="width:85%;">
+                <form class="form-inline" onsubmit="return false" id="" name="">
+                    {% csrf_token %}
+                    &nbsp;<input type="text" class="form-control form-control-sm" id="s_svr" name="">
+                    &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">SVR 검색</button>
+                </form>
+            </td>
+            <td>
+                <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                    <input type="checkbox" class="custom-control-input" id="checkbox_unregister">
+                    <label class="custom-control-label" for="checkbox_unregister">미등록 안보기</label>
+                </div>
+            </td>
+            <td>
+                <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                    <input type="checkbox" class="custom-control-input" id="checkbox_off">
+                    <label class="custom-control-label" for="checkbox_off">OFF 안보기</label>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
 {% endif %}
 
 {% for job_svr_list in job_svr_lists %}
@@ -36,35 +61,35 @@
                         &nbsp;&nbsp;
                         -->
                 {% if svr_list.use_yn is None %}
-                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" style="background-color: #F0F0F0">
+                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #F0F0F0">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;
                         <input type="checkbox" class="custom-control-input"
-                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="svr_checkbox"
                                onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
-                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
+                        <label class="custom-control-label pt-1" name="svr_label" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
                     </div>
                 </span>
 
                 {% elif svr_list.use_yn == 1 %}
-                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" style="background-color: #D8D8D8">
+                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;&nbsp;
                         <input type="checkbox" class="custom-control-input" checked
-                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="svr_checkbox"
                                onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
-                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
+                        <label class="custom-control-label pt-1" name="svr_label" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
                     </div>
                 </span>
 
                 {% else %}
-                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" style="background-color: #D8D8D8">
+                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;&nbsp;
                         <input type="checkbox" class="custom-control-input"
-                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
+                               id="{{ job_name }}_{{ svr_list.svr }}" name="svr_checkbox"
                                onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
-                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
+                        <label class="custom-control-label pt-1" name="svr_label" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
                     </div>
                 </span>
 
@@ -86,18 +111,47 @@
 
 <div id="dummy_ajax"></div>
 
-<!-- search test-->
+<!-- svr_ search -->
 <script>
     $('#svr_search').click(function(){
-        alert("test");
-
         //var checkboxValues = [];
-        //$("input[name='checkbox']:checked").each(function(i) {
+        //$("input[name='svr_checkbox']:checked").each(function(i) {
         //    checkboxValues.push($(this).val());
         //});
         //alert(checkboxValues);
+        checkbox_filter();
 
     });
+</script>
+
+<!-- svr_ search -->
+<script>
+    $('#checkbox_unregister').click(function(){
+        checkbox_filter();
+
+    });
+
+    $('#checkbox_off').click(function(){
+        checkbox_filter();
+
+    });
+
+    function checkbox_filter() {
+        var s_svr = $("#s_svr").val();
+        if($("#checkbox_unregister").is(":checked")){
+            var checkbox_unregister = "ON";
+		}else{
+            var checkbox_unregister = "OFF";
+		}
+
+        if($("#checkbox_off").is(":checked")){
+            var checkbox_off = "ON";
+		}else{
+            var checkbox_off = "OFF";
+		}
+        alert("검색어 : " + s_svr + " / 미등록 : " + checkbox_unregister + " / OFF : " + checkbox_off);
+    }
+
 </script>
 
 <!-- click use_yn ajax-->

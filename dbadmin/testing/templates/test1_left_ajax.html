@@ -37,6 +37,24 @@
     <!-- s_job_name. 검색 조건을 유지하기 위함 -->
     <input id="s_job_name" name="s_job_name" type="hidden" value="{{ s_job_name }}">
 
+    <!--
+    <div class="text-center mt-2">
+        <form class="form-inline" onsubmit="return false" id="" name="">
+            {% csrf_token %}
+            <input type="text" class="form-control form-control-sm mr-1" id="" name="">
+            <button id="svr_search" class="btn btn-outline-dark btn-sm">SVR 검색</button>
+        </form>
+        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+            <input type="checkbox" class="custom-control-input" id="customControlInline">
+            <label class="custom-control-label" for="customControlInline">미등록 안보기</label>
+        </div>
+        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+            <input type="checkbox" class="custom-control-input" id="customControlInline1">
+            <label class="custom-control-label" for="customControlInline1">OFF 안보기</label>
+        </div>
+    </div>
+    -->
+
     <script>
         function all_click(job_info_lists_cnt) {
             // 체크횟수 파악
