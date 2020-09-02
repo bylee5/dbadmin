@@ -37,6 +37,31 @@
     <!-- s_job_name. 검색 조건을 유지하기 위함 -->
     <input id="s_job_name" name="s_job_name" type="hidden" value="{{ s_job_name }}">
 
+    <!-- Job filter 검색. 원하는 항목만 표시하기 -->
+    <div class="card card-body mt-0 bg-light 1callout 1callout-dark small">
+        <!--
+    <h6>Server List</h6>
+    -->
+        <form class="form-inline" onsubmit="return false" id="" name="">
+            {% csrf_token %}
+            <input type="text" class="form-control form-control-sm" id="s_svr" name="">
+            &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">검색</button>
+        </form>
+        <table><tr>
+            <td>
+        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+            <input type="checkbox" class="custom-control-input" id="checkbox_unregister">
+            <label class="custom-control-label" for="checkbox_unregister">미등록 안보기</label>
+        </div>
+            </td><td>
+        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+            <input type="checkbox" class="custom-control-input" id="checkbox_off">
+            <label class="custom-control-label" for="checkbox_off">OFF 안보기</label>
+        </div>
+        </td>
+        </tr>
+        </table>
+    </div>
     <!--
     <div class="text-center mt-2">
         <form class="form-inline" onsubmit="return false" id="" name="">
@@ -54,6 +79,52 @@
         </div>
     </div>
     -->
+
+    <!-- svr_ search -->
+	<script>
+		$('#svr_search').click(function(){ checkbox_filter(); });
+		$('#checkbox_unregister').click(function(){ checkbox_filter(); });
+		$('#checkbox_off').click(function(){ checkbox_filter(); });
+
+		function checkbox_filter() {
+			var s_svr = $("#s_svr").val();
+			if($("#checkbox_unregister").is(":checked")){
+				var checkbox_unregister = "ON";
+			}else{
+				var checkbox_unregister = "OFF";
+			}
+
+			if($("#checkbox_off").is(":checked")){
+				var checkbox_off = "ON";
+			}else{
+				var checkbox_off = "OFF";
+			}
+
+			//alert("검색어 : " + s_svr + " / 미등록 : " + checkbox_unregister + " / OFF : " + checkbox_off);
+
+            //call_job_info_name_ajax(null);
+            var checkboxValues = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                checkboxValues.push($(this).val());
+            });
+
+            alert(checkboxValues);
+
+            //$.ajax( {
+            //    type : 'POST',
+            //    url: "{% url 'test1_right_ajax' %}",
+            //    //async: false,
+            //    data: {
+            //        'csrfmiddlewaretoken': token,
+            //        'job_info_name': job_info_name,
+            //    },
+            //    success: call_more_right_ajax,
+            //    dataType: 'html'
+            //});
+        }
+
+	</script>
+
 
     <script>
         function all_click(job_info_lists_cnt) {

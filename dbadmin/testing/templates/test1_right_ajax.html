@@ -9,34 +9,7 @@
 
 {% if job_svr_lists != '' %}
 
-<div class="card card-body mt-0 bg-light callout callout-dark">
-    <!--
-    <h6>Server List</h6>
-    -->
-    <table class="mb-0 small"><!--<hr class="mt-2 mb-2">-->
-        <tr>
-            <td style="width:85%;">
-                <form class="form-inline" onsubmit="return false" id="" name="">
-                    {% csrf_token %}
-                    &nbsp;<input type="text" class="form-control form-control-sm" id="s_svr" name="">
-                    &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">SVR 검색</button>
-                </form>
-            </td>
-            <td>
-                <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                    <input type="checkbox" class="custom-control-input" id="checkbox_unregister">
-                    <label class="custom-control-label" for="checkbox_unregister">미등록 안보기</label>
-                </div>
-            </td>
-            <td>
-                <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                    <input type="checkbox" class="custom-control-input" id="checkbox_off">
-                    <label class="custom-control-label" for="checkbox_off">OFF 안보기</label>
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
+
 
 {% endif %}
 
@@ -111,48 +84,7 @@
 
 <div id="dummy_ajax"></div>
 
-<!-- svr_ search -->
-<script>
-    $('#svr_search').click(function(){
-        //var checkboxValues = [];
-        //$("input[name='svr_checkbox']:checked").each(function(i) {
-        //    checkboxValues.push($(this).val());
-        //});
-        //alert(checkboxValues);
-        checkbox_filter();
 
-    });
-</script>
-
-<!-- svr_ search -->
-<script>
-    $('#checkbox_unregister').click(function(){
-        checkbox_filter();
-
-    });
-
-    $('#checkbox_off').click(function(){
-        checkbox_filter();
-
-    });
-
-    function checkbox_filter() {
-        var s_svr = $("#s_svr").val();
-        if($("#checkbox_unregister").is(":checked")){
-            var checkbox_unregister = "ON";
-		}else{
-            var checkbox_unregister = "OFF";
-		}
-
-        if($("#checkbox_off").is(":checked")){
-            var checkbox_off = "ON";
-		}else{
-            var checkbox_off = "OFF";
-		}
-        alert("검색어 : " + s_svr + " / 미등록 : " + checkbox_unregister + " / OFF : " + checkbox_off);
-    }
-
-</script>
 
 <!-- click use_yn ajax-->
 <script>
