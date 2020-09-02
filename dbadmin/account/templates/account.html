@@ -153,10 +153,6 @@
 
 								<!-- input grant 직접입력 구현 -->
 								<script>
-								$('#i_account_grant').load('dummy',function(){
-									$("#i_account_grant_direct").show();
-									$("#i_account_grant_direct").hide();
-								});
 
 								$('#i_account_grant').change(function(){
 									$("#i_account_grant option:selected").each(function () {
@@ -170,6 +166,11 @@
 											$("#i_account_grant_direct").hide();
 										}
 									});
+								});
+
+								$('#i_account_grant_direct').load('dummy',function(){
+									$("#i_account_grant").show();
+									$("#i_account_grant_direct").hide();
 								});
 								</script>
 						</div>
