@@ -274,10 +274,21 @@ def test1_right_ajax(request):
         job_info_names = request.POST.getlist('job_info_name[]') # 원래 입력값
         job_info_name = ", ".join( repr(e) for e in job_info_names) # QUERY에 쓰일 JOB_NAME 값
 
-        # print("-------------------------------------------------------------")
-        # print("right POST 테스트")
-        # print(job_info_names)
-        # print("---------------------------")
+        s_svr = request.POST.get('s_svr') # 원래 입력값
+        checkbox_unregister = request.POST.get('checkbox_unregister') # 원래 입력값
+        checkbox_off = request.POST.get('checkbox_off') # 원래 입력값
+
+        print("-------------------------------------------------------------")
+        print("right POST 테스트")
+        print("-------------------------------------------------------------")
+        print(job_info_names)
+        print("s_svr : " + str(s_svr))
+        print("checkbox_unregister : " + str(checkbox_unregister))
+        print("checkbox_off : " + str(checkbox_off))
+        print("-------------------------------------------------------------")
+        if s_svr is None:
+            s_svr=''
+
         if len(job_info_names) == 0:
             # print("비어있는 값 입력")
             job_svr_lists = ''
@@ -297,10 +308,13 @@ def test1_right_ajax(request):
                             " AND ji.job_info_name='" + job_name + "'" + \
                             " ORDER BY ji.job_info_name, svr"
 
+                # 잡 리스트 숨긴것 다 가져오기
                 s_query1 =  "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
                             " FROM server_list sl JOIN job_info AS ji" + \
                             " LEFT JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno AND ji.job_info_seqno = jsm.job_info_seqno" + \
-                            " WHERE ji.job_info_name='" + job_name + "'" + \
+                            " WHERE 1=1" + \
+                            " AND ji.job_info_name='" + job_name + "'" + \
+                            " AND sl.svr like '%" + s_svr + "%'" + \
                             " ORDER BY ji.job_info_name, svr"
 
                 # print(s_query)

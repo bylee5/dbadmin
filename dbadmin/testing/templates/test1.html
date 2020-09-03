@@ -9,12 +9,12 @@
 </head>
 <body>
     {% block content %}
-    <span style="font-size: 12px;" type="button" class="badge badge-primary" data-toggle="collapse" data-target="#collapseSelect" aria-controls="collapseSelect">검색</span>
-    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseInsert" aria-controls="collapseInsert">입력</span>
+    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">조회</span>
     <!-- 로딩바 -->
     <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
 
     <!-- 상단 페이지. 검색, 입력-->
+    <!--
     <div class="card card-body mt-2 bg-light callout callout-danger small">
         <table class="mb-1">
             <tr>
@@ -34,7 +34,93 @@
             </tr>
         </table>
     </div>
-    <hr>
+    -->
+	<!-- 검색란 -->
+	<div class="collapse show small" id="collapseUpdateMulti" style="1font-size: 12px;">
+		<table class="w-100 mt-2" style="table-layout: fixed">
+			<td style="1width: 50%">
+				<div class="card card-body mt-0 bg-light callout callout-danger">
+					<h6>Job List</h6>
+					<a>- 잡 리스트에 따른 서버 통합관리 및 on/off 스위치를 제어하는 페이지입니다. </a>
+					<a>- 특정 job name만을 보기 원하신다면, 아래 검색란을 활용해주세요.</a>
+
+					<form class="form-inline" onsubmit="return false" id="" name="">
+						{% csrf_token %}
+                        <div class="mt-2">
+							<input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name">
+							&nbsp;<button id="search" class="btn btn-outline-dark btn-sm">검색</button>
+						</div>
+					</form>
+				</div>
+			</td>
+			<!--
+			<td>
+				<div class="card card-body mt-0 bg-light callout callout-dark">
+					<h6>Svr List</h6>
+					<a>- 좌측 하단 체크박스 클릭을 통해 다중 변경 대상을 선택해주세요.</a>
+					<a>- 삭제 사유 및 삭제 URL (JIRA)를 기재해주세요.<a>
+
+					<form class="form-inline" onsubmit="return false" id="" name="">
+						{% csrf_token %}
+						<div class="mt-2">
+							<input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name">
+							&nbsp;<button id="search" class="btn btn-outline-dark btn-sm">검색</button>
+						</div>
+					</form>
+				</div>
+			</td>
+			-->
+		</table>
+	</div>
+	<hr>
+
+	<!-- 다중 변경란 -->
+	<!--
+	<div class="collapse small" id="collapseUpdateMulti" style="1font-size: 12px;">
+        <table>
+            <td>
+				<div class="card card-body mt-2 bg-light callout callout-dark">
+                    <h6>Job Server List</h6>
+                    <a>- 잡 리스트에 따른 서버 통합관리 및 on/off 스위치를 제어하는 페이지입니다. </a>
+                    <br><a>- 특정 job name만을 보기 원하신다면, 아래 검색란을 활용해주세요.</a>
+                </div>
+
+                <form class="form-inline" onsubmit="return false" id="" name="">
+                    {% csrf_token %}
+                    <input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name">
+                    &nbsp;<button id="search" class="btn btn-outline-dark btn-sm">검색</button>
+                </form>
+			</td>
+			</td>
+			<td>
+				<div class="card card-body mt-2 bg-light callout callout-dark">
+					<h6> 다중 삭제란</h6>
+					<a>- 좌측 하단 체크박스 클릭을 통해 다중 변경 대상을 선택해주세요.</a>
+					<a>- 삭제 사유 및 삭제 URL (JIRA)를 기재해주세요.<a>
+					<a>&nbsp;&nbsp;(ex. ARCH-번호)</a>
+					<a class="mb-3">- 체크 대상으로 <font color="red"><b>일괄 삭제</b></font> 되오니, 신중하게 사용해주세요.</a>
+
+					<table class="table table-sm text-center" style="table-layout: fixed">
+						<form class="form-inline" onsubmit="return false;" name="MultiDeleteForm">
+							{% csrf_token %}
+							<tr class="bg-dark text-white">
+								<th style="width: 62%" class="rounded-left">삭제 사유</th>
+								<th style="width: 30%" class="">삭제 URL(JIRA)</th>
+								<th style="width: 8%" class="rounded-right"></th>
+							<tr class="">
+								<td><input class="form-control form-control-sm" id="md_account_del_reason" name="md_account_del_reason" type="text"></td>
+								<td><input class="form-control form-control-sm" id="md_account_del_note" name="md_account_del_note" type="text"></td>
+								<td>
+									<button class="btn btn-outline-dark btn-sm" onclick="MultiDeleteBox()" type="submit">삭제</button>
+								</td>
+							</tr>
+						</form>
+					</table>
+				</div>
+			</td>
+		</table>
+	</div>
+	-->
 
     <!-- 메인 본문. AJAX -->
     <div>

@@ -6,13 +6,6 @@
 </head>
 <body>
 
-
-{% if job_svr_lists != '' %}
-
-
-
-{% endif %}
-
 {% for job_svr_list in job_svr_lists %}
 {% with job_name=job_svr_list.0 svr_lists=job_svr_list.1 %}
 {% if job_name != '' and job_name != "''" %}
@@ -75,6 +68,9 @@
                 {% endfor %}
             </td>
         </tr>
+        {% if svr_lists|length == 0 %}
+            <div class="small">검색 결과 없음</div>
+        {% endif %}
     </table>
 </div>
 
@@ -92,6 +88,7 @@
 
     function update_job_use_yn(checkbox_id, job_name, svr, use_yn) {
         var flag = $("#" + checkbox_id).prop('checked');
+
         update_job_use_yn_ajax(job_name, svr, flag, use_yn);
 
         if (use_yn == 'None'){
