@@ -74,54 +74,6 @@
 	</div>
 	<hr>
 
-	<!-- 다중 변경란 -->
-	<!--
-	<div class="collapse small" id="collapseUpdateMulti" style="1font-size: 12px;">
-        <table>
-            <td>
-				<div class="card card-body mt-2 bg-light callout callout-dark">
-                    <h6>Job Server List</h6>
-                    <a>- 잡 리스트에 따른 서버 통합관리 및 on/off 스위치를 제어하는 페이지입니다. </a>
-                    <br><a>- 특정 job name만을 보기 원하신다면, 아래 검색란을 활용해주세요.</a>
-                </div>
-
-                <form class="form-inline" onsubmit="return false" id="" name="">
-                    {% csrf_token %}
-                    <input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name">
-                    &nbsp;<button id="search" class="btn btn-outline-dark btn-sm">검색</button>
-                </form>
-			</td>
-			</td>
-			<td>
-				<div class="card card-body mt-2 bg-light callout callout-dark">
-					<h6> 다중 삭제란</h6>
-					<a>- 좌측 하단 체크박스 클릭을 통해 다중 변경 대상을 선택해주세요.</a>
-					<a>- 삭제 사유 및 삭제 URL (JIRA)를 기재해주세요.<a>
-					<a>&nbsp;&nbsp;(ex. ARCH-번호)</a>
-					<a class="mb-3">- 체크 대상으로 <font color="red"><b>일괄 삭제</b></font> 되오니, 신중하게 사용해주세요.</a>
-
-					<table class="table table-sm text-center" style="table-layout: fixed">
-						<form class="form-inline" onsubmit="return false;" name="MultiDeleteForm">
-							{% csrf_token %}
-							<tr class="bg-dark text-white">
-								<th style="width: 62%" class="rounded-left">삭제 사유</th>
-								<th style="width: 30%" class="">삭제 URL(JIRA)</th>
-								<th style="width: 8%" class="rounded-right"></th>
-							<tr class="">
-								<td><input class="form-control form-control-sm" id="md_account_del_reason" name="md_account_del_reason" type="text"></td>
-								<td><input class="form-control form-control-sm" id="md_account_del_note" name="md_account_del_note" type="text"></td>
-								<td>
-									<button class="btn btn-outline-dark btn-sm" onclick="MultiDeleteBox()" type="submit">삭제</button>
-								</td>
-							</tr>
-						</form>
-					</table>
-				</div>
-			</td>
-		</table>
-	</div>
-	-->
-
     <!-- 메인 본문. AJAX -->
     <div>
         <table class="w-100" border="0"><tr>

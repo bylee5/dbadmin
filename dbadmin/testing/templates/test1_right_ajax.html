@@ -16,16 +16,8 @@
         <tr>
             <td>
                 {% for svr_list in svr_lists %}
-                <!-- old version
-                <span class="badge 1badge-light badge-pill mt-0 mb-1" style="background-color: #DCDCDC">
-                    <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
-                        &nbsp;&nbsp;
-                        <input type="checkbox" class="custom-control-input" {% if svr_list.use_yn == 1 %} checked {% endif %}
-                               id="{{ job_name }}_{{ svr_list.svr }}" name="checkbox_svr_use_yn"
-                               onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}')">
-                        <label class="custom-control-label pt-1" for="{{ job_name }}_{{ svr_list.svr }}">{{ svr_list.svr }}</label>
-                        &nbsp;&nbsp;
-                        -->
+
+                <!-- 미등록인경우 -->
                 {% if svr_list.use_yn is None %}
                 <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #F0F0F0">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
@@ -37,6 +29,7 @@
                     </div>
                 </span>
 
+                <!-- 등록 및 USE_YN = 1인 경우 -->
                 {% elif svr_list.use_yn == 1 %}
                 <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
@@ -48,6 +41,7 @@
                     </div>
                 </span>
 
+                <!-- 등록 및 USE_YN = 0인 경우 -->
                 {% else %}
                 <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
@@ -131,6 +125,25 @@
     function test1_reload_left_ajax(job_info_name) {
         var s_job_name = $("#s_job_name").val();
 
+        // 검색어
+        var s_svr = $("#s_svr").val();
+
+        // 미등록 안보기 체크
+        if($("#checkbox_unregister").is(":checked")){
+            var checkbox_unregister = "ON";
+        }else{
+            var checkbox_unregister = "OFF";
+        }
+
+        // OFF 안보기 체크
+        if($("#checkbox_off").is(":checked")){
+            var checkbox_off = "ON";
+        }else{
+            var checkbox_off = "OFF";
+        }
+
+        //alert(s_svr + " / " + checkbox_unregister + " / " + checkbox_off);
+
         $.ajax( {
             type : 'POST',
             url: "{% url 'test1_reload_left_ajax' %}",
@@ -139,6 +152,9 @@
                 'csrfmiddlewaretoken': token,
                 'job_info_name': job_info_name,
                 's_job_name': s_job_name,
+                's_svr': s_svr,
+                'checkbox_unregister': checkbox_unregister,
+                'checkbox_off': checkbox_off,
             },
             success: call_more_reload_left_ajax,
             dataType: 'html'

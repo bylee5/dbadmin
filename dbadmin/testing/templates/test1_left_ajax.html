@@ -45,21 +45,25 @@
     -->
         <form class="form-inline" onsubmit="return false" id="" name="">
             {% csrf_token %}
+            {% if s_svr is None %}
             <input type="text" class="form-control form-control-sm" id="s_svr" name="">
+            {% else %}
+            <input type="text" class="form-control form-control-sm" id="s_svr" name="" value="{{ s_svr }}">
+            {% endif %}
             &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">검색</button>
         </form>
         <table>
             <tr>
                 <td>
                     <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                        <input type="checkbox" class="custom-control-input" id="checkbox_unregister">
-                        <label class="custom-control-label" for="checkbox_unregister">미등록 안보기</label>
+                        <input type="checkbox" class="custom-control-input" {% if checkbox_unregister == 'ON' %} checked {% endif %} id="checkbox_unregister">
+                        <label class="custom-control-label" for="checkbox_unregister">등록 서버만</label>
                     </div>
                 </td>
                 <td>
                     <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                        <input type="checkbox" class="custom-control-input" id="checkbox_off">
-                        <label class="custom-control-label" for="checkbox_off">OFF 안보기</label>
+                        <input type="checkbox" class="custom-control-input" {% if checkbox_off == 'ON' %} checked {% endif %} id="checkbox_off">
+                        <label class="custom-control-label" for="checkbox_off">스위치 ON만</label>
                     </div>
                 </td>
             </tr>
@@ -70,69 +74,9 @@
             검색결과 없음
         </div>
     {% endif %}
-    <!--
-    <div class="text-center mt-2">
-        <form class="form-inline" onsubmit="return false" id="" name="">
-            {% csrf_token %}
-            <input type="text" class="form-control form-control-sm mr-1" id="" name="">
-            <button id="svr_search" class="btn btn-outline-dark btn-sm">SVR 검색</button>
-        </form>
-        <div class="custom-control custom-checkbox my-1 mr-sm-2">
-            <input type="checkbox" class="custom-control-input" id="customControlInline">
-            <label class="custom-control-label" for="customControlInline">미등록 안보기</label>
-        </div>
-        <div class="custom-control custom-checkbox my-1 mr-sm-2">
-            <input type="checkbox" class="custom-control-input" id="customControlInline1">
-            <label class="custom-control-label" for="customControlInline1">OFF 안보기</label>
-        </div>
-    </div>
-    -->
-    <!-- svr_ search -->
-	<script>
-		$('#svr_search').click(function(){ checkbox_filter(); });
-		$('#checkbox_unregister').click(function(){ checkbox_filter(); });
-		$('#checkbox_off').click(function(){ checkbox_filter(); });
 
-		function checkbox_filter() {
-			var s_svr = $("#s_svr").val();
-			if($("#checkbox_unregister").is(":checked")){
-				var checkbox_unregister = "ON";
-			}else{
-				var checkbox_unregister = "OFF";
-			}
-
-			if($("#checkbox_off").is(":checked")){
-				var checkbox_off = "ON";
-			}else{
-				var checkbox_off = "OFF";
-			}
-
-			//alert("검색어 : " + s_svr + " / 미등록 : " + checkbox_unregister + " / OFF : " + checkbox_off);
-
-            var job_info_name = [];
-            $("input[name='checkbox']:checked").each(function(i) {
-                job_info_name.push($(this).val());
-            });
-
-            $.ajax( {
-                type : 'POST',
-                url: "{% url 'test1_right_ajax' %}",
-                //async: false,
-                data: {
-                    'csrfmiddlewaretoken': token,
-                    'job_info_name': job_info_name,
-                    's_svr': s_svr,
-                    'checkbox_unregister': checkbox_unregister,
-                    'checkbox_off': checkbox_off,
-                },
-                success: call_more_right_ajax,
-                dataType: 'html'
-            });
-        }
-
-	</script>
-
-
+    <!-- left ajax -->
+    <!-- 체크 모두 선택 / 모두해제 -->
     <script>
         function all_click(job_info_lists_cnt) {
             // 체크횟수 파악
@@ -152,10 +96,7 @@
             // left_ajax 리로드
             test1_reload_left_ajax(checked_job_info_lists);
 		}
-    </script>
 
-    <!-- left ajax-->
-	<script>
 		function test1_reload_left_ajax(job_info_name) {
 			var s_job_name = $("#s_job_name").val();
 
@@ -178,35 +119,63 @@
 		}
 	</script>
 
-
-    <!-- checked all -->
+    <!-- 잡 클릭. checkbox -->
     <script>
+		$('#svr_search').click(function(){
+            //alert("search");
+            var job_info_name = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                job_info_name.push($(this).val());
+            });
+		    call_job_info_name_ajax(job_info_name);
+        });
+
         $(document).ready(function(){
             $("input:checkbox").on('click', function() {
-                alert("여기1");
-                var checkboxValues = [];
+                //alert("checkbox click");
+                var job_info_name = [];
                 $("input[name='checkbox']:checked").each(function(i) {
-                    checkboxValues.push($(this).val());
+                    job_info_name.push($(this).val());
                 });
-                call_job_info_name_ajax(checkboxValues);
+                call_job_info_name_ajax(job_info_name);
             });
         });
     </script>
 
+    <!-- 초기 right ajax script -->
+    <script>
+        $('#right_ajax').load('dummy',function(){
+            var job_info_name = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                job_info_name.push($(this).val());
+            });
+            call_job_info_name_ajax(job_info_name);
+        });
+    </script>
 
-    <!-- right ajax script -->
+    <!-- ajax common script -->
     <script>
         var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
-
-        $('#right_ajax').load('dummy',function(){
-            var checkboxValues = [];
-            $("input[name='checkbox']:checked").each(function(i) {
-                checkboxValues.push($(this).val());
-            });
-            call_job_info_name_ajax(checkboxValues);
-        });
-
         function call_job_info_name_ajax(job_info_name) {
+            // 검색어
+            var s_svr = $("#s_svr").val();
+
+            // 미등록 안보기 체크
+            if($("#checkbox_unregister").is(":checked")){
+                var checkbox_unregister = "ON";
+            }else{
+                var checkbox_unregister = "OFF";
+            }
+
+            // OFF 안보기 체크
+            if($("#checkbox_off").is(":checked")){
+                var checkbox_off = "ON";
+            }else{
+                var checkbox_off = "OFF";
+            }
+
+            //alert(s_svr + " / " + checkbox_unregister + " / " + checkbox_off);
+
             $.ajax( {
                 type : 'POST',
                 url: "{% url 'test1_right_ajax' %}",
@@ -214,6 +183,9 @@
                 data: {
                     'csrfmiddlewaretoken': token,
                     'job_info_name': job_info_name,
+                    's_svr': s_svr,
+                    'checkbox_unregister': checkbox_unregister,
+                    'checkbox_off': checkbox_off,
                 },
                 success: call_more_right_ajax,
                 dataType: 'html'

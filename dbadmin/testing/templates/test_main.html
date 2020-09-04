@@ -109,6 +109,30 @@
         </div>
     </div>
 </div>
+    <hr>
+    <span class="badge badge-light badge-pill mt-0 mb-1 pt-0 pb-0" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #B8B8B8">
+        <div class="pl-4 pr-2 pt-0 pb-1 custom-control custom-switch">
+            &nbsp;
+            <input type="checkbox" class="custom-control-input"
+                   id="{{ job_name }}_{{ svr_list.svr }}" name="svr_checkbox"
+                   onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
+            <label class="custom-control-label pt-1" name="svr_label" for="{{ job_name }}_{{ svr_list.svr }}">testdb</label>
+        </div>
+    </span><br>
+        <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #B8B8B8">
+        <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
+            &nbsp;
+            <input type="checkbox" class="custom-control-input"
+                   id="{{ job_name }}_{{ svr_list.svr }}" name="svr_checkbox"
+                   onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">
+            <label class="custom-control-label pt-1" name="svr_label" for="{{ job_name }}_{{ svr_list.svr }}">checkdb</label>
+        </div>
+    </span>
+    <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="customSwitch1">
+        <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
+    </div>
+
     <!--
     <script>
         $('#slack').click(function(){

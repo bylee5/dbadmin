@@ -253,9 +253,8 @@ def test1_left_ajax(request):
             cursor.execute(s_query)
             job_info_lists = namedtuplefetchall(cursor)
 
-
-        print("============= count ================")
-        print(len(job_info_lists))
+        # print("============= count ================")
+        # print(len(job_info_lists))
 
         context = {
             'job_info_lists': job_info_lists,
@@ -278,14 +277,14 @@ def test1_right_ajax(request):
         checkbox_unregister = request.POST.get('checkbox_unregister') # 원래 입력값
         checkbox_off = request.POST.get('checkbox_off') # 원래 입력값
 
-        print("-------------------------------------------------------------")
-        print("right POST 테스트")
-        print("-------------------------------------------------------------")
-        print(job_info_names)
-        print("s_svr : " + str(s_svr))
-        print("checkbox_unregister : " + str(checkbox_unregister))
-        print("checkbox_off : " + str(checkbox_off))
-        print("-------------------------------------------------------------")
+        # print("-------------------------------------------------------------")
+        # print("right POST 테스트")
+        # print("-------------------------------------------------------------")
+        # print(job_info_names)
+        # print("s_svr : " + str(s_svr))
+        # print("checkbox_unregister : " + str(checkbox_unregister))
+        # print("checkbox_off : " + str(checkbox_off))
+        # print("-------------------------------------------------------------")
         if s_svr is None:
             s_svr=''
 
@@ -297,32 +296,41 @@ def test1_right_ajax(request):
         else:
             job_svr_lists = []
             for job_name in job_info_names:
+                if checkbox_off =='ON':
+                    str_checkbox_off = " AND use_yn=1"
+                else:
+                    str_checkbox_off = ""
 
-                # 잡 리스트 및 JOB 스케줄 가져오기
-                s_query =   "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
-                            " FROM server_list sl" + \
-                            " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
-                            " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
-                            " WHERE 1=1" + \
-                            " AND sl.svr IS NOT NULL AND jsm.use_yn IS NOT NULL" + \
-                            " AND ji.job_info_name='" + job_name + "'" + \
-                            " ORDER BY ji.job_info_name, svr"
+                # 미등록 안보기 ON
+                if checkbox_unregister == 'ON':
+                    s_query =   "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
+                                " FROM server_list sl" + \
+                                " INNER JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno" + \
+                                " RIGHT OUTER JOIN job_info AS ji ON jsm.job_info_seqno = ji.job_info_seqno" + \
+                                " WHERE 1=1" + \
+                                " AND sl.svr IS NOT NULL AND jsm.use_yn IS NOT NULL" + \
+                                " AND ji.job_info_name='" + job_name + "'" + \
+                                " AND sl.svr like '%" + s_svr + "%'" + \
+                                str_checkbox_off + \
+                                " ORDER BY ji.job_info_name, svr"
 
-                # 잡 리스트 숨긴것 다 가져오기
-                s_query1 =  "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
-                            " FROM server_list sl JOIN job_info AS ji" + \
-                            " LEFT JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno AND ji.job_info_seqno = jsm.job_info_seqno" + \
-                            " WHERE 1=1" + \
-                            " AND ji.job_info_name='" + job_name + "'" + \
-                            " AND sl.svr like '%" + s_svr + "%'" + \
-                            " ORDER BY ji.job_info_name, svr"
+                # 미등록 OFF
+                else:
+                    s_query =  "/*right*/SELECT ji.job_info_name, REPLACE(sl.svr,'.tmonc.net','') AS svr, jsm.use_yn" + \
+                                " FROM server_list sl JOIN job_info AS ji" + \
+                                " LEFT JOIN job_server_map AS jsm ON sl.server_list_seqno = jsm.server_list_seqno AND ji.job_info_seqno = jsm.job_info_seqno" + \
+                                " WHERE 1=1" + \
+                                " AND ji.job_info_name='" + job_name + "'" + \
+                                " AND sl.svr like '%" + s_svr + "%'" + \
+                               str_checkbox_off + \
+                               " ORDER BY ji.job_info_name, svr"
 
                 # print(s_query)
                 # print("-------------------------------------------------------------")
 
                 try:
                     with connections['tmon_dba'].cursor() as cursor:
-                        cursor.execute(s_query1)
+                        cursor.execute(s_query)
                         svr_lists = namedtuplefetchall(cursor)
                         job_svr_lists.append([job_name, svr_lists])
                 finally:
@@ -350,13 +358,13 @@ def update_job_use_yn_ajax(request):
         use_yn = request.POST.get('use_yn') # None 일경우, 미등록 처리 하기 위함
 
         flag = 1 if flag == 'true' else 0 # true = 1, false = 0
-        print("------------------------------------------------------------------------------------------------------")
-        print("/* use yn 입력값 테스트 */")
-        print(job_name)
-        print(svr)
-        print("변경값 : " + str(flag))
-        print("사용여부 : " + str(use_yn))
-        print("------------------------------------------------------------------------------------------------------")
+        # print("------------------------------------------------------------------------------------------------------")
+        # print("/* use yn 입력값 테스트 */")
+        # print(job_name)
+        # print(svr)
+        # print("변경값 : " + str(flag))
+        # print("사용여부 : " + str(use_yn))
+        # print("------------------------------------------------------------------------------------------------------")
 
         # 미등록 서버,잡 입력받는경우. INSERT
         if use_yn == 'None':
@@ -375,9 +383,9 @@ def update_job_use_yn_ajax(request):
                     " WHERE 1=1" + \
                     " AND jsm.job_info_seqno = (SELECT job_info_seqno FROM job_info ji WHERE ji.job_info_name = '" + job_name+ "')" + \
                     " AND jsm.server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE sl.svr=CONCAT('" + svr + "','.tmonc.net'))"
-        print("------------------------------------------------------------------------------------------------------")
-        print(query)
-        print("------------------------------------------------------------------------------------------------------")
+        # print("------------------------------------------------------------------------------------------------------")
+        # print(query)
+        # print("------------------------------------------------------------------------------------------------------")
 
         try:
             cursor = connections['tmon_dba'].cursor()
@@ -399,13 +407,22 @@ def update_job_use_yn_ajax(request):
 
 def test1_reload_left_ajax(request):
     if request.method == 'POST':
-        time.sleep(0.5)
-        s_job_name = request.POST.get('s_job_name')
+        time.sleep(0.2)
         job_info_name = request.POST.getlist('job_info_name[]')
+        s_job_name = request.POST.get('s_job_name')
+        s_svr = request.POST.get('s_svr')
+        checkbox_unregister = request.POST.get('checkbox_unregister')
+        checkbox_off = request.POST.get('checkbox_off')
 
-        print("-------------------------------------------------------------")
-        print(s_job_name)
-        print(job_info_name)
+        # print("-------------------------------------------------------------")
+        # print("test1_reload_left_ajax")
+        # print("-------------------------------------------------------------")
+        # print(s_job_name)
+        # print(job_info_name)
+        # print(s_svr)
+        # print(checkbox_unregister)
+        # print(checkbox_off)
+        # print("-------------------------------------------------------------")
 
         if s_job_name is None:
             s_job_name=''
@@ -418,9 +435,9 @@ def test1_reload_left_ajax(request):
                     " where ji.job_info_name like '%" + s_job_name + "%'" + \
                     " GROUP BY ji.job_info_name" + \
                     " ORDER BY ji.job_info_name"
-        print(s_query)
+        # print(s_query)
 
-        print("-------------------------------------------------------------")
+        # print("-------------------------------------------------------------")
         with connections['tmon_dba'].cursor() as cursor:
             job_info_lists = []
             cursor.execute(s_query)
@@ -429,6 +446,9 @@ def test1_reload_left_ajax(request):
         context = {
             'job_info_lists': job_info_lists,
             'job_info_name_checked_list': job_info_name,
+            's_svr': s_svr,
+            'checkbox_unregister': checkbox_unregister,
+            'checkbox_off': checkbox_off,
         }
 
         return render(request, 'test1_left_ajax.html', context)
