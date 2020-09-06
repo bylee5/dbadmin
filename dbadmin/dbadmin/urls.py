@@ -92,6 +92,7 @@ urlpatterns = [
 
     #graph test
     path('testing/graph/', testing.views.graph, name='graph'),
+    path('testing/graph_test/', testing.views.graph_test, name='graph_test'),
 
     #post test
     path('testing/post/', testing.views.post, name='post'),

@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.conf import settings, os
 from django.contrib.auth.decorators import login_required
 from django.db import connections
+from django.http import JsonResponse
 import time
 
 from .models import *
@@ -126,20 +127,67 @@ def graph(request):
     #         " FROM account_account" + \
     #         " GROUP BY DATE(account_create_dt), account_svr"
 
+    # query = "SELECT DATE(account_create_dt) AS account_create_dt, COUNT(*) AS account_create_cnt" + \
+    #         " FROM account_account" + \
+    #         " GROUP BY DATE(account_create_dt)"
+    # QUERY JSON 타입으로 변환 쿼리
+    query = "SELECT JSON_ARRAY(GROUP_CONCAT(a.account_create_dt)) AS account_create_dt, JSON_ARRAY(GROUP_CONCAT(a.account_create_cnt)) AS account_create_cnt" + \
+            " FROM (	SELECT DATE(account_create_dt) AS account_create_dt, COUNT(*) AS account_create_cnt" + \
+            " FROM account_account" + \
+	        " GROUP BY DATE(account_create_dt)) a"
+
+    with connections['default'].cursor() as cursor:
+        cursor.execute(query)
+        account_stat = namedtuplefetchall(cursor)
+    print("===========================================")
+    print(account_stat)
+    print("===========================================")
+
+    context = {
+        'account_stat': account_stat,
+        'Title': 'Account Create Count',
+    }
+
+    return render(request, 'test_graph.html', context)
+
+def graph_test(request):
+    print("graph_test");
+    # query = "SELECT JSON_ARRAY(GROUP_CONCAT(a.account_create_dt)) AS account_create_dt, JSON_ARRAY(GROUP_CONCAT(a.account_create_cnt)) AS account_create_cnt" + \
+    #         " FROM (	SELECT DATE(account_create_dt) AS account_create_dt, COUNT(*) AS account_create_cnt" + \
+    #         " FROM account_account" + \
+    #         " GROUP BY DATE(account_create_dt)) a"
+
     query = "SELECT DATE(account_create_dt) AS account_create_dt, COUNT(*) AS account_create_cnt" + \
             " FROM account_account" + \
             " GROUP BY DATE(account_create_dt)"
 
+    query = "SELECT account_svr AS account_svr, COUNT(*) AS account_cnt" + \
+            " FROM account_account" + \
+            " GROUP BY account_svr" + \
+            " ORDER BY account_svr"
+
     with connections['default'].cursor() as cursor:
-        account_stat = []
         cursor.execute(query)
-        account_stat = namedtuplefetchall(cursor)
+        rows = cursor.fetchall()
+
+        key = []
+        value = []
+
+        for row in rows:
+            key.append(row[0])
+            value.append(row[1])
+
+    print("===========================================================")
+    print(key)
+    print(value)
+    print("==========================================================")
 
     context = {
-        'account_stat': account_stat
+        'key': key,
+        'value': value
     }
+    return JsonResponse(context)
 
-    return render(request, 'test_graph.html', context)
 
 
 #########################################################################

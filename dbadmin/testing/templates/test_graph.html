@@ -9,33 +9,23 @@
 </head>
 <body>
     {% block content %}
-
     <div>
-        <h1>Wellcome Test Graph Page!</h1>
-        <p>  Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.<br>
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-        nisi ut aliquip ex ea commodo consequat.<br>Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.<br>
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.</p>
+        <h3>Wellcome Test Graph Page!</h3>
+        <p>Graph test page</p>
     </div>
     <hr>
-
-    {% for row in account_stat %}
-        {{ row.account_create_dt|date:'Y/m/d' }}
-<!--        {{ row.account_svr }}-->
-        {{ row.account_create_cnt }}
-    {% endfor %}
     <div class="center">
         <button type="button" class="btn btn-primary btn-sm btn-lg active" id="charta" name="btnAdd">A chart</button>
         <button type="button" class="btn btn-primary btn-sm btn-lg " id="chartb" name="btnAdd">B chart</button>
     </div>
 
     <div class="row">
-        <div class="col test" id="test" style="height:420px"></div>
-        <div class="col test1" id="test1" style="height:420px"></div>
-        <div class="col main" id="main" style="height:400px"></div>
+        <div class="col test" id="test" style="height:300px; width:300px"></div>
+        <div class="col main" id="main" style="height:300px"></div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col test1" id="test1" style="height:300px"></div>
     </div>
 
     <!-- 차트a -->
@@ -65,34 +55,58 @@
             }]
         };
         myChart.setOption(option);
+    </script>
 
-        var myChart = echarts.init(document.getElementById('test1'));
-        var option = {
-            title: {
-                text: 'Account Create Count'
+    <script>
+        var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+        var chart_test1 = echarts.init(document.getElementById('test1'));
+
+        $.ajax( {
+            type : 'POST',
+            url: "{% url 'graph_test' %}",
+            dataType: "json",
+            data: {
+                'csrfmiddlewaretoken': token,
             },
-            tooltip: {},
-            legend: {
-                data:['Count']
+            success: function (data) {
+                var option = {
+                    title: {
+                        text: 'Account Svr Count'
+                    },
+                    tooltip: {
+				        trigger: 'axis',
+				        axisPointer: {
+					        type: 'shadow'
+				        }
+                    },
+                    legend: {
+                        data:['Count']
+                    },
+                    xAxis: {
+                        data: data.key
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        name: 'Count',
+                        type: 'line',
+                        itemStyle:{
+                            color: 'darkgreen',
+                        },
+                        data: data.value
+                    }]
+                };
+                chart_test1.setOption(option);
             },
+            error: function () {
+                alert("error");
+            }
+        });
+    </script>
 
-            xAxis: {
-                //data: {{ account_stat.account_create_dt|date:'Y/m/d' }}
-                data: ["ab","cd","ef","gh","ij","kl","mo","pq","rs","tu","vw","xyz"]
-            },
-
-            yAxis: {},
-            series: [{
-                name: 'Count',
-                type: 'bar',
-                itemStyle:{
-                    color: 'darkgreen',
-                },
-                //data: {{ account_stat.account_create_cnt }}
-            }]
-        };
-        myChart.setOption(option);
-
+    <!--  차트 A, 차트 B 버튼 클릭 -->
+    <script>
         $('#charta').click(function(){
             var myChart = echarts.init(document.getElementById('test'));
             var option = {
@@ -148,13 +162,11 @@
 			};
             myChart.setOption(option);
         });
-
-
     </script>
-    <!-- 차트b -->
-    <script>
 
-        var myChart = echarts.init(document.getElementById("main"));
+    <!-- 차트 메인(간트 테스트) -->
+    <script>
+        var chart_main= echarts.init(document.getElementById("main"));
 
         var option = {
             title: {
@@ -224,14 +236,8 @@
 				}
 			]
 		};
-
-        myChart.setOption(option);
+        chart_main.setOption(option);
     </script>
-
-    <script>
-
-	</script>
-
 	{% endblock %}
 </body>
 </html>
