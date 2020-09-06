@@ -122,7 +122,24 @@ def page_update(request):
 #########################################################################
 
 def graph(request):
-    return render(request, 'test_graph.html')
+    # query = "SELECT DATE(account_create_dt) AS account_create_dt, account_svr, COUNT(*) AS account_create_cnt" + \
+    #         " FROM account_account" + \
+    #         " GROUP BY DATE(account_create_dt), account_svr"
+
+    query = "SELECT DATE(account_create_dt) AS account_create_dt, COUNT(*) AS account_create_cnt" + \
+            " FROM account_account" + \
+            " GROUP BY DATE(account_create_dt)"
+
+    with connections['default'].cursor() as cursor:
+        account_stat = []
+        cursor.execute(query)
+        account_stat = namedtuplefetchall(cursor)
+
+    context = {
+        'account_stat': account_stat
+    }
+
+    return render(request, 'test_graph.html', context)
 
 
 #########################################################################

@@ -19,7 +19,7 @@
 
                 <!-- 미등록인경우 -->
                 {% if svr_list.use_yn is None %}
-                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #F0F0F0">
+                <span class="badge badge-light badge-pill mt-0 mb-1 pt-0 pb-0" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #F0F0F0">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;
                         <input type="checkbox" class="custom-control-input"
@@ -31,7 +31,7 @@
 
                 <!-- 등록 및 USE_YN = 1인 경우 -->
                 {% elif svr_list.use_yn == 1 %}
-                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
+                <span class="badge badge-light badge-pill mt-0 mb-1 pt-0 pb-0" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;&nbsp;
                         <input type="checkbox" class="custom-control-input" checked
@@ -43,7 +43,7 @@
 
                 <!-- 등록 및 USE_YN = 0인 경우 -->
                 {% else %}
-                <span class="badge badge-light badge-pill mt-0 mb-1" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
+                <span class="badge badge-light badge-pill mt-0 mb-1 pt-0 pb-0" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #D8D8D8">
                     <div class="pl-4 pr-3 pt-0 pb-0 custom-control custom-switch">
                         &nbsp;&nbsp;
                         <input type="checkbox" class="custom-control-input"
