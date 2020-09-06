@@ -10,9 +10,22 @@
 <body>
     {% block content %}
     <div>
-        <h3>Wellcome Test Graph Page!</h3>
-        <p>Graph test page</p>
+        <span style="font-size: 12px;" type="button" class="badge badge-warning" data-toggle="collapse" data-target="#collapse_graph" aria-controls="collapseUpdateMulti">통계 보기</span>
     </div>
+
+	<div class="collapse small show" id="collapse_graph" style="1font-size: 12px;">
+		<table class="w-50">
+			<td>
+				<div class="card card-body mt-2 bg-light callout callout-dark">
+<!--					<h6>graph test</h6>-->
+<!--					<a class="mb-3">- 체크 대상으로 <font color="red"><b>일괄 변경</b></font> 되오니, 신중하게 사용해주세요.</a>-->
+                    <div class="test1" id="test1" style="height:200px"></div>
+				</div>
+			</td>
+		</table>
+	</div>
+
+
     <hr>
     <div class="center">
         <button type="button" class="btn btn-primary btn-sm btn-lg active" id="charta" name="btnAdd">A chart</button>
@@ -24,9 +37,6 @@
         <div class="col main" id="main" style="height:300px"></div>
     </div>
     <hr>
-    <div class="row">
-        <div class="col test1" id="test1" style="height:300px"></div>
-    </div>
 
     <!-- 차트a -->
     <script>
@@ -41,7 +51,7 @@
             },
 
             xAxis: {
-                data: ["ab","cd","ef","gh","ij","kl","mo","pq","rs","tu","vw","xyz"]
+                data: ["ab","cd","ef","gh","ij","kl","mo","pq","rs","tu","vw","xyz"],
             },
 
             yAxis: {},
@@ -57,6 +67,7 @@
         myChart.setOption(option);
     </script>
 
+    <!-- account 차트-->
     <script>
         var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
         var chart_test1 = echarts.init(document.getElementById('test1'));
@@ -71,7 +82,8 @@
             success: function (data) {
                 var option = {
                     title: {
-                        text: 'Account Svr Count'
+                        left: 'center',
+                        text: 'Account Count'
                     },
                     tooltip: {
 				        trigger: 'axis',
