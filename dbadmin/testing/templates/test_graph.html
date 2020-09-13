@@ -13,18 +13,17 @@
         <span style="font-size: 12px;" type="button" class="badge badge-warning" data-toggle="collapse" data-target="#collapse_graph" aria-controls="collapseUpdateMulti">통계 보기</span>
     </div>
 
-	<div class="collapse small show" id="collapse_graph" style="1font-size: 12px;">
-		<table class="w-50">
+	<div class="collapse small 1show" id="collapse_graph" style="1font-size: 12px;">
+		<table class="w-100">
 			<td>
 				<div class="card card-body mt-2 bg-light callout callout-dark">
 <!--					<h6>graph test</h6>-->
 <!--					<a class="mb-3">- 체크 대상으로 <font color="red"><b>일괄 변경</b></font> 되오니, 신중하게 사용해주세요.</a>-->
-                    <div class="test1" id="test1" style="height:200px"></div>
+                    <div class="test1" id="test1" style="height:400px"></div>
 				</div>
 			</td>
 		</table>
 	</div>
-
 
     <hr>
     <div class="center">
@@ -69,6 +68,11 @@
 
     <!-- account 차트-->
     <script>
+
+    $('#collapse_graph').on("shown.bs.collapse",function(){
+        chartTab();
+    });
+    function chartTab() {
         var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
         var chart_test1 = echarts.init(document.getElementById('test1'));
 
@@ -81,18 +85,47 @@
             },
             success: function (data) {
                 var option = {
+                    // 차트 제목
                     title: {
                         left: 'center',
-                        text: 'Account Count'
+                        text: 'Account Count',
+                        subtext: 'Sub'
                     },
+                    // 차트 RANGE 줌
+                    dataZoom: [{
+                        type: 'inside',
+                        start: 0,
+                        end: 10000
+                    }, {
+                        bottom: 0,
+                        handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                        handleSize: '70%',
+                        handleStyle: {
+                            color: '#fff',
+                            shadowBlur: 3,
+                            shadowColor: 'rgba(0, 0, 0, 0.6)',
+                            shadowOffsetX: 2,
+                            shadowOffsetY: 2
+                        }
+                    }],
+                    // 차트 툴팁
                     tooltip: {
 				        trigger: 'axis',
 				        axisPointer: {
 					        type: 'shadow'
 				        }
                     },
+                    grid: [{
+                        left: 50,
+                        right: 50,
+                        height: '70%'
+                    }],
+                    // 컬럼 항목 나타내기
                     legend: {
-                        data:['Count']
+                        //top: 25,
+                        left: 50,
+                        top: 30,
+                        data:['Count','rand_num']
                     },
                     xAxis: {
                         data: data.key
@@ -100,14 +133,34 @@
                     yAxis: {
                         type: 'value'
                     },
-                    series: [{
-                        name: 'Count',
-                        type: 'line',
-                        itemStyle:{
-                            color: 'darkgreen',
+                    series: [
+                        {
+                            name: 'Count',
+                            type: 'line',
+                            itemStyle:{
+                                color: 'darkgreen',
+                            },
+                            data: data.value1,
+                            //animationDelay: function (idx) {
+                            //    return idx * 5;
+                            //}
                         },
-                        data: data.value
-                    }]
+                        {
+                            name: 'rand_num',
+                            type: 'line',
+                            itemStyle:{
+                                color: 'orange',
+                            },
+                            data: data.value2,
+                            //animationDelay: function (idx) {
+                            //    return idx * 10 + 100;
+                            //}
+                        }
+                    ]//,
+                    //animationEasing: 'elasticOut',
+                    //animationDelayUpdate: function (idx) {
+                    //    return idx * 5;
+                    //}
                 };
                 chart_test1.setOption(option);
             },
@@ -115,6 +168,7 @@
                 alert("error");
             }
         });
+    }
     </script>
 
     <!--  차트 A, 차트 B 버튼 클릭 -->

@@ -65,7 +65,7 @@ urlpatterns = [
     #########################################################################
 
     # server_list
-    path('monitoring', monitoring.views.server_list, name='server_list'),
+    path('monitoring', monitoring.views.server_job_list_new, name='server_job_list_new'),
     path('monitoring/server_list/', monitoring.views.server_list, name='server_list'),
     path('monitoring/server_list_update/', monitoring.views.server_list_update, name='server_list_update'),
 
@@ -73,6 +73,13 @@ urlpatterns = [
     path('monitoring/server_job_list/', monitoring.views.server_job_list, name='server_job_list'),
     path('monitoring/server_job_list_update/', monitoring.views.server_job_list_update, name='server_job_list_update'),
 
+    # serverlist test
+    path('monitoring/server_job_list_new/', monitoring.views.server_job_list_new, name='server_job_list_new'),
+    path('monitoring/server_job_list/server_job_list_left_ajax', monitoring.views.server_job_list_left_ajax, name='server_job_list_left_ajax'),
+    path('monitoring/server_job_list/server_job_list_right_ajax', monitoring.views.server_job_list_right_ajax, name='server_job_list_right_ajax'),
+    path('monitoring/server_job_list/server_job_list_update_job_use_yn_ajax', monitoring.views.server_job_list_update_job_use_yn_ajax, name='server_job_list_update_job_use_yn_ajax'),
+    path('monitoring/server_job_list/server_job_list_delete_job_use_yn_ajax', monitoring.views.server_job_list_delete_job_use_yn_ajax, name='server_job_list_delete_job_use_yn_ajax'),
+    path('monitoring/server_job_list/server_job_list_reload_left_ajax', monitoring.views.server_job_list_reload_left_ajax, name='server_job_list_reload_left_ajax'),
 
     #########################################################################
     # testing app

@@ -161,30 +161,39 @@ def graph_test(request):
             " FROM account_account" + \
             " GROUP BY DATE(account_create_dt)"
 
-    query = "SELECT account_svr AS account_svr, COUNT(*) AS account_cnt" + \
+    query = "SELECT DATE_FORMAT(account_create_dt,'%y/%m/%d %H:%m:%i'), COUNT(*) AS account_create_cnt" + \
             " FROM account_account" + \
-            " GROUP BY account_svr" + \
-            " ORDER BY account_svr"
+            " GROUP BY DATE_FORMAT(account_create_dt,'%y/%m/%d %H:%m:%i')"
+
+    query = "SELECT create_dt, COUNT(*) as cnt, ROUND(RAND()*10,0) FROM account_history GROUP BY create_dt"
+
+    # query = "SELECT account_svr AS account_svr, COUNT(*) AS account_cnt" + \
+    #         " FROM account_account" + \
+    #         " GROUP BY account_svr" + \
+    #         " ORDER BY account_svr"
 
     with connections['default'].cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
 
         key = []
-        value = []
+        value1 = []
+        value2 = []
 
         for row in rows:
             key.append(row[0])
-            value.append(row[1])
+            value1.append(row[1])
+            value2.append(row[2])
 
-    print("===========================================================")
-    print(key)
-    print(value)
-    print("==========================================================")
+    # print("===========================================================")
+    # print(key)
+    # print(value)
+    # print("==========================================================")
 
     context = {
         'key': key,
-        'value': value
+        'value1': value1,
+        'value2': value2
     }
     return JsonResponse(context)
 

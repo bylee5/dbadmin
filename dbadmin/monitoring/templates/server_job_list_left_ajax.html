@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>left_ajax</title>
+</head>
+<body>
+<div>
+    {% if job_info_lists|length != 0 %}
+    <div class="text-center">
+        <h6>
+            <span class="badge badge-warning" type="button" onclick="all_click({{ job_info_lists|length }})">모두 선택/해제</span>
+            <span class="badge badge-light">TOTAL CNT</span>
+            <span class="badge badge-dark">ON CNT</span>
+        </h6>
+    </div>
+    <div class="btn-group-toggle" data-toggle="buttons">
+    {% for job_info_list in job_info_lists %}
+            {% if job_info_list.job_info_name in job_info_name_checked_list %}
+        <label class="btn btn-secondary btn-sm w-100 active">
+            <input type="checkbox" id="checkbox" name="checkbox" checked class="check" value="{{ job_info_list.job_info_name }}">
+            {% else %}
+        <label class="btn btn-secondary btn-sm w-100">
+            <input type="checkbox" id="checkbox" name="checkbox" class="check" value="{{ job_info_list.job_info_name }}">
+            {% endif %}
+
+            {% if job_info_list.job_info_name|length <= 28 %}
+                {{ job_info_list.job_info_name }}
+            {% else %}
+                {{ job_info_list.job_info_name| slice:":28"| add:".." }}
+            {% endif %}
+                <span class="badge badge-light">{{ job_info_list.svr_total}}</span>
+                <span class="badge badge-dark">{{ job_info_list.svr_use_total}}</span>
+            </input>
+        </label>
+    {% endfor %}
+    </div>
+    <!-- s_job_name. 검색 조건을 유지하기 위함 -->
+    <input id="s_job_name" name="s_job_name" type="hidden" value="{{ s_job_name }}">
+
+    <!-- Job filter 검색. 원하는 항목만 표시하기 -->
+    <div class="card card-body mt-0 bg-light 1callout 1callout-dark small">
+        <!--
+    <h6>Server List</h6>
+    -->
+        <form class="form-inline" onsubmit="return false" id="" name="">
+            {% csrf_token %}
+            {% if s_svr is None %}
+            <input type="text" class="form-control form-control-sm" id="s_svr" name="">
+            {% else %}
+            <input type="text" class="form-control form-control-sm" id="s_svr" name="" value="{{ s_svr }}">
+            {% endif %}
+            &nbsp;<button id="svr_search" class="btn btn-outline-dark btn-sm">검색</button>
+        </form>
+        <table>
+            <tr>
+                <td>
+                    <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                        <input type="checkbox" class="custom-control-input" {% if checkbox_unregister == 'ON' %} checked {% endif %} id="checkbox_unregister">
+                        <label class="custom-control-label" for="checkbox_unregister">등록 서버만</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                        <input type="checkbox" class="custom-control-input" {% if checkbox_off == 'ON' %} checked {% endif %} id="checkbox_off">
+                        <label class="custom-control-label" for="checkbox_off">스위치 ON만</label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% else %}
+        <div class="small">
+            검색결과 없음
+        </div>
+    {% endif %}
+
+    <!-- left ajax -->
+    <!-- 체크 모두 선택 / 모두해제 -->
+    <script>
+        function all_click(job_info_lists_cnt) {
+            // 체크횟수 파악
+            var checkboxValues = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                checkboxValues.push($(this).val());
+            });
+
+            // 모두 체크한게 아니라면 모두 체크로. 그게 아니라면 해크해제로 null 값 입력
+            var checked_job_info_lists = [];
+            if (checkboxValues.length != job_info_lists_cnt ){
+                $("input[name='checkbox']").each(function(i) {
+                    checked_job_info_lists.push($(this).val());
+                });
+			}
+
+            // left_ajax 리로드
+            server_job_list_reload_left_ajax(checked_job_info_lists);
+		}
+
+		function server_job_list_reload_left_ajax(job_info_name) {
+			var s_job_name = $("#s_job_name").val();
+
+			$.ajax( {
+				type : 'POST',
+				url: "{% url 'server_job_list_reload_left_ajax' %}",
+				//async: false,
+				data: {
+					'csrfmiddlewaretoken': token,
+					'job_info_name': job_info_name,
+					's_job_name': s_job_name,
+				},
+				success: call_more_reload_left_ajax,
+				dataType: 'html'
+			});
+		}
+
+		function call_more_reload_left_ajax(data, textStatus, jqXHR) {
+			$('#left_ajax').html(data);
+		}
+	</script>
+
+    <!-- 잡 클릭. checkbox -->
+    <script>
+		$('#svr_search').click(function(){
+            //alert("search");
+            var job_info_name = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                job_info_name.push($(this).val());
+            });
+		    call_job_info_name_ajax(job_info_name);
+        });
+
+        $(document).ready(function(){
+            $("input:checkbox").on('click', function() {
+                //alert("checkbox click");
+                var job_info_name = [];
+                $("input[name='checkbox']:checked").each(function(i) {
+                    job_info_name.push($(this).val());
+                });
+                call_job_info_name_ajax(job_info_name);
+            });
+        });
+    </script>
+
+    <!-- 초기 right ajax script -->
+    <script>
+        $('#right_ajax').load('dummy',function(){
+            var job_info_name = [];
+            $("input[name='checkbox']:checked").each(function(i) {
+                job_info_name.push($(this).val());
+            });
+            call_job_info_name_ajax(job_info_name);
+        });
+    </script>
+
+    <!-- ajax common script -->
+    <script>
+        var token = $('input[name="csrfmiddlewaretoken"]').prop('value');
+        function call_job_info_name_ajax(job_info_name) {
+            // 검색어
+            var s_svr = $("#s_svr").val();
+
+            // 미등록 안보기 체크
+            if($("#checkbox_unregister").is(":checked")){
+                var checkbox_unregister = "ON";
+            }else{
+                var checkbox_unregister = "OFF";
+            }
+
+            // OFF 안보기 체크
+            if($("#checkbox_off").is(":checked")){
+                var checkbox_off = "ON";
+            }else{
+                var checkbox_off = "OFF";
+            }
+
+            //alert(s_svr + " / " + checkbox_unregister + " / " + checkbox_off);
+
+            $.ajax( {
+                type : 'POST',
+                url: "{% url 'server_job_list_right_ajax' %}",
+				//async: false,
+                data: {
+                    'csrfmiddlewaretoken': token,
+                    'job_info_name': job_info_name,
+                    's_svr': s_svr,
+                    'checkbox_unregister': checkbox_unregister,
+                    'checkbox_off': checkbox_off,
+                },
+                success: call_more_right_ajax,
+                dataType: 'html'
+            });
+        }
+
+        function call_more_right_ajax(data, textStatus, jqXHR) {
+            $('#right_ajax').html(data);
+        }
+    </script>
+
+</div>
+</body>
+</html>
