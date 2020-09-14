@@ -596,22 +596,22 @@ def server_job_list_delete_job_use_yn_ajax(request):
 
         # 등록잡 삭제하기
         print("등록된 잡 삭제하기")
-        query = "/*delete_job_use_yn_ajax*/UPDATE job_server_map jsm SET use_yn=" + str(flag) + \
+        query = "/*delete_job_use_yn_ajax*/ DELETE FROM job_server_map" + \
                 " WHERE 1=1" + \
-                " AND jsm.job_info_seqno = (SELECT job_info_seqno FROM job_info ji WHERE ji.job_info_name = '" + job_name+ "')" + \
-                " AND jsm.server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE sl.svr=CONCAT('" + svr + "','.tmonc.net'))"
+                " AND job_info_seqno = (SELECT job_info_seqno FROM job_info ji WHERE ji.job_info_name = '" + job_name+ "')" + \
+                " AND server_list_seqno = (SELECT server_list_seqno FROM server_list sl WHERE sl.svr=CONCAT('" + svr + "','.tmonc.net'))"
         # print("------------------------------------------------------------------------------------------------------")
         print(query)
         print("-------------------------------------------------------------------------------------------------------")
 
-        # try:
-        #     cursor = connections['tmon_dba'].cursor()
-        #     cursor.execute(query)
-        #     connection.commit()
-        # except:
-        #     connection.rollback()
-        # finally:
-        #     cursor.close()
+        try:
+            cursor = connections['tmon_dba'].cursor()
+            cursor.execute(query)
+            connection.commit()
+        except:
+            connection.rollback()
+        finally:
+            cursor.close()
 
     context = {
         'job_name': job_name,
