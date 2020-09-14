@@ -20,8 +20,8 @@
                 <!-- 미등록인경우 -->
                 {% if svr_list.use_yn is None %}
                 <span class="badge badge-light badge-pill mt-0 mb-1 pt-0 pb-0" id="span_{{ job_name }}_{{ svr_list.svr }}" name="svr_span" style="background-color: #F0F0F0">
-                    <div class="pl-4 pr-2 pt-0 pb-0 custom-control custom-switch">
-                        &nbsp;
+                    <div class="pl-4 pr-0 pt-0 pb-0 custom-control custom-switch">
+                        &nbsp;&nbsp;
                         <input type="checkbox" class="custom-control-input"
                                id="{{ job_name }}_{{ svr_list.svr }}" name="svr_checkbox"
                                onclick="update_job_use_yn('{{ job_name }}_{{ svr_list.svr }}','{{ job_name }}','{{ svr_list.svr }}','{{ svr_list.use_yn}}')">

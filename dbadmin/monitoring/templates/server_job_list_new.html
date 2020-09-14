@@ -9,7 +9,7 @@
 </head>
 <body>
     {% block content %}
-    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">조회</span>
+    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse_dummy" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">조회</span>
     <!-- 로딩바 -->
     <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
 
@@ -53,40 +53,46 @@
 					</form>
 				</div>
 			</td>
-			<!--
-			<td>
-				<div class="card card-body mt-0 bg-light callout callout-dark">
-					<h6>Svr List</h6>
-					<a>- 좌측 하단 체크박스 클릭을 통해 다중 변경 대상을 선택해주세요.</a>
-					<a>- 삭제 사유 및 삭제 URL (JIRA)를 기재해주세요.<a>
-
-					<form class="form-inline" onsubmit="return false" id="" name="">
-						{% csrf_token %}
-						<div class="mt-2">
-							<input type="text" class="form-control form-control-sm" id="s_job_name" name="s_job_name">
-							&nbsp;<button id="search" class="btn btn-outline-dark btn-sm">검색</button>
-						</div>
-					</form>
-				</div>
-			</td>
-			-->
 		</table>
 	</div>
-	<hr>
+	<hr class="">
 
 	<!-- 메인 본문. AJAX -->
-	<div>
+<!--	<div class="container no-gutters">-->
+<!--		<div class="row">-->
+<!--			<div class="w-25 mw-100" id="left_ajax" style="1position: absolute; 1font-size: 12px;"></div>-->
+<!--			<div class="w-75 mw-100" id="right_ajax" style="1position: absolute; 1font-size: 12px;"></div>-->
+<!--		</div>-->
+<!--	</div>-->
+
+	<!-- 메인 본문. AJAX -->
+	<div class="">
 		<table class="w-100" border="0">
 			<tr>
 				<td style="width: 15%" class="align-top">
-					<div class="" id="left_ajax" style="1position: fixed; 1font-size: 12px;"></div>
+					<div class="" id="left_ajax" style="position: absolute; width: 265px; 1font-size: 12px;"></div>
+					<div class="" id="dummy" style="width: 265px; height: 400px;"></div>
 				</td>
-				<td style="width: 85%" class="align-top">
-					<div class="ml-0" id="right_ajax" style="1position: fixed; 1font-size: 12px;"></div>
+				<td style="width: 85.5%" class="align-top">
+					<div class="" id="right_ajax" style="1position: absolute; 1width: 85%; 1font-size: 12px;"></div>
 				</td>
 			</tr>
 		</table>
 	</div>
+
+	<!-- 메인 본문. AJAX -->
+<!--	<div>-->
+<!--		<table class="w-100" border="0">-->
+<!--			<tr>-->
+<!--				<td style="width: 15%" class="align-top">-->
+<!--					<div class="" id="left_ajax" style="position: absolute; 1font-size: 12px;"></div>-->
+<!--				</td>-->
+<!--				<td style="width: 85%" class="align-top">-->
+<!--					<div class="ml-0" id="right_ajax" style="position: absolute; 1font-size: 12px;"></div>-->
+<!--				</td>-->
+<!--			</tr>-->
+<!--		</table>-->
+<!--	</div>-->
 
 
 	<!-- floating control -->
@@ -107,6 +113,7 @@
 	});
 	</script>
 
+	<!-- main -->
 	<script>
 	$(document).ready(function(){
     	$('#spinners').hide();
