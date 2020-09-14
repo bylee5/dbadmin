@@ -74,16 +74,39 @@
 	</div>
 	<hr>
 
-    <!-- 메인 본문. AJAX -->
-    <div>
-        <table class="w-100" border="0"><tr>
-            <td style="width: 15%" class="align-top"><div class="" id="left_ajax" style="1font-size: 12px;"></div></td>
-            <td style="width: 85%" class="align-top"><div class="ml-0" id="right_ajax" style="1font-size: 12px;"></div></td>
-        </tr></table>
-    </div>
+	<!-- 메인 본문. AJAX -->
+	<div>
+		<table class="w-100" border="0">
+			<tr>
+				<td style="width: 15%" class="align-top">
+					<div class="" id="left_ajax" style="1position: fixed; 1font-size: 12px;"></div>
+				</td>
+				<td style="width: 85%" class="align-top">
+					<div class="ml-0" id="right_ajax" style="1position: fixed; 1font-size: 12px;"></div>
+				</td>
+			</tr>
+		</table>
+	</div>
 
 
-	<!-- loading control -->
+	<!-- floating control -->
+	<script>
+	$(document).ready(function() {
+		var floatPosition = parseInt($("#left_ajax").css('top'));
+		$(window).scroll(function() {
+			// 현재 스크롤 위치를 가져온다.
+			var scrollTop = $(window).scrollTop();
+			var newPosition = scrollTop + floatPosition + "px";
+
+			//$("#left_ajax").css('top', newPosition);
+
+			$("#left_ajax").stop().animate({
+				"top" : newPosition
+			}, 500);
+		}).scroll();
+	});
+	</script>
+
 	<script>
 	$(document).ready(function(){
     	$('#spinners').hide();
