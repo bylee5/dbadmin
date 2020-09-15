@@ -404,7 +404,11 @@ def server_job_list_update(request):
 #########################################################################
 
 def server_job_list_new(request):
-    return render(request, 'server_job_list_new.html')
+    job_count = 17
+    context = {
+        'job_count': job_count,
+    }
+    return render(request, 'server_job_list_new.html', context)
 
 def server_job_list_left_ajax(request):
     if request.method == 'POST':

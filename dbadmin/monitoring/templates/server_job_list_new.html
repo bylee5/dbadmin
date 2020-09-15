@@ -13,6 +13,8 @@
     <!-- 로딩바 -->
     <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
 
+	<input id="{{ job_count }}" name="{{ job_count }}" type="hidden" value="20">
+
     <!-- 상단 페이지. 검색, 입력-->
     <!--
     <div class="card card-body mt-2 bg-light callout callout-danger small">
@@ -42,7 +44,10 @@
 				<div class="card card-body mt-0 bg-light callout callout-danger">
 					<h6>Job List</h6>
 					<a>- 잡 리스트에 따른 서버 통합관리 및 on/off 스위치를 제어하는 페이지입니다. </a>
-					<a>- 특정 job name만을 보기 원하신다면, 아래 검색란을 활용해주세요.</a>
+					<a>- 특정 job만을 보기 원하신다면, 아래 검색란을 활용해주세요.</a>
+					<a>- 등록된 총 Job의 갯수 :
+						<span style="font-size: 10px;" class="badge badge-dark">{{ job_count }}</span>
+					</a>
 
 					<form class="form-inline" onsubmit="return false" id="" name="">
 						{% csrf_token %}
@@ -71,7 +76,7 @@
 			<tr>
 				<td style="width: 15%" class="align-top">
 					<div class="" id="left_ajax" style="position: absolute; width: 265px; 1font-size: 12px;"></div>
-					<div class="" id="dummy" style="width: 265px; height: 400px;"></div>
+					<div class="" id="dummy_ajax" style="width: 265px;"></div>
 				</td>
 				<td style="width: 85.5%" class="align-top">
 					<div class="" id="right_ajax" style="1position: absolute; 1width: 85%; 1font-size: 12px;"></div>
@@ -80,32 +85,26 @@
 		</table>
 	</div>
 
-	<!-- 메인 본문. AJAX -->
-<!--	<div>-->
-<!--		<table class="w-100" border="0">-->
-<!--			<tr>-->
-<!--				<td style="width: 15%" class="align-top">-->
-<!--					<div class="" id="left_ajax" style="position: absolute; 1font-size: 12px;"></div>-->
-<!--				</td>-->
-<!--				<td style="width: 85%" class="align-top">-->
-<!--					<div class="ml-0" id="right_ajax" style="position: absolute; 1font-size: 12px;"></div>-->
-<!--				</td>-->
-<!--			</tr>-->
-<!--		</table>-->
-<!--	</div>-->
-
+	<!-- hidden -->
+	<input id="job_count" name="job_count" type="hidden" value="{{ job_count }}">
 
 	<!-- floating control -->
 	<script>
 	$(document).ready(function() {
 		var floatPosition = parseInt($("#left_ajax").css('top'));
+		var job_count = $("#job_count").val();
+
 		$(window).scroll(function() {
 			// 현재 스크롤 위치를 가져온다.
 			var scrollTop = $(window).scrollTop();
 			var newPosition = scrollTop + floatPosition + "px";
+			var bottomPosition = $("#left_ajax").position().top;
+
+			var job_count = $("#job_count").val();
+
+			$("#dummy_ajax").css('height', job_count*37);
 
 			//$("#left_ajax").css('top', newPosition);
-
 			$("#left_ajax").stop().animate({
 				"top" : newPosition
 			}, 500);
