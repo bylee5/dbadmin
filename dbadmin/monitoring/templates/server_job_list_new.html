@@ -8,10 +8,11 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
 </head>
 <body>
+
     {% block content %}
 <!--    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse_dummy" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">조회</span>-->
-    <!-- 로딩바 -->
-    <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
+<!--     로딩바 -->
+<!--    <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>-->
 
 	<input id="{{ job_count }}" name="{{ job_count }}" type="hidden" value="20">
 
@@ -38,11 +39,14 @@
     </div>
     -->
 	<!-- 검색란 -->
-	<div class="collapse show small"mt-0 id="collapseUpdateMulti" style="1font-size: 12px;">
+	<div class="collapse show small" id="collapseUpdateMulti" style="1font-size: 12px;">
 		<table class="w-100 mt-0" style="table-layout: fixed">
 			<td style="1width: 50%">
 				<div class="card card-body mt-0 bg-light callout callout-danger">
-					<h6>Job List</h6>
+					<h6>Job List
+						<!-- 로딩바 -->
+						<div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
+					</h6>
 					<a>- 잡 리스트에 따른 서버 통합관리 및 on/off 스위치를 제어하는 페이지입니다. </a>
 					<a>- 특정 job만을 보기 원하신다면, 아래 검색란을 활용해주세요.
 					(등록된 총 Job의 갯수 :
@@ -60,7 +64,7 @@
 			</td>
 		</table>
 	</div>
-	<hr class="mb-0 mt-0">
+	<hr class="mb-0 pb-2">
 
 	<!-- 메인 본문. AJAX -->
 <!--	<div class="container no-gutters">-->

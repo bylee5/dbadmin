@@ -5,10 +5,9 @@
     <title>left_ajax</title>
 </head>
 <body>
-<div>
 <!--<div class="card card-body mt-0 bg-light callout callout-dark">-->
     {% if job_info_lists|length != 0 %}
-    <div class="text-center">
+    <div class="text-center mt-0 pt-0">
         <h6>
             <span class="badge badge-warning" type="button" onclick="all_click({{ job_info_lists|length }})">모두 선택/해제</span>
             <span class="badge badge-light">TOTAL CNT</span>
@@ -198,6 +197,5 @@
         }
     </script>
 
-</div>
 </body>
 </html>
