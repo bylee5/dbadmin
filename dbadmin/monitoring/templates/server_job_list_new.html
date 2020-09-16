@@ -9,7 +9,7 @@
 </head>
 <body>
     {% block content %}
-    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse_dummy" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">조회</span>
+<!--    <span style="font-size: 12px;" type="button" class="badge badge-danger" data-toggle="collapse_dummy" data-target="#collapseUpdateMulti" aria-controls="collapseUpdateMulti">조회</span>-->
     <!-- 로딩바 -->
     <div class="spinner-border spinner-border-sm text-dark" role="status" id="spinners" name="spinners"></div>
 
@@ -38,15 +38,15 @@
     </div>
     -->
 	<!-- 검색란 -->
-	<div class="collapse show small" id="collapseUpdateMulti" style="1font-size: 12px;">
-		<table class="w-100 mt-2" style="table-layout: fixed">
+	<div class="collapse show small"mt-0 id="collapseUpdateMulti" style="1font-size: 12px;">
+		<table class="w-100 mt-0" style="table-layout: fixed">
 			<td style="1width: 50%">
 				<div class="card card-body mt-0 bg-light callout callout-danger">
 					<h6>Job List</h6>
 					<a>- 잡 리스트에 따른 서버 통합관리 및 on/off 스위치를 제어하는 페이지입니다. </a>
-					<a>- 특정 job만을 보기 원하신다면, 아래 검색란을 활용해주세요.</a>
-					<a>- 등록된 총 Job의 갯수 :
-						<span style="font-size: 10px;" class="badge badge-dark">{{ job_count }}</span>
+					<a>- 특정 job만을 보기 원하신다면, 아래 검색란을 활용해주세요.
+					(등록된 총 Job의 갯수 :
+						<span style="font-size: 10px;" class="badge badge-dark">{{ job_count }}</span>)
 					</a>
 
 					<form class="form-inline" onsubmit="return false" id="" name="">
@@ -60,7 +60,7 @@
 			</td>
 		</table>
 	</div>
-	<hr class="">
+	<hr class="mb-0 mt-0">
 
 	<!-- 메인 본문. AJAX -->
 <!--	<div class="container no-gutters">-->
@@ -72,7 +72,7 @@
 
 	<!-- 메인 본문. AJAX -->
 	<div class="">
-		<table class="w-100" border="0">
+		<table class="w-100 mt-0" border="0">
 			<tr>
 				<td style="width: 15%" class="align-top">
 					<div class="" id="left_ajax" style="position: absolute; width: 265px; 1font-size: 12px;"></div>
